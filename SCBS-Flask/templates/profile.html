@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f3f6fb;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 60px;
+            background: #205072;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .nav-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .btn-login {
+            border: 1px solid #7BE495;
+            color: #7BE495;
+        }
+
+        /* ================= PROFILE ================= */
+        .profile-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #329D9C;
+        }
+
+        .profile-info h2 {
+            color: #205072;
+        }
+
+        .profile-info p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .update-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #329D9C, #56C596);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: #205072;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 60px;
+        }
+
+        @media(max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+
+    <div class="logo">Sports Complex</div>
+
+    <div class="nav-center">
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}#home">Home</a>
+            <a href="{{ url_for('index') }}#about">About</a>
+            <a href="{{ url_for('index') }}#pricing">Pricing</a>
+            <a href="{{ url_for('index') }}#facilities">Facilities</a>
+            <a href="{{ url_for('index') }}#contact">Contact</a>
+            <a href="{{ url_for('index') }}#chatbot">Chatbot</a>
+        </div>
+    </div>
+
+    <div>
+        <a href="{{ url_for('logout') }}" class="btn btn-login">Logout</a>
+    </div>
+
+</div>
+
+<!-- ================= PROFILE CONTENT ================= -->
+<div class="profile-container">
+
+    <div class="profile-header">
+
+        {% if user and user['profile_image'] %}
+            <img src="{{ user['profile_image'] }}" class="profile-img">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ user['name'] if user else 'User' }}&background=329D9C&color=fff"
+                 class="profile-img">
+        {% endif %}
+
+        <div class="profile-info">
+            <h2>{{ user['name'] }}</h2>
+            <p>{{ user['email'] }}</p>
+            <p>Role: {{ user['role'] }}</p>
+        </div>
+
+    </div>
+
+    <!-- UPDATE FORM -->
+    <form enctype="multipart/form-data">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Name</label>
+                <input type="text" name="name"
+                       value="{{ user['name'] }}">
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input type="email"
+                       value="{{ user['email'] }}"
+                       readonly>
+            </div>
+
+            <div>
+                <label>Phone</label>
+                <input type="text" name="phone"
+                       value="{{ user['phone'] if user['phone'] else '' }}">
+            </div>
+
+            <div>
+                <label>Profile Image</label>
+                <input type="file" name="profile_image" id="profileInput" accept="image/*">
+            </div>
+
+            <div class="full">
+                <label>Address</label>
+                <textarea name="address" rows="3">{{ user['address'] if user['address'] else '' }}</textarea>
+            </div>
+
+        </div>
+
+        <button type="submit" class="update-btn">
+            Update Profile
+        </button>
+
+    </form>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="footer">
+    © 2026 Sports Complex Booking System
+</div>
+
+
+
+<script>
+document.querySelector("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: "Update Profile?",
+        text: "Do you want to save changes?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Update",
+        cancelButtonText: "No"
+    }).then((result) => {
+
+        if (!result.isConfirmed) return;
+
+        let formData = new FormData(this);
+
+        fetch("/update_profile", {
+            method: "POST",
+            body: formData
+        })
+        .then(async (res) => {
+
+            const text = await res.text();
+
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                throw new Error("Server returned invalid response (not JSON).");
+            }
+
+        })
+        .then(data => {
+
+            if (data.status === "success") {
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Updated Successfully",
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.reload();
+                });
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: data.message
+                });
+            }
+
+        })
+        .catch(err => {
+            Swal.fire({
+                icon: "error",
+                title: "Server Error",
+                text: err.message
+            });
+        });
+
+    });
+});
+
+
+// ================= LOGOUT CONFIRMATION =================
+document.querySelector(".btn-login").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const logoutUrl = this.href;
+
+    Swal.fire({
+        title: "Logout?",
+        text: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Logout",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            window.location.href = logoutUrl;
+        }
+
+    });
+});
+
+document.getElementById("profileInput").addEventListener("change", function (event) {
+
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            document.getElementById("profilePreview").src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+});
+</script>
+
+</body>
+</html>

@@ -4,6 +4,7 @@ import sqlite3
 from flask import Flask, render_template, redirect, url_for, session, request, jsonify
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
 
 from fetch_users import fetch_user
 from fetch_inquiries import fetch_inquiry
@@ -11,6 +12,8 @@ from fetch_categories import fetch_categories
 from fetch_facility import fetch_facility
 from fetch_reservations import fetch_reservations
 from create_reservation import create_reservation
+from chatbot import chatbot
+from email_notifications import EmailNotification
 
 # ======================
 # BASE DIRECTORY
@@ -29,6 +32,7 @@ app.register_blueprint(fetch_categories)
 app.register_blueprint(fetch_facility)
 app.register_blueprint(fetch_reservations)
 app.register_blueprint(create_reservation)
+app.register_blueprint(chatbot)
 # ======================
 # DATABASE CONNECTION
 # ======================
@@ -38,6 +42,11 @@ conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
 
 
+
+email_service = EmailNotification(
+    sender_email="arturoyparraguirre01@gmail.com",
+    sender_password="zhuc cwnd vdhu nqmg"
+)
 
 # ======================
 # CREATE TABLES
@@ -235,7 +244,9 @@ def index():
     )
 
 
+# ======================
 # LOGIN
+# ======================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -261,16 +272,30 @@ def login():
                 if password != confirm_password:
                     return jsonify({"status": "error", "message": "Passwords do not match"})
 
-                # ✅ HASH PASSWORD PROPERLY
                 hashed_pw = generate_password_hash(password)
 
                 cursor.execute(
-                    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-                    (name, email, hashed_pw)
+                    "INSERT INTO users (name, email, password, status) VALUES (?, ?, ?, ?)",
+                    (name, email, hashed_pw, "inactive")
                 )
 
                 conn.commit()
-                return jsonify({"status": "success"})
+
+                # ======================
+                # EMAIL: SIGNUP SUCCESS
+                # ======================
+                email_service.send_email(
+                    recipient_email=email,
+                    subject="Welcome to Sports Complex Booking System",
+                    message_html=f"""
+                        <h2>Welcome {name}!</h2>
+                        <p>Your account has been created successfully.</p>
+                        <p>Status: <b>Inactive</b></p>
+                        <p>Please wait for admin approval before you can log in.</p>
+                    """
+                )
+
+                return jsonify({"status": "success", "message": "Account created successfully"})
 
             # ======================
             # LOGIN
@@ -286,11 +311,81 @@ def login():
 
                 user = cursor.fetchone()
 
-                if user and check_password_hash(user['password'], password):
-                    session['user'] = user['email']
-                    return jsonify({"status": "success"})
+                if not user:
+                    return jsonify({
+                        "status": "error",
+                        "message": "Account not found"
+                    })
 
-                return jsonify({"status": "error", "message": "Invalid credentials"})
+                name = user['name']
+
+                # ======================
+                # CHECK ACCOUNT STATUS
+                # ======================
+                status = user['status'] if 'status' in user.keys() else 'active'
+
+                if status == "inactive":
+
+                    email_service.send_email(
+                        recipient_email=email,
+                        subject="Login Attempt Failed - Inactive Account",
+                        message_html=f"""
+                            <h3>Hello {name},</h3>
+                            <p>We detected a login attempt on your account.</p>
+                            <p><b>Status:</b> Inactive</p>
+                            <p>Please contact support to activate your account.</p>
+                        """
+                    )
+
+                    return jsonify({
+                        "status": "error",
+                        "message": "Your account is not activated yet."
+                    })
+
+                if status == "banned":
+
+                    email_service.send_email(
+                        recipient_email=email,
+                        subject="Login Attempt Blocked - Banned Account",
+                        message_html=f"""
+                            <h3>Hello {name},</h3>
+                            <p>We detected a login attempt on your account.</p>
+                            <p><b>Status:</b> Banned</p>
+                            <p>You are not allowed to access this system.</p>
+                        """
+                    )
+
+                    return jsonify({
+                        "status": "error",
+                        "message": "Your account has been banned. Please contact support for more information."
+                    })
+
+                # ======================
+                # PASSWORD CHECK
+                # ======================
+                if check_password_hash(user['password'], password):
+
+                    session['user'] = user['email']
+
+                    # EMAIL: LOGIN SUCCESS
+                    email_service.send_email(
+                        recipient_email=email,
+                        subject="Login Notification",
+                        message_html=f"""
+                            <h3>Hello {name},</h3>
+                            <p>You have successfully logged in to your account.</p>
+                        """
+                    )
+
+                    return jsonify({
+                        "status": "success",
+                        "message": "Login successful"
+                    })
+
+                return jsonify({
+                    "status": "error",
+                    "message": "Invalid credentials"
+                })
 
         except Exception as e:
             print("LOGIN ERROR:", e)
@@ -301,7 +396,6 @@ def login():
                 conn.close()
 
     return render_template('auth/login.html')
-
 
 @app.context_processor
 def inject_user():
@@ -327,7 +421,107 @@ def inject_user():
 
     return dict(user=None)
 
-    
+
+
+@app.route('/profile')
+def profile():
+
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM users WHERE email = ?
+    """, (session['user'],))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    return render_template("profile.html", user=user)
+
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+
+    if 'user' not in session:
+        return jsonify({
+            "status": "error",
+            "message": "Unauthorized. Please login again."
+        }), 401
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+
+        # Get email from session
+        email = session['user']
+
+        # Get user_id from database using email
+        cursor.execute("SELECT id FROM users WHERE email=?", (email,))
+        user_row = cursor.fetchone()
+
+        if not user_row:
+            return jsonify({
+                "status": "error",
+                "message": "User not found"
+            }), 404
+
+        user_id = user_row['id']
+
+        profile_image_path = None
+
+        file = request.files.get('profile_image')
+
+        if file and file.filename != "":
+            filename = secure_filename(file.filename)
+
+            upload_folder = os.path.join('static', 'uploads', 'profiles')
+            os.makedirs(upload_folder, exist_ok=True)
+
+            filepath = os.path.join(upload_folder, filename)
+            file.save(filepath)
+
+            profile_image_path = "/" + filepath.replace("\\", "/")
+
+        if profile_image_path:
+            cursor.execute("""
+                UPDATE users
+                SET name = ?, phone = ?, address = ?, profile_image = ?
+                WHERE id = ?
+            """, (name, phone, address, profile_image_path, user_id))
+        else:
+            cursor.execute("""
+                UPDATE users
+                SET name = ?, phone = ?, address = ?
+                WHERE id = ?
+            """, (name, phone, address, user_id))
+
+        conn.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Profile updated successfully"
+        })
+
+    except Exception as e:
+        print("UPDATE PROFILE ERROR:", e)
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+    finally:
+        conn.close()
 # ======================
 # ADMIN PAGES
 # ======================

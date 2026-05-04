@@ -1313,7 +1313,7 @@ textarea {
 
 
 <script>
-function sendMessage() {
+async function sendMessage() {
 
     let input = document.getElementById("chatInput");
     let message = input.value.trim();
@@ -1322,54 +1322,76 @@ function sendMessage() {
 
     let chat = document.getElementById("chatMessages");
 
+    // =========================
     // USER MESSAGE
+    // =========================
     chat.innerHTML += `
         <div class="user-message">
             ${message}
         </div>
     `;
 
-    // AUTO BOT RESPONSE
-    let reply = "Sorry, I don't understand that yet.";
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
 
-    let msg = message.toLowerCase();
+    // =========================
+    // BOT "TYPING..." EFFECT
+    // =========================
+    let typingDiv = document.createElement("div");
+    typingDiv.className = "bot-message typing";
+    typingDiv.innerHTML = "Typing...";
+    chat.appendChild(typingDiv);
+    chat.scrollTop = chat.scrollHeight;
 
-    if (msg.includes("price")) {
-        reply = "Facility prices depend on the selected sports area and duration.";
-    }
+    try {
 
-    else if (msg.includes("reservation")) {
-        reply = "You can reserve facilities directly through the booking section.";
-    }
+        // =========================
+        // CALL FLASK BACKEND
+        // =========================
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: message })
+        });
 
-    else if (msg.includes("schedule")) {
-        reply = "Facility schedules depend on availability and approved reservations.";
-    }
+        const data = await response.json();
 
-    else if (msg.includes("facility")) {
-        reply = "We offer courts, gym facilities, billiards, and other sports areas.";
-    }
+        // REMOVE "Typing..."
+        chat.removeChild(typingDiv);
 
-    else if (msg.includes("contact")) {
-        reply = "You can contact the admin through the Contact section below.";
-    }
-
-    setTimeout(() => {
-
+        // =========================
+        // BOT RESPONSE (FROM DB + AI LOGIC)
+        // =========================
         chat.innerHTML += `
             <div class="bot-message">
-                ${reply}
+                ${data.response.replace(/\n/g, "<br>")}
             </div>
         `;
 
-        chat.scrollTop = chat.scrollHeight;
+    } catch (error) {
 
-    }, 500);
+        // REMOVE "Typing..."
+        chat.removeChild(typingDiv);
 
-    input.value = "";
+        chat.innerHTML += `
+            <div class="bot-message">
+                ⚠️ Server error. Please try again later.
+            </div>
+        `;
+    }
 
     chat.scrollTop = chat.scrollHeight;
 }
+</script>
+
+<script>
+document.getElementById("chatInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
 </script>
 
 <script>
@@ -1457,8 +1479,8 @@ function sendInquiry() {
 
                 <div class="dropdown-menu">
                     <a href="#">Reservations</a>
-                    <a href="#">Profile</a>
-                    <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+                    <a href="{{ url_for('profile') }}">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="logout" id="logoutBtn">Logout</a>
                 </div>
 
             </div>
@@ -2522,6 +2544,30 @@ function handleOverlayClick(event) {
     }
 }
 
+</script>
+
+
+<script>
+document.getElementById("logoutBtn").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const logoutUrl = this.href;
+
+    Swal.fire({
+        title: "Logout?",
+        text: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Logout",
+        cancelButtonText: "Cancel"
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            window.location.href = logoutUrl;
+        }
+
+    });
+});
 </script>
 
 </body>

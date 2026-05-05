@@ -618,71 +618,126 @@ function viewReservation(r) {
         gcashScreenshot = "/static/uploads/payments/" + file;
     }
 
-    Swal.fire({
-        title: "Reservation Details",
-        width: 750,
-        confirmButtonText: "Close",
+Swal.fire({
+    title: "Reservation Details",
+    width: 780,
+    confirmButtonText: "Close",
+    confirmButtonColor: "#329D9C",
 
-        html: `
-        <div style="text-align:left;font-family:Arial;line-height:1.6">
+    html: `
+    <div style="font-family:Poppins, sans-serif; font-size:14px; text-align:left;">
 
-            <!-- FACILITY IMAGE -->
-            <div style="text-align:center;margin-bottom:15px;">
-                <img src="${facilityImage}"
-                     onerror="this.src='/static/uploads/facilities/default.png'"
-                     style="width:100%;max-height:240px;object-fit:cover;border-radius:10px;border:1px solid #ddd;">
-            </div>
+        <!-- IMAGE -->
+        <div style="margin-bottom:15px;">
+            <img src="${facilityImage}"
+                 onerror="this.src='/static/uploads/facilities/default.png'"
+                 style="width:100%;height:200px;object-fit:cover;border-radius:12px;">
+        </div>
 
-            <h2 style="color:#1e88e5;margin-bottom:10px;">
+        <!-- FACILITY -->
+        <div style="margin-bottom:15px;">
+            <h2 style="color:#205072;margin-bottom:5px;">
                 ${r.facility_name || "N/A"}
             </h2>
+        </div>
 
-            <hr>
+        <!-- GRID -->
+        <div style="
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap:12px;
+        ">
 
-            <h4>👤 User Information</h4>
-            <p><b>Name:</b> ${r.user_name || "N/A"}</p>
-            <p><b>Email:</b> ${r.user_email || "N/A"}</p>
-            <p><b>Phone:</b> ${r.user_phone || "N/A"}</p>
-
-            <hr>
-
-            <h4>📅 Booking Details</h4>
-            <p><b>Date:</b> ${r.booking_date || "N/A"}</p>
-            <p><b>Time:</b> ${r.start_time || "N/A"} - ${r.end_time || "N/A"}</p>
-            <p><b>Purpose:</b> ${r.purpose || "N/A"}</p>
-
-            <hr>
-
-            <h4>💰 Payment Details</h4>
-            <p><b>Total:</b> ₱${r.total_amount || 0}</p>
-            <p><b>Deposit:</b> ₱${r.deposit_amount || 0}</p>
-            <p><b>Method:</b> ${r.payment_method || "GCash"}</p>
-
-            <p><b>GCash Reference:</b> ${r.gcash_reference || "N/A"}</p>
-
-            <!-- GCASH SCREENSHOT -->
-            <div style="margin-top:10px;">
-                <h4>📸 GCash Screenshot</h4>
-
-                ${gcashScreenshot ? `
-                    <img src="${gcashScreenshot}"
-                        onerror="this.src='/static/uploads/payments/default.png'"
-                        style="width:100%;max-height:240px;object-fit:contain;border-radius:10px;border:1px solid #ddd;">
-                ` : `
-                    <p style="color:#888;">No screenshot uploaded</p>
-                `}
+            <!-- USER -->
+            <div style="background:#f8fafc;padding:12px;border-radius:10px;">
+                <b>User Information</b><br><br>
+                <b>Name:</b> ${r.user_name || "N/A"}<br>
+                <b>Email:</b> ${r.user_email || "N/A"}<br>
+                <b>Phone:</b> ${r.user_phone || "N/A"}<br>
             </div>
 
-            <hr>
+            <!-- BOOKING -->
+            <div style="background:#f8fafc;padding:12px;border-radius:10px;">
+                <b>Booking Details</b><br><br>
+                <b>Date:</b> ${r.booking_date || "N/A"}<br>
+                <b>Time:</b> ${r.start_time || "N/A"} - ${r.end_time || "N/A"}<br>
+                <b>Purpose:</b> ${r.purpose || "N/A"}
+            </div>
 
-            <h4>📊 Status</h4>
-            <p class="status-text status-${r.status}">
-                ${r.status || "Pending"}
-            </p>
+            <!-- PAYMENT -->
+            <div style="background:#f8fafc;padding:12px;border-radius:10px;">
+                <b>Payment Summary</b><br><br>
+                <b>Total:</b> ₱${r.total_amount || 0}<br>
+                <b>Deposit:</b> ₱${r.deposit_amount || 0}
+            </div>
+
+            <!-- STATUS -->
+            <div style="background:#f8fafc;padding:12px;border-radius:10px;">
+                <b>Status</b><br><br>
+                <span style="
+                    padding:6px 12px;
+                    border-radius:20px;
+                    font-size:12px;
+                    background:${r.status === 'approved' ? '#d1fae5' :
+                                 r.status === 'rejected' ? '#fee2e2' : '#fef3c7'};
+                    color:${r.status === 'approved' ? '#065f46' :
+                            r.status === 'rejected' ? '#991b1b' : '#92400e'};
+                ">
+                    ${r.status || "Pending"}
+                </span>
+            </div>
 
         </div>
-        `
-    });
+
+        <!-- TOGGLE BUTTON -->
+        <div style="margin-top:15px;">
+            <button id="toggleGcash" style="
+                width:100%;
+                padding:10px;
+                border:none;
+                border-radius:10px;
+                background:#e2e8f0;
+                cursor:pointer;
+                font-weight:500;
+            ">
+                Show Payment Details
+            </button>
+        </div>
+
+        <!-- HIDDEN PAYMENT DETAILS -->
+        <div id="gcashContainer" style="display:none; margin-top:12px; background:#f8fafc; padding:12px; border-radius:10px;">
+
+            <b>Payment Method:</b> ${r.payment_method || "GCash"}<br>
+            <b>Reference Number:</b> ${r.gcash_reference || "N/A"}<br><br>
+
+            ${gcashScreenshot ? `
+                <img src="${gcashScreenshot}"
+                     onerror="this.src='/static/uploads/payments/default.png'"
+                     style="width:100%;max-height:220px;object-fit:contain;border-radius:10px;">
+            ` : `
+                <p style="color:#888;">No screenshot uploaded</p>
+            `}
+        </div>
+
+    </div>
+    `,
+
+    didOpen: () => {
+        const btn = document.getElementById("toggleGcash");
+        const container = document.getElementById("gcashContainer");
+
+        btn.addEventListener("click", () => {
+            if (container.style.display === "none") {
+                container.style.display = "block";
+                btn.innerText = "Hide Payment Details";
+            } else {
+                container.style.display = "none";
+                btn.innerText = "Show Payment Details";
+            }
+        });
+    }
+});
+
 }
 
 function toggleSection(id) {

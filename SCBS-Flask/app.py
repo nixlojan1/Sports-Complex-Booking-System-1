@@ -276,7 +276,7 @@ def login():
 
                 cursor.execute(
                     "INSERT INTO users (name, email, password, status) VALUES (?, ?, ?, ?)",
-                    (name, email, hashed_pw, "inactive")
+                    (name, email, hashed_pw, "active")
                 )
 
                 conn.commit()

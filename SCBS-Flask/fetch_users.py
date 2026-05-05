@@ -73,8 +73,6 @@ def create_user():
     name = request.form.get('name')
     email = request.form.get('email')
     password = request.form.get('password', '123456')
-    phone = request.form.get('phone')
-    address = request.form.get('address')
     role = request.form.get('role', 'user')
     status = request.form.get('status', 'active')
 
@@ -99,14 +97,12 @@ def create_user():
     try:
         cursor.execute("""
             INSERT INTO users 
-            (name, email, password, phone, address, role, status, profile_image)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (name, email, password, role, status, profile_image)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (
             name,
             email,
             hashed_password,
-            phone,
-            address,
             role,
             status,
             profile_image

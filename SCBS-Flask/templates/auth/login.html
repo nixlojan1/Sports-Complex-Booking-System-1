@@ -208,7 +208,7 @@ body {
         }
 
         /* ================= BUTTON ================= */
-        .box form input[type="submit"] {
+        .box form button {
             width: 100%;
             background: var(--teal);
             border: none;
@@ -220,7 +220,7 @@ body {
             transition: 0.3s;
         }
 
-        .box form input[type="submit"]:hover {
+        .box form button:hover {
             background: var(--dark);
         }
 
@@ -239,6 +239,31 @@ body {
             text-align: center;
             padding: 20px;
         }
+
+
+        /* BUTTON LOADING STATE */
+        .loading-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* SPINNER */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -247,7 +272,7 @@ body {
 <!-- ================= NAVBAR ================= -->
 <div class="navbar">
     <div class="logo">
-        <i class="fas fa-dumbbell"></i> Sports Complex
+        <i></i> Sports Complex
     </div>
 
     <div class="nav-links">
@@ -289,7 +314,8 @@ body {
                 <label>Password</label>
             </div>
 
-            <input type="submit" value="Login">
+            <button type="submit" id="loginSubmit">Login</button>
+
         </form>
 
         <!-- SIGNUP -->
@@ -307,16 +333,6 @@ body {
             </div>
 
             <div class="inputBox">
-                <input type="text" name="phone" id="phone" required>
-                <label>Phone Number</label>
-            </div>
-
-            <div class="inputBox">
-                <input type="text" name="phone" id="phone" required>
-                <label>Address</label>
-            </div>
-
-            <div class="inputBox">
                 <input type="password" name="password" id="password" required>
                 <label>Password</label>
             </div>
@@ -329,11 +345,11 @@ body {
             <div class="terms">
                 <input type="checkbox" id="terms" name="terms">
                 <label for="terms">
-                    I agree to the <a href="#">Terms and Conditions</a>
+                    I agree to the <a href="#" id="openTerms">Terms and Conditions</a>
                 </label>
             </div>
 
-            <input type="submit" value="Signup">
+            <button type="submit" id="signupSubmit">Signup</button>
         </form>
 
     </div>
@@ -375,14 +391,16 @@ function showSignup() {
 signupForm.addEventListener("submit", function(e) {
     e.preventDefault();
 
+    let btn = document.getElementById("signupSubmit");
+    let originalText = btn.innerHTML;
+
     let name = document.getElementById("name").value.trim();
     let email = document.getElementById("signupEmail").value.trim();
-    let phone = document.getElementById("phone").value.trim();
     let password = document.getElementById("password").value;
     let confirm = document.getElementById("confirmPassword").value;
     let terms = document.getElementById("terms").checked;
 
-    if (!name || !email || !phone || !password || !confirm) {
+    if (!name || !email || !password || !confirm) {
         Swal.fire("Error", "All fields are required!", "error");
         return;
     }
@@ -397,6 +415,11 @@ signupForm.addEventListener("submit", function(e) {
         return;
     }
 
+    // START LOADING
+    btn.innerHTML = `<span class="spinner"></span> Processing...`;
+    btn.classList.add("loading-btn");
+    btn.disabled = true;
+
     fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -404,27 +427,33 @@ signupForm.addEventListener("submit", function(e) {
             action: "signup",
             name,
             email,
-            phone,
             password,
             confirm_password: confirm
         })
     })
     .then(async res => {
         const text = await res.text();
+
         try {
             return JSON.parse(text);
-        } catch {
-            console.error("NOT JSON RESPONSE:", text);
-            throw new Error("Server returned non-JSON response");
+        } catch (e) {
+            console.error("INVALID JSON:", text);
+            throw new Error("Server returned invalid response");
         }
     })
     .then(data => {
+
+        // STOP LOADING
+        btn.innerHTML = originalText;
+        btn.classList.remove("loading-btn");
+        btn.disabled = false;
+
         if (data.status === "success") {
 
             Swal.fire({
                 icon: "success",
                 title: "Account Created!",
-                text: "Please wait for admin approval.",
+                text: "Please login to continue.",
                 timer: 2000,
                 showConfirmButton: false
             }).then(() => {
@@ -435,15 +464,24 @@ signupForm.addEventListener("submit", function(e) {
         } else {
             Swal.fire("Error", data.message, "error");
         }
+    })
+    .catch(err => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("loading-btn");
+        btn.disabled = false;
+
+        Swal.fire("Error", err.message, "error");
     });
 });
-
 
 /* =======================
    LOGIN VALIDATION + AJAX
 ======================= */
 loginForm.addEventListener("submit", function(e) {
     e.preventDefault();
+
+    let btn = document.getElementById("loginSubmit");
+    let originalText = btn.innerHTML;
 
     let email = document.getElementById("loginEmail").value.trim();
     let password = document.getElementById("loginPassword").value;
@@ -452,6 +490,11 @@ loginForm.addEventListener("submit", function(e) {
         Swal.fire("Error", "Please fill in all fields!", "error");
         return;
     }
+
+    // START LOADING
+    btn.innerHTML = `<span class="spinner"></span> Logging in...`;
+    btn.classList.add("loading-btn");
+    btn.disabled = true;
 
     fetch("/login", {
         method: "POST",
@@ -462,16 +505,14 @@ loginForm.addEventListener("submit", function(e) {
             password
         })
     })
-    .then(async res => {
-        const text = await res.text();
-        try {
-            return JSON.parse(text);
-        } catch {
-            console.error("NOT JSON RESPONSE:", text);
-            throw new Error("Server returned non-JSON response");
-        }
-    })
+    .then(res => res.json())
     .then(data => {
+
+        // STOP LOADING
+        btn.innerHTML = originalText;
+        btn.classList.remove("loading-btn");
+        btn.disabled = false;
+
         if (data.status === "success") {
 
             Swal.fire({
@@ -487,9 +528,15 @@ loginForm.addEventListener("submit", function(e) {
         } else {
             Swal.fire("Login Failed", data.message, "error");
         }
+    })
+    .catch(err => {
+        btn.innerHTML = originalText;
+        btn.classList.remove("loading-btn");
+        btn.disabled = false;
+
+        Swal.fire("Error", err.message, "error");
     });
 });
-
 
 /* =======================
    AUTO LOAD FORM
@@ -504,6 +551,54 @@ window.onload = function() {
         showLogin();
     }
 };
+</script>
+
+<script>
+document.getElementById("openTerms").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: "Terms and Conditions",
+        width: 700,
+        html: `
+            <div style="text-align:left; max-height:400px; overflow-y:auto; font-size:14px; line-height:1.6;">
+                
+                <h3>1. User Responsibilities</h3>
+                <p>Users must provide accurate and complete information when registering and booking facilities.</p>
+
+                <h3>2. Booking Policy</h3>
+                <p>All reservations must be made in advance and are subject to availability.</p>
+                <p>Failure to attend a booking may result in restrictions on future reservations.</p>
+
+                <h3>3. Payment Terms</h3>
+                <p>Payments must be completed before confirming any reservation.</p>
+                <p>No refunds will be issued once the booking is finalized unless approved by management.</p>
+
+                <h3>4. Account Security</h3>
+                <p>You are responsible for maintaining the confidentiality of your account credentials.</p>
+
+                <h3>5. Prohibited Activities</h3>
+                <ul>
+                    <li>Misuse of the system</li>
+                    <li>Providing false information</li>
+                    <li>Attempting unauthorized access</li>
+                </ul>
+
+                <h3>6. Account Status</h3>
+                <p>Accounts may be marked as <b>Inactive</b> or <b>Banned</b> depending on violations or administrative decisions.</p>
+
+                <h3>7. Changes to Terms</h3>
+                <p>The system administrators reserve the right to update these terms at any time without prior notice.</p>
+
+                <br>
+                <p><b>By using this system, you agree to comply with all the terms stated above.</b></p>
+
+            </div>
+        `,
+        confirmButtonText: "Close",
+        confirmButtonColor: "#329D9C"
+    });
+});
 </script>
 
 </body>

@@ -17,7 +17,7 @@ cursor.execute("""
     WHERE role = 'user'
 """)
 users = cursor.fetchall()
-
+   
 # ======================
 # FETCH FACILITIES
 # ======================

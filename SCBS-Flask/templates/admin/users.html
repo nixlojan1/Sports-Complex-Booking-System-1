@@ -440,27 +440,22 @@ tbody tr:hover {
 
         <div class="menu-title">Logs</div>
 
-        <a href="{{ url_for('transaction_log') }}"
-        class="{% if active_page == 'transaction_log' %}active{% endif %}">
-            <i class="fas fa-receipt"></i> Transaction Log
-        </a>
-
         <a href="{{ url_for('history_log') }}"
         class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
 
-        <div class="menu-title">System</div>
+        <div class="menu-title">Account</div>
 
-        <a href="{{ url_for('settings') }}"
-        class="{% if active_page == 'settings' %}active{% endif %}">
-            <i class="fas fa-cog"></i> Settings
+        <a href="{{ url_for('logout') }}"
+           style="color:#ff6b6b;"
+           onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> Logout
         </a>
 
     </div>
 
 </div>
-
 <!-- MAIN -->
 <div class="main">
 

@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 * {
@@ -281,6 +283,8 @@ tbody tr:hover {
     margin-bottom: 10px;
 }
 </style>
+
+
 </head>
 
 <body>
@@ -328,27 +332,22 @@ tbody tr:hover {
 
         <div class="menu-title">Logs</div>
 
-        <a href="{{ url_for('transaction_log') }}"
-        class="{% if active_page == 'transaction_log' %}active{% endif %}">
-            <i class="fas fa-receipt"></i> Transaction Log
-        </a>
-
         <a href="{{ url_for('history_log') }}"
         class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
 
-        <div class="menu-title">System</div>
+        <div class="menu-title">Account</div>
 
-        <a href="{{ url_for('settings') }}"
-        class="{% if active_page == 'settings' %}active{% endif %}">
-            <i class="fas fa-cog"></i> Settings
+        <a href="{{ url_for('logout') }}"
+           style="color:#ff6b6b;"
+           onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> Logout
         </a>
 
     </div>
 
 </div>
-
 <!-- MAIN -->
 <div class="main">
 
@@ -407,94 +406,285 @@ tbody tr:hover {
 
     </div>
 
+<!-- ======================
+     LIVE MONITORING TABLE
+     (ONGOING APPROVED RESERVATIONS)
+====================== -->
+<div class="table-container" style="margin-top:25px;">
 
-    <!-- ======================
-         LIVE MONITORING TABLE
-         (ONGOING APPROVED RESERVATIONS)
-    ====================== -->
-    <div class="table-container" style="margin-top:25px;">
+    <div class="table-header">
+        <h4>Live Facility Monitoring</h4>
 
-        <div class="table-header">
-            <h4>Live Facility Monitoring</h4>
-
-            <div class="search-box">
-                <input type="text" placeholder="Search active reservations...">
-            </div>
+        <!-- SEARCH (NOW FUNCTIONAL) -->
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="searchInput"
+                placeholder="Search active reservations..."
+                onkeyup="searchTable()"
+            >
         </div>
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Facility</th>
-                    <th>User</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Status</th>
-                    <th>Time Remaining</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody id="liveMonitoringTable">
-
-                <!-- Example Row (Replace with Jinja or JS rendering) -->
-                {% for r in active_reservations %}
-
-                <tr data-end="{{ r.end_datetime }}">
-
-                    <td>{{ r.facility_name }}</td>
-                    <td>{{ r.user_name }}</td>
-                    <td>{{ r.start_time }}</td>
-                    <td>{{ r.end_time }}</td>
-
-                    <td>
-                        <span style="color:#00e5ff;">
-                            {{ r.status }}
-                        </span>
-                    </td>
-
-                    <!-- LIVE COUNTDOWN (JS WILL UPDATE THIS) -->
-                    <td class="countdown">
-                        Calculating...
-                    </td>
-
-                    <td>
-
-                        <button class="action-btn">Extend</button>
-
-                        <button class="action-btn" style="background:#ffcc00;">
-                            Stop / Go
-                        </button>
-
-                        <button class="action-btn" style="background:#ff4d4d;">
-                            End
-                        </button>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-        <!-- EMPTY STATE -->
-        {% if not active_reservations %}
-        <div class="empty-state">
-            <i class="fas fa-calendar-times"></i>
-            <h3>No Active Reservations</h3>
-            <p>Approved bookings currently in progress will appear here.</p>
-        </div>
-        {% endif %}
-
     </div>
 
+    <table>
+
+        <thead>
+            <tr>
+                <th>Facility</th>
+                <th>User</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody id="liveMonitoringTable">
+
+            {% for r in active_reservations %}
+
+            <tr>
+
+                <td>{{ r.facility_name }}</td>
+                <td>{{ r.user_name }}</td>
+                <td>{{ r.start_time }}</td>
+                <td>{{ r.end_time }}</td>
+
+                <td>
+                    <span style="color:#00e5ff;">
+                        {{ r.status }}
+                    </span>
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <!-- EMPTY STATE -->
+    {% if not active_reservations %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <h3>No Active Reservations</h3>
+        <p>Approved bookings currently in progress will appear here.</p>
+    </div>
+    {% endif %}
+
+</div>
 </div>
 
 </div>
 
 </body>
+
+
+<script>
+
+// ======================
+// OPEN EXTEND (SWEETALERT MODAL)
+// ======================
+function openExtendModal(id, endTime) {
+
+    Swal.fire({
+        title: "Extend Reservation",
+        html: `
+            <div style="text-align:left; color:#cfe8ff; font-size:13px; margin-bottom:10px;">
+                Current End Time: <b style="color:#00e5ff;">${endTime}</b>
+            </div>
+
+            <label style="color:#9fb3c8; font-size:13px;">Select Extension</label>
+            <select id="extendMinutes"
+                style="
+                    width:100%;
+                    padding:10px;
+                    margin-top:6px;
+                    border-radius:8px;
+                    border:1px solid #1f2a38;
+                    background:#0a0f1a;
+                    color:#e6f1ff;
+                    outline:none;
+                ">
+                <option value="30">30 Minutes</option>
+                <option value="60">1 Hour</option>
+            </select>
+        `,
+        background: "#0f1117",
+        color: "#e6f1ff",
+        showCancelButton: true,
+        confirmButtonText: "Extend",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#00e5ff",
+        cancelButtonColor: "#1f2a38",
+
+        preConfirm: () => {
+            return document.getElementById("extendMinutes").value;
+        }
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            let minutes = result.value;
+
+            fetch("/extend_reservation", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    reservation_id: id,
+                    minutes: minutes
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+
+                if (data.status === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Extended Successfully",
+                        text: data.message,
+                        background: "#0f1117",
+                        color: "#e6f1ff",
+                        confirmButtonColor: "#00e5ff"
+                    });
+
+                    location.reload();
+
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed",
+                        text: data.message,
+                        background: "#0f1117",
+                        color: "#e6f1ff",
+                        confirmButtonColor: "#00e5ff"
+                    });
+                }
+
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "Something went wrong.",
+                    background: "#0f1117",
+                    color: "#e6f1ff"
+                });
+            });
+        }
+
+    });
+}
+
+</script>
+
+
+<script>
+
+// ======================
+// SEARCH FUNCTION (LIVE FILTER)
+// ======================
+function searchTable() {
+    let input = document.getElementById("searchInput");
+    let filter = input.value.toLowerCase();
+    let rows = document.querySelectorAll("#liveMonitoringTable tr");
+
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+
+
+// ======================
+// SUBMIT EXTEND REQUEST
+// ======================
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("extendForm");
+
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let reservationId = document.getElementById("reservationId").value;
+        let minutes = document.getElementById("extendMinutes").value;
+
+        if (!minutes || minutes <= 0) {
+            Swal.fire({
+                icon: "warning",
+                title: "Invalid Input",
+                text: "Please enter valid minutes.",
+                background: "#111827",
+                color: "#e6f1ff",
+                confirmButtonColor: "#00e5ff"
+            });
+            return;
+        }
+
+        fetch("/extend_reservation", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                reservation_id: reservationId,
+                minutes: minutes
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "success") {
+                Swal.fire({
+                    icon: "success",
+                    title: "Time Extended",
+                    text: data.message,
+                    background: "#111827",
+                    color: "#e6f1ff",
+                    confirmButtonColor: "#00e5ff"
+                });
+
+                closeModal();
+                location.reload();
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Failed",
+                    text: data.message,
+                    background: "#111827",
+                    color: "#e6f1ff",
+                    confirmButtonColor: "#00e5ff"
+                });
+            }
+
+        })
+        .catch(err => {
+            Swal.fire({
+                icon: "error",
+                title: "Server Error",
+                text: "Something went wrong.",
+                background: "#111827",
+                color: "#e6f1ff"
+            });
+        });
+    });
+});
+
+
+// ======================
+// CLOSE MODAL ON OUTSIDE CLICK
+// ======================
+window.onclick = function(event) {
+    const modal = document.getElementById("extendModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
+
+</script>
 </html>

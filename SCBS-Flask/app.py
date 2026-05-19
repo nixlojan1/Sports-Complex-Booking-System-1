@@ -525,8 +525,141 @@ def update_profile():
 # ======================
 # ADMIN PAGES
 # ======================
-@app.route('/admin')
+# ======================
+# ADMIN LOGIN
+# ======================
+@app.route('/admin', methods=['GET', 'POST'])
 def dashboard():
+
+    # ======================
+    # ADMIN LOGIN PROCESS
+    # ======================
+    if request.method == 'POST':
+
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT * FROM users
+            WHERE email = ? AND role = 'admin'
+        """, (email,))
+
+        admin = cursor.fetchone()
+
+        conn.close()
+
+        # ======================
+        # CHECK ADMIN ACCOUNT
+        # ======================
+        if admin and check_password_hash(admin['password'], password):
+
+            session['admin'] = admin['email']
+
+            return redirect(url_for('dashboard'))
+
+        return render_template(
+            'auth/admin-login.html',
+            error="Invalid admin credentials"
+        )
+
+    # ======================
+    # CHECK ADMIN SESSION
+    # ======================
+    if 'admin' not in session:
+        return render_template('auth/admin-login.html')
+
+    # ======================
+    # DASHBOARD DATA
+    # ======================
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # ======================
+    # COUNTS
+    # ======================
+    cursor.execute("SELECT COUNT(*) FROM reservations")
+    reservations_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM categories")
+    categories_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM facilities")
+    facilities_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM users")
+    users_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM inquiries")
+    inquiries_count = cursor.fetchone()[0]
+
+    # ======================
+    # SALES
+    # ======================
+    cursor.execute("""
+        SELECT IFNULL(SUM(total_amount), 0)
+        FROM reservations
+        WHERE status = 'Approved'
+    """)
+    total_sales = cursor.fetchone()[0]
+
+    # ======================
+    # ACTIVE RESERVATIONS
+    # ======================
+    cursor.execute("""
+        SELECT
+            r.id,
+            r.booking_date,
+            r.start_time,
+            r.end_time,
+            r.status,
+
+            r.facility_id,
+            r.user_id,
+
+            u.name AS user_name,
+            f.name AS facility_name
+
+        FROM reservations r
+
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN facilities f ON r.facility_id = f.id
+
+        WHERE r.status = 'Approved'
+        ORDER BY r.id DESC
+    """)
+
+    active_rows = cursor.fetchall()
+
+    active_reservations = []
+
+    for r in active_rows:
+        row = dict(r)
+
+        row["end_datetime"] = f"{row['booking_date']} {row['end_time']}"
+
+        active_reservations.append(row)
+
+    conn.close()
+
+    return render_template(
+        'admin/dashboard.html',
+
+        active_page='dashboard',
+
+        reservations_count=reservations_count,
+        categories_count=categories_count,
+        facilities_count=facilities_count,
+        users_count=users_count,
+        inquiries_count=inquiries_count,
+        total_sales=total_sales,
+
+        active_reservations=active_reservations
+    )
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -705,6 +838,100 @@ def contact():
     conn.commit()
 
     return jsonify({"status": "success"})
+
+
+
+@app.route("/extend_reservation", methods=["POST"])
+def extend_reservation():
+    try:
+        data = request.get_json()
+        reservation_id = data.get("reservation_id")
+        minutes = data.get("minutes")
+
+        # ------------------------
+        # Convert dropdown value
+        # ------------------------
+        if minutes == "30 mins":
+            add_time = 30
+        elif minutes == "1 hour":
+            add_time = 60
+        else:
+            return jsonify({"status": "error", "message": "Invalid duration"}), 400
+
+        conn = sqlite3.connect("database.db")
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # ------------------------
+        # Get reservation
+        # ------------------------
+        cursor.execute("""
+            SELECT booking_date, end_time
+            FROM reservations
+            WHERE id = ?
+        """, (reservation_id,))
+
+        row = cursor.fetchone()
+
+        if not row:
+            return jsonify({"status": "error", "message": "Reservation not found"}), 404
+
+        # ------------------------
+        # Parse time safely
+        # ------------------------
+        try:
+            current_end_str = f"{row['booking_date']} {row['end_time']}"
+            
+            # Example expected format:
+            # "May 19, 2026 10:00 AM"
+            current_end = datetime.strptime(current_end_str, "%B %d, %Y %I:%M %p")
+
+        except Exception:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid date format in database"
+            }), 500
+
+        # ------------------------
+        # Add time
+        # ------------------------
+        new_end = current_end + timedelta(minutes=add_time)
+
+        new_end_time = new_end.strftime("%I:%M %p")  # store only time
+        new_booking_date = new_end.strftime("%B %d, %Y")
+
+        # ------------------------
+        # Update DB
+        # ------------------------
+        cursor.execute("""
+            UPDATE reservations
+            SET end_time = ?,
+                booking_date = ?,
+                date_updated = CURRENT_TIMESTAMP
+            WHERE id = ?
+        """, (new_end_time, new_booking_date, reservation_id))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "status": "success",
+            "message": "Reservation extended successfully",
+            "new_end_time": new_end_time,
+            "new_date": new_booking_date
+        })
+
+    except sqlite3.OperationalError as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Database error: {str(e)}"
+        }), 500
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 
 # ======================

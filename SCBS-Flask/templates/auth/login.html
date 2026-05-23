@@ -31,17 +31,9 @@
 
         body {
             background: linear-gradient(135deg, var(--mint), #ffffff);
+            min-height: 100vh;
+            display: block;
         }
-
-body {
-    background: linear-gradient(135deg, var(--mint), #ffffff);
-    min-height: 100vh;
-}
-
-/* REMOVE vertical centering */
-body {
-    display: block; /* important fix */
-}
 
         /* ================= NAVBAR ================= */
         .navbar {
@@ -110,14 +102,15 @@ body {
             background: var(--light-green);
             color: var(--dark);
         }
-/* ================= FORM WRAPPER ================= */
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 80px); /* keeps center BELOW navbar */
-    padding: 30px 15px;
-}
+
+        /* ================= FORM WRAPPER ================= */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 30px 15px;
+        }
 
         /* ================= LOGIN BOX ================= */
         .box {
@@ -161,7 +154,7 @@ body {
 
         .inputBox input {
             width: 100%;
-            padding: 12px 10px;
+            padding: 12px 40px 12px 10px; /* right padding for eye icon */
             border: 1px solid #ddd;
             border-radius: 8px;
             outline: none;
@@ -182,6 +175,43 @@ body {
             padding: 0 5px;
             font-size: 12px;
             color: var(--dark);
+        }
+
+        /* ================= EYE ICON ================= */
+        .eye-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #aaa;
+            font-size: 15px;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .eye-icon:hover {
+            color: var(--teal);
+        }
+
+        /* ================= FORGOT PASSWORD ================= */
+        .forgot-password {
+            text-align: right;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-password a {
+            font-size: 12px;
+            color: var(--teal);
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .forgot-password a:hover {
+            color: var(--dark);
+            text-decoration: underline;
         }
 
         /* ================= TERMS ================= */
@@ -240,7 +270,6 @@ body {
             padding: 20px;
         }
 
-
         /* BUTTON LOADING STATE */
         .loading-btn {
             display: flex;
@@ -259,6 +288,7 @@ body {
             border-top: 2px solid transparent;
             border-radius: 50%;
             animation: spin 0.6s linear infinite;
+            display: inline-block;
         }
 
         @keyframes spin {
@@ -276,12 +306,12 @@ body {
     </div>
 
     <div class="nav-links">
-            <a href="{{ url_for('index') }}#home">Home</a>
-            <a href="{{ url_for('index') }}#about">About</a>
-            <a href="{{ url_for('index') }}#pricing">Pricing</a>
-            <a href="{{ url_for('index') }}#facilities">Facilities</a>
-            <a href="{{ url_for('index') }}#contact">Contact</a>
-            <a href="{{ url_for('index') }}#chatbot">Chatbot</a>
+        <a href="{{ url_for('index') }}#home">Home</a>
+        <a href="{{ url_for('index') }}#about">About</a>
+        <a href="{{ url_for('index') }}#pricing">Pricing</a>
+        <a href="{{ url_for('index') }}#facilities">Facilities</a>
+        <a href="{{ url_for('index') }}#contact">Contact</a>
+        <a href="{{ url_for('index') }}#chatbot">Chatbot</a>
     </div>
 
     <div class="auth-buttons">
@@ -300,7 +330,7 @@ body {
             <button id="signupBtn" onclick="showSignup()">Signup</button>
         </div>
 
-        <!-- LOGIN -->
+        <!-- LOGIN FORM -->
         <form id="loginForm" method="POST">
             <input type="hidden" name="action" value="login">
 
@@ -312,13 +342,20 @@ body {
             <div class="inputBox">
                 <input type="password" name="password" id="loginPassword" required>
                 <label>Password</label>
+                <span class="eye-icon" onclick="togglePassword('loginPassword', this)">
+                    <i class="fa fa-eye"></i>
+                </span>
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+            <div class="forgot-password">
+                <a id="forgotPasswordLink">Forgot Password?</a>
             </div>
 
             <button type="submit" id="loginSubmit">Login</button>
-
         </form>
 
-        <!-- SIGNUP -->
+        <!-- SIGNUP FORM -->
         <form id="signupForm" method="POST" style="display:none;">
             <input type="hidden" name="action" value="signup">
 
@@ -335,11 +372,17 @@ body {
             <div class="inputBox">
                 <input type="password" name="password" id="password" required>
                 <label>Password</label>
+                <span class="eye-icon" onclick="togglePassword('password', this)">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
 
             <div class="inputBox">
                 <input type="password" name="confirm_password" id="confirmPassword" required>
                 <label>Confirm Password</label>
+                <span class="eye-icon" onclick="togglePassword('confirmPassword', this)">
+                    <i class="fa fa-eye"></i>
+                </span>
             </div>
 
             <div class="terms">
@@ -367,6 +410,24 @@ const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
 
 /* =======================
+   TOGGLE PASSWORD VISIBILITY
+======================= */
+function togglePassword(inputId, iconSpan) {
+    const input = document.getElementById(inputId);
+    const icon = iconSpan.querySelector("i");
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+}
+
+/* =======================
    TOGGLE FORMS
 ======================= */
 function showLogin() {
@@ -384,6 +445,86 @@ function showSignup() {
     signupBtn.classList.add("active");
     loginBtn.classList.remove("active");
 }
+
+/* =======================
+   FORGOT PASSWORD MODAL
+======================= */
+document.getElementById("forgotPasswordLink").addEventListener("click", function(e) {
+    e.preventDefault();
+
+    Swal.fire({
+        title: "Forgot Password",
+        html: `
+            <p style="font-size:14px; color:#555; margin-bottom:16px;">
+                Enter the email address linked to your account and we'll send you a password reset link.
+            </p>
+            <input
+                type="email"
+                id="forgotEmail"
+                class="swal2-input"
+                placeholder="Enter your email address"
+                style="font-size:14px;"
+            >
+        `,
+        confirmButtonText: "Send Reset Link",
+        confirmButtonColor: "#329D9C",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        cancelButtonColor: "#aaa",
+        focusConfirm: false,
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            const email = document.getElementById("forgotEmail").value.trim();
+
+            if (!email) {
+                Swal.showValidationMessage("Please enter your email address.");
+                return false;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                Swal.showValidationMessage("Please enter a valid email address.");
+                return false;
+            }
+
+            // Send request to backend
+            return fetch("/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ email })
+            })
+            .then(async res => {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Server returned an invalid response.");
+                }
+            })
+            .then(data => {
+                if (data.status !== "success") {
+                    Swal.showValidationMessage(data.message || "Something went wrong. Please try again.");
+                    return false;
+                }
+                return data;
+            })
+            .catch(err => {
+                Swal.showValidationMessage(err.message || "Network error. Please try again.");
+                return false;
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then(result => {
+        if (result.isConfirmed && result.value) {
+            Swal.fire({
+                icon: "success",
+                title: "Reset Link Sent!",
+                text: "Please check your email inbox for the password reset link.",
+                confirmButtonColor: "#329D9C"
+            });
+        }
+    });
+});
 
 /* =======================
    SIGNUP VALIDATION + AJAX
@@ -433,7 +574,6 @@ signupForm.addEventListener("submit", function(e) {
     })
     .then(async res => {
         const text = await res.text();
-
         try {
             return JSON.parse(text);
         } catch (e) {
@@ -442,14 +582,11 @@ signupForm.addEventListener("submit", function(e) {
         }
     })
     .then(data => {
-
-        // STOP LOADING
         btn.innerHTML = originalText;
         btn.classList.remove("loading-btn");
         btn.disabled = false;
 
         if (data.status === "success") {
-
             Swal.fire({
                 icon: "success",
                 title: "Account Created!",
@@ -460,7 +597,6 @@ signupForm.addEventListener("submit", function(e) {
                 showLogin();
                 signupForm.reset();
             });
-
         } else {
             Swal.fire("Error", data.message, "error");
         }
@@ -469,7 +605,6 @@ signupForm.addEventListener("submit", function(e) {
         btn.innerHTML = originalText;
         btn.classList.remove("loading-btn");
         btn.disabled = false;
-
         Swal.fire("Error", err.message, "error");
     });
 });
@@ -499,22 +634,15 @@ loginForm.addEventListener("submit", function(e) {
     fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-            action: "login",
-            email,
-            password
-        })
+        body: new URLSearchParams({ action: "login", email, password })
     })
     .then(res => res.json())
     .then(data => {
-
-        // STOP LOADING
         btn.innerHTML = originalText;
         btn.classList.remove("loading-btn");
         btn.disabled = false;
 
         if (data.status === "success") {
-
             Swal.fire({
                 icon: "success",
                 title: "Login Successful!",
@@ -524,7 +652,6 @@ loginForm.addEventListener("submit", function(e) {
             }).then(() => {
                 window.location.href = "/";
             });
-
         } else {
             Swal.fire("Login Failed", data.message, "error");
         }
@@ -533,7 +660,6 @@ loginForm.addEventListener("submit", function(e) {
         btn.innerHTML = originalText;
         btn.classList.remove("loading-btn");
         btn.disabled = false;
-
         Swal.fire("Error", err.message, "error");
     });
 });
@@ -554,6 +680,9 @@ window.onload = function() {
 </script>
 
 <script>
+/* =======================
+   TERMS AND CONDITIONS
+======================= */
 document.getElementById("openTerms").addEventListener("click", function(e) {
     e.preventDefault();
 
@@ -602,5 +731,4 @@ document.getElementById("openTerms").addEventListener("click", function(e) {
 </script>
 
 </body>
-
 </html>

@@ -369,12 +369,27 @@ def profile():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+
     cursor.execute("SELECT * FROM users WHERE email = ?", (session['user'],))
     user = cursor.fetchone()
+
+    cursor.execute("SELECT id FROM users WHERE email = ?", (session['user'],))
+    user_row = cursor.fetchone()
+    uid = user_row['id']
+
+    cursor.execute("SELECT COUNT(*) FROM reservations WHERE user_id = ?", (uid,))
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM reservations WHERE user_id = ? AND status = 'Approved'", (uid,))
+    approved = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM reservations WHERE user_id = ? AND status = 'Pending'", (uid,))
+    pending = cursor.fetchone()[0]
+
     conn.close()
 
-    return render_template("profile.html", user=user)
-
+    stats = {"total": total, "approved": approved, "pending": pending}
+    return render_template("profile.html", user=user, stats=stats)
 
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
@@ -428,6 +443,42 @@ def update_profile():
     finally:
         conn.close()
 
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'user' not in session:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+    current_pw  = request.form.get('current_password', '')
+    new_pw      = request.form.get('new_password', '')
+    confirm_pw  = request.form.get('confirm_password', '')
+
+    if not current_pw or not new_pw or not confirm_pw:
+        return jsonify({"status": "error", "message": "All fields are required."})
+
+    if len(new_pw) < 6:
+        return jsonify({"status": "error", "message": "Password must be at least 6 characters."})
+
+    if new_pw != confirm_pw:
+        return jsonify({"status": "error", "message": "New passwords do not match."})
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE email = ?", (session['user'],))
+    user = cursor.fetchone()
+
+    if not check_password_hash(user['password'], current_pw):
+        conn.close()
+        return jsonify({"status": "error", "message": "Current password is incorrect."})
+
+    cursor.execute("UPDATE users SET password = ? WHERE email = ?",
+                   (generate_password_hash(new_pw), session['user']))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "success"})
 
 # ======================
 # ADMIN PAGES

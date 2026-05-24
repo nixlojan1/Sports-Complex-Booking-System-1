@@ -577,6 +577,58 @@ def settings():
     return render_with_active('admin/settings.html', 'settings')
 
 
+@app.route('/my_bookings')
+def my_bookings():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE email = ?", (session['user'],))
+    user_row = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT r.*, f.name AS facility_name
+        FROM reservations r
+        LEFT JOIN facilities f ON r.facility_id = f.id
+        WHERE r.user_id = ?
+        ORDER BY r.date_created DESC
+    """, (user_row['id'],))
+
+    bookings = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    return render_template('my_bookings.html', bookings=bookings)
+
+
+@app.route('/cancel_booking/<int:id>', methods=['POST'])
+def cancel_booking(id):
+    if 'user' not in session:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE email = ?", (session['user'],))
+    user_row = cursor.fetchone()
+
+    cursor.execute("""
+        UPDATE reservations SET status = 'Cancelled'
+        WHERE id = ? AND user_id = ? AND status = 'Pending'
+    """, (id, user_row['id']))
+
+    conn.commit()
+    affected = cursor.rowcount
+    conn.close()
+
+    if affected == 0:
+        return jsonify({"status": "error", "message": "Booking not found or cannot be cancelled."})
+
+    return jsonify({"status": "success"})
+
 # ======================
 # CONTACT
 # ======================

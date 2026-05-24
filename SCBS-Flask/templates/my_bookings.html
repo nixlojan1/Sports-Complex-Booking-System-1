@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings – Sports Complex</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --dark: #205072;
+            --teal: #329D9C;
+            --green: #56C596;
+            --light-green: #7BE495;
+            --mint: #CFF4D2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(135deg, var(--mint), #ffffff);
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 60px;
+            background: var(--dark);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .nav-center { flex: 1; display: flex; justify-content: center; }
+
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -6px;
+            width: 0%;
+            height: 2px;
+            background: var(--light-green);
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--light-green); }
+        .nav-links a:hover::after { width: 100%; }
+
+        .auth-buttons { display: flex; align-items: center; gap: 10px; }
+
+        .profile-dropdown { position: relative; display: inline-block; }
+
+        .profile-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--light-green);
+            transition: 0.3s;
+        }
+
+        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-btn:hover { transform: scale(1.05); }
+
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 42px;
+            background: white;
+            min-width: 180px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            z-index: 2000;
+        }
+
+        .dropdown-menu a {
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 14px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .dropdown-menu a:last-child { border-bottom: none; }
+        .dropdown-menu a:hover { background: #f5f5f5; }
+        .dropdown-menu .logout { color: red; }
+        .profile-dropdown:hover .dropdown-menu { display: flex; }
+
+        .btn { padding: 8px 15px; border-radius: 8px; font-size: 13px; text-decoration: none; }
+
+        .btn-login { border: 1px solid var(--light-green); color: var(--light-green); }
+        .btn-login:hover { background: var(--light-green); color: var(--dark); }
+        .btn-signup { background: var(--green); color: white; }
+
+        /* ================= PAGE WRAPPER ================= */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ================= PAGE HEADER ================= */
+        .page-header {
+            margin-bottom: 36px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* ================= FILTER TABS ================= */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            padding: 9px 20px;
+            border-radius: 50px;
+            border: 1px solid #dbe4ee;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s;
+            color: #475569;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* ================= BOOKING CARDS ================= */
+        .bookings-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .booking-card {
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.09);
+        }
+
+        .booking-card-inner {
+            display: grid;
+            grid-template-columns: 6px 1fr auto;
+            align-items: stretch;
+        }
+
+        /* STATUS COLOR STRIP */
+        .status-strip {
+            width: 6px;
+            border-radius: 18px 0 0 18px;
+        }
+
+        .strip-pending  { background: #f59e0b; }
+        .strip-approved { background: #22c55e; }
+        .strip-rejected { background: #ef4444; }
+        .strip-cancelled { background: #94a3b8; }
+
+        /* MAIN CONTENT */
+        .booking-body {
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .booking-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .booking-facility {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .booking-id {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* STATUS BADGE */
+        .status-badge {
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pending  { background: #fef3c7; color: #92400e; }
+        .badge-approved { background: #dcfce7; color: #166534; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; }
+        .badge-cancelled { background: #f1f5f9; color: #475569; }
+
+        /* META ROW */
+        .booking-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .meta-item i {
+            color: #14b8a6;
+            font-size: 13px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* AMOUNTS */
+        .booking-amounts {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .amount-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 10px 16px;
+        }
+
+        .amount-box .label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .amount-box .value {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+
+        /* ACTIONS */
+        .booking-actions {
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            border-left: 1px solid #f1f5f9;
+            min-width: 130px;
+        }
+
+        .action-btn {
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+            color: white;
+        }
+
+        .btn-view:hover { opacity: 0.88; }
+
+        .btn-cancel {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-cancel:hover { background: #fecaca; }
+
+        /* ================= EMPTY STATE ================= */
+        .empty-bookings {
+            text-align: center;
+            padding: 70px 20px;
+            background: #fff;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .empty-bookings i {
+            font-size: 48px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+
+        .empty-bookings h3 {
+            font-size: 18px;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .empty-bookings p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .empty-bookings a {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .empty-bookings a:hover { opacity: 0.88; }
+
+        /* ================= DETAIL MODAL ================= */
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child { border-bottom: none; }
+        .detail-row .dl { color: #64748b; }
+        .detail-row .dv { font-weight: 600; color: #0f172a; text-align: right; }
+
+        /* ================= SCREENSHOT PREVIEW ================= */
+        .screenshot-thumb {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 10px; padding: 15px; }
+            .booking-card-inner { grid-template-columns: 6px 1fr; }
+            .booking-actions { border-left: none; border-top: 1px solid #f1f5f9; flex-direction: row; flex-wrap: wrap; padding: 14px 20px; }
+            .page-wrapper { margin: 24px auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+
+    <div class="logo">
+        <i></i> Sports Complex
+    </div>
+
+    <div class="nav-center">
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}#home">Home</a>
+            <a href="{{ url_for('index') }}#about">About</a>
+            <a href="{{ url_for('index') }}#pricing">Pricing</a>
+            <a href="{{ url_for('index') }}#facilities">Facilities</a>
+            <a href="{{ url_for('index') }}#contact">Contact</a>
+        </div>
+    </div>
+
+    <div class="auth-buttons">
+        {% if not user %}
+            <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
+            <a href="{{ url_for('login') }}?form=signup" class="btn btn-signup">Sign Up</a>
+        {% else %}
+            <div class="profile-dropdown">
+                <div class="profile-btn">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image }}" alt="Profile">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.name }}&background=329D9C&color=fff&rounded=true">
+                    {% endif %}
+                </div>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('profile') }}">Profile</a>
+                    <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+                    <a href="{{ url_for('logout') }}" class="logout" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- ================= PAGE CONTENT ================= -->
+<div class="page-wrapper">
+
+    <div class="page-header">
+        <h1><i class="fas fa-calendar-check" style="color:#14b8a6;margin-right:10px;"></i>My Bookings</h1>
+        <p>Track and manage all your facility reservations in one place.</p>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="Pending">Pending</button>
+        <button class="tab-btn" data-filter="Approved">Approved</button>
+        <button class="tab-btn" data-filter="Rejected">Rejected</button>
+        <button class="tab-btn" data-filter="Cancelled">Cancelled</button>
+    </div>
+
+    <!-- BOOKINGS LIST -->
+    <div class="bookings-grid" id="bookingsGrid">
+
+        {% if bookings and bookings|length > 0 %}
+            {% for b in bookings %}
+
+            <div class="booking-card" data-status="{{ b.status }}">
+                <div class="booking-card-inner">
+
+                    <!-- COLOR STRIP -->
+                    <div class="status-strip strip-{{ b.status|lower }}"></div>
+
+                    <!-- BODY -->
+                    <div class="booking-body">
+
+                        <!-- TOP ROW -->
+                        <div class="booking-top">
+                            <div>
+                                <div class="booking-facility">{{ b.facility_name }}</div>
+                                <div class="booking-id">Booking #{{ b.id }}</div>
+                            </div>
+                            <span class="status-badge badge-{{ b.status|lower }}">
+                                {{ b.status }}
+                            </span>
+                        </div>
+
+                        <!-- META -->
+                        <div class="booking-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                {{ b.booking_date }}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock"></i>
+                                {{ b.start_time }} – {{ b.end_time }}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-credit-card"></i>
+                                {{ b.payment_method }}
+                            </div>
+                            {% if b.purpose %}
+                            <div class="meta-item">
+                                <i class="fas fa-tag"></i>
+                                {{ b.purpose }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- AMOUNTS -->
+                        <div class="booking-amounts">
+                            <div class="amount-box">
+                                <div class="label">Total Amount</div>
+                                <div class="value">₱{{ "%.2f"|format(b.total_amount) }}</div>
+                            </div>
+                            <div class="amount-box">
+                                <div class="label">Deposit Paid</div>
+                                <div class="value">₱{{ "%.2f"|format(b.deposit_amount) }}</div>
+                            </div>
+                            <div class="amount-box">
+                                <div class="label">Balance</div>
+                                <div class="value">₱{{ "%.2f"|format(b.total_amount - b.deposit_amount) }}</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="booking-actions">
+                        <button class="action-btn btn-view"
+                            onclick='showDetail({{ b|tojson }})'>
+                            <i class="fas fa-eye"></i> View
+                        </button>
+
+                        {% if b.status == "Pending" %}
+                        <button class="action-btn btn-cancel"
+                            onclick="cancelBooking({{ b.id }})">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            {% endfor %}
+        {% else %}
+
+            <div class="empty-bookings">
+                <i class="fas fa-calendar-times"></i>
+                <h3>No Bookings Yet</h3>
+                <p>You haven't made any reservations. Start by browsing our available facilities.</p>
+                <a href="{{ url_for('index') }}#facilities">Browse Facilities</a>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="footer">© 2026 Sports Complex Booking System</div>
+
+
+<script>
+/* =======================
+   FILTER TABS
+======================= */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const filter = btn.getAttribute("data-filter");
+        const cards  = document.querySelectorAll(".booking-card");
+
+        cards.forEach(card => {
+            const status = card.getAttribute("data-status");
+            card.style.display = (filter === "all" || filter === status) ? "block" : "none";
+        });
+    });
+});
+
+/* =======================
+   VIEW DETAIL MODAL
+======================= */
+function showDetail(b) {
+
+    const screenshotHtml = b.payment_screenshot
+        ? `<p style="font-size:13px;font-weight:600;color:#64748b;margin-top:14px;">Payment Screenshot</p>
+           <img src="/static/uploads/payments/${b.payment_screenshot}"
+                class="screenshot-thumb"
+                onclick="window.open(this.src,'_blank')"
+                title="Click to view full size">`
+        : "";
+
+    const statusColors = {
+        Pending:   "#f59e0b",
+        Approved:  "#22c55e",
+        Rejected:  "#ef4444",
+        Cancelled: "#94a3b8"
+    };
+
+    Swal.fire({
+        title: `<span style="font-size:18px;">Booking #${b.id}</span>`,
+        width: 540,
+        confirmButtonText: "Close",
+        confirmButtonColor: "#14b8a6",
+        html: `
+        <div style="text-align:left;">
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <span style="font-size:15px;font-weight:700;color:#0f172a;">${b.facility_name}</span>
+                <span style="padding:4px 12px;border-radius:999px;font-size:12px;font-weight:700;
+                             background:${statusColors[b.status]}22;color:${statusColors[b.status]};">
+                    ${b.status}
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="dl">Booking Date</span>
+                <span class="dv">${b.booking_date}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Time</span>
+                <span class="dv">${b.start_time} – ${b.end_time}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Purpose</span>
+                <span class="dv">${b.purpose || '—'}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Payment Method</span>
+                <span class="dv">${b.payment_method}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">GCash Reference</span>
+                <span class="dv">${b.gcash_reference || '—'}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Total Amount</span>
+                <span class="dv">₱${parseFloat(b.total_amount).toFixed(2)}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Deposit Paid</span>
+                <span class="dv">₱${parseFloat(b.deposit_amount).toFixed(2)}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Remaining Balance</span>
+                <span class="dv">₱${(parseFloat(b.total_amount) - parseFloat(b.deposit_amount)).toFixed(2)}</span>
+            </div>
+            <div class="detail-row">
+                <span class="dl">Date Created</span>
+                <span class="dv">${b.date_created || '—'}</span>
+            </div>
+
+            ${screenshotHtml}
+
+        </div>
+        `
+    });
+}
+
+/* =======================
+   CANCEL BOOKING
+======================= */
+function cancelBooking(id) {
+    Swal.fire({
+        title: "Cancel Booking?",
+        text: "Are you sure you want to cancel this reservation? This cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Cancel It",
+        cancelButtonText: "Keep It",
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#aaa"
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        fetch(`/cancel_booking/${id}`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire({
+                    icon: "success",
+                    title: "Booking Cancelled",
+                    text: "Your reservation has been cancelled.",
+                    confirmButtonColor: "#14b8a6",
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => location.reload());
+            } else {
+                Swal.fire("Error", data.message || "Failed to cancel booking.", "error");
+            }
+        })
+        .catch(() => {
+            Swal.fire("Error", "Server error. Please try again.", "error");
+        });
+    });
+}
+
+/* =======================
+   LOGOUT CONFIRM
+======================= */
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        const url = this.href;
+        Swal.fire({
+            title: "Logout?",
+            text: "Are you sure you want to logout?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, Logout",
+            cancelButtonText: "Cancel"
+        }).then(result => {
+            if (result.isConfirmed) window.location.href = url;
+        });
+    });
+}
+</script>
+
+</body>
+</html>

@@ -51,8 +51,8 @@ conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
 
 email_service = EmailNotification(
-    sender_email="arturoyparraguirre01@gmail.com",
-    sender_password="zhuc cwnd vdhu nqmg"
+    sender_email="sportscomplexx1@gmail.com",
+    sender_password="kaiu ouav fgqv kfsa"
 )
 
 # ======================

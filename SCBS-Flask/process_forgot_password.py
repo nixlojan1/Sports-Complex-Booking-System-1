@@ -9,8 +9,8 @@ from email_notifications import EmailNotification
 
 
 # ── Config ──────────────────────────────────────────────────────────────────
-SENDER_EMAIL         = "arturoyparraguirre01@gmail.com"
-SENDER_PASSWORD      = "zhuc cwnd vdhu nqmg"
+SENDER_EMAIL         = "sportscomplexx1@gmail.com"
+SENDER_PASSWORD      = "kaiu ouav fgqv kfsa"
 TOKEN_EXPIRY_MINUTES = 30
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

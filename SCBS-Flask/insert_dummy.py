@@ -9,7 +9,7 @@ cursor = conn.cursor()
 
 # ======================
 # ADMIN DETAILS
-# ======================
+# ========================
 name = "Administrator"
 email = "admin@gmail.com"
 password = "admin123"

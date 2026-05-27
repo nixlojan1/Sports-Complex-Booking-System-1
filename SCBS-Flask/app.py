@@ -568,6 +568,21 @@ def dashboard():
 def reservations():
     return render_with_active('admin/reservations.html', 'reservations')
 
+@app.route('/get_booked_slots')
+def get_booked_slots():
+    facility_id = request.args.get('facility_id')
+    date        = request.args.get('date')
+    bookings    = Reservation.query.filter_by(
+                      facility_id=facility_id,
+                      booking_date=date,
+                      status='approved'    # only approved count
+                  ).all()
+    slots = [{'start_hour': int(b.start_time.split(':')[0]),
+              'end_hour':   int(b.end_time.split(':')[0])}
+             for b in bookings]
+    return jsonify({'booked_slots': slots})
+
+    
 @app.route('/categories')
 def categories():
     return render_with_active('admin/categories.html', 'categories')

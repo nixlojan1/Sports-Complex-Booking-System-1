@@ -352,42 +352,6 @@
 </div>
 
 
-<!-- FLOATING CHATBOT -->
-<button class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()" title="Chat with us">
-    <i class="fas fa-robot" id="fabIcon"></i>
-</button>
-
-<div class="chatbot-popup" id="chatbotPopup">
-    <div class="chatbot-popup-header">
-        <div class="chatbot-popup-header-left">
-            <div class="chatbot-avatar">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div>
-                <div class="chatbot-popup-title">SCBS Assistant</div>
-                <div class="chatbot-popup-subtitle">Online &bull; Ready to help</div>
-            </div>
-        </div>
-        <button class="chatbot-close-btn" onclick="toggleChatbot()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <div class="chatbot-popup-messages" id="popupChatMessages">
-        <div class="bot-msg">
-            Hello 👋 Welcome to Sports Complex Booking System. How can I help you today?
-        </div>
-    </div>
-
-    <div class="chatbot-popup-input">
-        <input type="text" id="popupChatInput" placeholder="Type your message...">
-        <button onclick="sendPopupMessage()">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    </div>
-</div>
-
-
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

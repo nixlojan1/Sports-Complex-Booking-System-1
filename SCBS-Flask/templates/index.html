@@ -8,48 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <!-- Equipment Options Standalone Styles -->
-    <!-- Added here so it won't depend on chatbot CSS -->
-    <style>
-        .equipment-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .equipment-option-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background-color: #f0f9f9;
-            color: #205072;
-            border: 1.5px solid #329D9C;
-            border-radius: 20px;
-            font-family: 'Poppins', Arial, sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        .equipment-option-btn:hover {
-            background-color: #329D9C;
-            color: #ffffff;
-        }
-
-        .equipment-option-btn i {
-            font-size: 13px;
-        }
-
-        .equipment-option-btn.selected {
-            background-color: #205072;
-            color: #ffffff;
-            border-color: #205072;
-        }
-    </style>
 </head>
 
 <body>
@@ -64,7 +22,6 @@
         <div class="nav-links">
             <a href="{{ url_for('index') }}#home">Home</a>
             <a href="{{ url_for('index') }}#about">About</a>
-            <a href="{{ url_for('index') }}#pricing">Pricing</a>
             <a href="{{ url_for('index') }}#facilities">Facilities</a>
             <a href="{{ url_for('index') }}#contact">Contact</a>
         </div>
@@ -176,56 +133,6 @@
 </section>
 
 
-<!-- PRICING -->
-<section id="pricing" class="pricing-section">
-    <div class="pricing-header">
-        <span class="pricing-badge">Pricing Plans</span>
-        <h2>Choose Your Reservation Plan</h2>
-        <p>Flexible and affordable facility rates for casual games, training sessions, and tournaments.</p>
-    </div>
-
-    <div class="pricing-grid">
-
-        <div class="price-card">
-            <div class="plan-icon"><i class="fas fa-table-tennis"></i></div>
-            <h3>Basic</h3>
-            <div class="price">₱100 <span>/hour</span></div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check"></i> Standard Access</li>
-                <li><i class="fas fa-check"></i> 1 Hour Reservation</li>
-                <li><i class="fas fa-check"></i> Online Booking</li>
-            </ul>
-            <a href="#facilities" class="pricing-btn">Reserve</a>
-        </div>
-
-        <div class="price-card featured-plan">
-            <div class="featured-badge">Most Popular</div>
-            <div class="plan-icon"><i class="fas fa-basketball-ball"></i></div>
-            <h3>Standard</h3>
-            <div class="price">₱200 <span>/hour</span></div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check"></i> Premium Court Access</li>
-                <li><i class="fas fa-check"></i> Priority Booking</li>
-                <li><i class="fas fa-check"></i> Flexible Schedule</li>
-            </ul>
-            <a href="#facilities" class="pricing-btn">Reserve</a>
-        </div>
-
-        <div class="price-card">
-            <div class="plan-icon"><i class="fas fa-trophy"></i></div>
-            <h3>Premium</h3>
-            <div class="price">₱350 <span>/hour</span></div>
-            <ul class="plan-features">
-                <li><i class="fas fa-check"></i> Full Facility Access</li>
-                <li><i class="fas fa-check"></i> VIP Reservation</li>
-                <li><i class="fas fa-check"></i> Event Ready Setup</li>
-            </ul>
-            <a href="#facilities" class="pricing-btn">Reserve</a>
-        </div>
-
-    </div>
-</section>
-
 
 <!-- FACILITIES -->
 <section id="facilities" class="facilities-section">
@@ -305,28 +212,82 @@
 <!-- BOOKING MODAL -->
 <div id="bookingModal" class="modal-overlay" onclick="handleOverlayClick(event)">
     <div class="modal-container minimal" onclick="event.stopPropagation()">
-        <h2 class="modal-title">Book Schedule</h2>
-        <form onsubmit="handleBookingSubmit(event)">
-            <label>Date</label>
-            <input type="date" id="startDate">
 
-            <div class="time-grid">
+        <!-- CLOSE -->
+        <button type="button" class="modal-close-x" onclick="closeBookingModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <!-- HEADER -->
+        <h2 class="modal-title">
+            <i class="fas fa-calendar-check" style="color:#14b8a6;margin-right:8px;"></i>
+            Book Schedule
+        </h2>
+
+        <form onsubmit="handleBookingSubmit(event)" novalidate>
+
+            <!-- DATE -->
+            <label>Date <span class="req">*</span></label>
+            <input type="date" id="startDate" required>
+            <div id="dateError" class="field-error"></div>
+
+            <!-- TIME GRID HEADER -->
+            <div class="tg-header">
                 <div>
-                    <label>Start Time</label>
-                    <select id="startTime"></select>
+                    <label style="margin:0;">Time Slot <span class="req">*</span></label>
+                    <div id="rtBadge" class="rt-badge">
+                        <span class="rt-dot"></span> Live availability
+                    </div>
                 </div>
-                <div>
-                    <label>End Time</label>
-                    <select id="endTime" disabled></select>
+                <div class="time-legend">
+                    <span class="leg-item"><span class="leg-dot ld-avail"></span>Available</span>
+                    <span class="leg-item"><span class="leg-dot ld-booked"></span>Booked</span>
+                    <span class="leg-item"><span class="leg-dot ld-sel"></span>Selected</span>
+                    <span class="leg-item"><span class="leg-dot ld-past"></span>Past</span>
                 </div>
             </div>
 
-            <label>Purpose of Booking</label>
-            <textarea id="purpose" placeholder="Optional"></textarea>
+            <!-- STEP HINT -->
+            <div id="stepHint" class="step-hint">
+                <i class="fas fa-hand-pointer"></i>
+                <span id="stepHintText">Click a time block to set your <strong>start time</strong></span>
+            </div>
 
+            <!-- GRID WRAP -->
+            <div id="timeGridWrap" class="tg-wrap">
+                <div id="timeGridLoader" class="tg-loader">
+                    <i class="fas fa-spinner fa-spin"></i>&nbsp; Checking availability…
+                </div>
+                <div id="timeGrid" class="time-grid-visual" style="display:none;"></div>
+            </div>
+
+            <!-- BOOKING SUMMARY -->
+            <div id="timeSummary" class="time-summary" style="display:none;">
+                <div class="sum-left">
+                    <span id="sumRange"></span><br>
+                    <small id="sumDuration" style="color:#64748b;font-weight:400;"></small>
+                </div>
+                <div class="sum-right" id="sumCost"></div>
+            </div>
+
+            <!-- PURPOSE -->
+            <label style="margin-top:12px;">
+                Purpose of Booking
+                <span style="font-weight:400;color:#94a3b8;font-size:11px;">(optional)</span>
+            </label>
+            <textarea id="purpose"
+                      placeholder="e.g. Practice game, Training session, Tournament…"
+                      rows="2"
+                      maxlength="300"></textarea>
+
+            <!-- ERRORS -->
             <div id="bookingError" class="error-box"></div>
 
-            <button class="submit-btn" type="submit">Continue</button>
+            <!-- SUBMIT -->
+            <button class="submit-btn" type="submit" id="bookingSubmitBtn" disabled>
+                <i class="fas fa-arrow-right"></i>&nbsp; Continue to Equipment
+            </button>
+
         </form>
     </div>
 </div>
@@ -394,10 +355,7 @@
 </div>
 
 
-<!-- ====================== -->
-<!-- CHATBOT (COMMENTED OUT) -->
-<!-- ====================== -->
-<!--
+<!-- FLOATING CHATBOT -
 <button class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()" title="Chat with us">
     <i class="fas fa-robot" id="fabIcon"></i>
 </button>
@@ -431,6 +389,7 @@
         </button>
     </div>
 </div>
+
 -->
 
 

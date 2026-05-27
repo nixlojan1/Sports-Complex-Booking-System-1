@@ -1,1526 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- https://faphouse.com/videos/the-night-cheated-stepsister-cgNScK?utm_source=pbweb&utm_medium=referral&utm_campaign=pbw  -->
 <head>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sports Complex Booking System</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <style>
-        :root {
-            --dark: #205072;
-            --teal: #329D9C;
-            --green: #56C596;
-            --light-green: #7BE495;
-            --mint: #CFF4D2;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--mint), #ffffff);
-        }
-
-/* ================= NAVBAR ================= */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 60px;
-    background: var(--dark);
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-/* LOGO */
-.logo {
-    font-size: 20px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-/* CENTER WRAPPER */
-.nav-center {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-/* NAV LINKS */
-.nav-links {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-}
-
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    position: relative;
-    transition: 0.3s;
-}
-
-/* hover underline effect */
-.nav-links a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -6px;
-    width: 0%;
-    height: 2px;
-    background: var(--light-green);
-    transition: 0.3s;
-}
-
-.nav-links a:hover {
-    color: var(--light-green);
-}
-
-.nav-links a:hover::after {
-    width: 100%;
-}
-
-/* AUTH RIGHT SIDE */
-.auth-buttons {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid var(--light-green);
-            transition: 0.3s;
-        }
-
-        .profile-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 42px;
-            background: white;
-            min-width: 180px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-            overflow: hidden;
-            display: none;
-            flex-direction: column;
-            z-index: 2000;
-        }
-
-        .dropdown-menu a {
-            padding: 12px 15px;
-            text-decoration: none;
-            color: var(--dark);
-            font-size: 14px;
-            border-bottom: 1px solid #f1f1f1;
-        }
-
-        .dropdown-menu a:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-menu a:hover {
-            background: #f5f5f5;
-        }
-
-        .dropdown-menu .logout {
-            color: red;
-        }
-
-        .profile-dropdown:hover .dropdown-menu {
-            display: flex;
-        }
-
-        .btn {
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-        .btn-login {
-            border: 1px solid var(--light-green);
-            color: var(--light-green);
-        }
-
-        .btn-login:hover {
-            background: var(--light-green);
-            color: var(--dark);
-        }
-
-        .btn-signup {
-            background: var(--green);
-            color: white;
-        }
-
-        /* ================= HERO ================= */
-        .hero {
-            height: 90vh;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: white;
-            max-width: 800px;
-            padding: 20px;
-        }
-
-        .hero-title {
-            font-size: 52px;
-            font-weight: 700;
-        }
-
-        .hero-subtitle {
-            margin-top: 15px;
-            font-size: 18px;
-        }
-
-        .hero-btn {
-            margin-top: 30px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 30px;
-            border-radius: 50px;
-            background: linear-gradient(135deg, var(--teal), var(--green));
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-        }
-
-        .hero-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .dots {
-            position: absolute;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 3;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.5);
-            cursor: pointer;
-        }
-
-        .dot.active {
-            background: white;
-        }
-
-        /* ================= SECTIONS ================= */
-        section {
-            padding: 80px 60px;
-        }
-
-        .pricing {
-            text-align: center;
-        }
-
-        .pricing h2 {
-            font-size: 32px;
-            color: var(--dark);
-            margin-bottom: 30px;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .price-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-
-        .price-card h3 {
-            color: var(--teal);
-        }
-
-        .price {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--dark);
-        }
-
-        .footer {
-            background: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 32px;
-            }
-
-            .navbar {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-
-/* EMPTY STATE */
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 40px;
-    color: #9ca3af;
-    font-size: 14px;
-}
-
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-}
-
-.modal-container.minimal {
-    width: 420px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-
-.modal-title {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-label {
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 10px;
-    display: block;
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-textarea {
-    resize: none;
-}
-
-.time-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.total-box {
-    margin-top: 10px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.submit-btn {
-    width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    border: none;
-    background: #1e88e5;
-    color: #fff;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.close-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-
-.error-box {
-    display: none;
-    background: #ffe5e5;
-    color: #d8000c;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    margin-top: 10px;
-}
-
-
-/* ================= FLOATING CHATBOT ================= */
-.chatbot-fab {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(20, 184, 166, 0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    z-index: 9000;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.chatbot-fab:hover {
-    transform: scale(1.1);
-    box-shadow: 0 12px 35px rgba(20, 184, 166, 0.55);
-}
-
-.chatbot-fab::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(20, 184, 166, 0.35);
-    animation: fabPulse 2s ease-out infinite;
-}
-
-@keyframes fabPulse {
-    0%   { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(1.9); opacity: 0; }
-}
-
-/* POPUP */
-.chatbot-popup {
-    position: fixed;
-    bottom: 105px;
-    right: 30px;
-    width: 370px;
-    background: white;
-    border-radius: 22px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-    border: 1px solid #e5e7eb;
-    z-index: 8999;
-    display: none;
-    flex-direction: column;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    transform: translateY(20px);
-    opacity: 0;
-}
-
-.chatbot-popup.open {
-    display: flex;
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.chatbot-popup-header {
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    padding: 16px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.chatbot-popup-header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.chatbot-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-}
-
-.chatbot-popup-title {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.chatbot-popup-subtitle {
-    font-size: 11px;
-    opacity: 0.85;
-}
-
-.chatbot-close-btn {
-    background: rgba(255,255,255,0.18);
-    border: none;
-    color: white;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-}
-
-.chatbot-close-btn:hover {
-    background: rgba(255,255,255,0.3);
-}
-
-.chatbot-popup-messages {
-    height: 320px;
-    overflow-y: auto;
-    padding: 18px;
-    background: #f9fafb;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.chatbot-popup-messages::-webkit-scrollbar { width: 4px; }
-.chatbot-popup-messages::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 4px;
-}
-
-.bot-msg,
-.user-msg {
-    max-width: 85%;
-    padding: 11px 14px;
-    border-radius: 16px;
-    font-size: 13.5px;
-    line-height: 1.5;
-}
-
-.bot-msg {
-    background: #e5e7eb;
-    color: #111827;
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-}
-
-.user-msg {
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-
-.typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 12px 14px;
-    background: #e5e7eb;
-    border-radius: 16px;
-    border-bottom-left-radius: 4px;
-    align-self: flex-start;
-    width: fit-content;
-}
-
-.typing-indicator span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #9ca3af;
-    animation: typingBounce 1.2s infinite;
-}
-
-.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes typingBounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30%            { transform: translateY(-6px); }
-}
-
-.chatbot-popup-input {
-    display: flex;
-    border-top: 1px solid #e5e7eb;
-    background: white;
-}
-
-.chatbot-popup-input input {
-    flex: 1;
-    border: none;
-    padding: 14px 16px;
-    outline: none;
-    font-size: 13.5px;
-    background: transparent;
-    margin: 0;
-    border-radius: 0;
-    width: auto;
-}
-
-.chatbot-popup-input button {
-    width: 55px;
-    border: none;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    font-size: 16px;
-}
-
-.chatbot-popup-input button:hover {
-    opacity: 0.88;
-}
-
-@media(max-width: 480px) {
-    .chatbot-popup {
-        width: calc(100vw - 30px);
-        right: 15px;
-        bottom: 95px;
-    }
-    .chatbot-fab {
-        right: 15px;
-        bottom: 20px;
-    }
-}
-
-</style>
-
-<style>
-    /* ================= ABOUT SECTION ================= */
-.about-section {
-    padding: 90px 7%;
-    background:
-        linear-gradient(
-            180deg,
-            #f8fafc 0%,
-            #eef6ff 100%
-        );
-}
-
-/* CONTAINER */
-.about-container {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 60px;
-    align-items: center;
-}
-
-/* CONTENT */
-.about-content h2 {
-    font-size: 42px;
-    line-height: 1.2;
-    color: #0f172a;
-    margin-bottom: 20px;
-    font-weight: 800;
-}
-
-.about-description {
-    color: #64748b;
-    font-size: 15px;
-    line-height: 1.9;
-    margin-bottom: 18px;
-}
-
-/* BADGE */
-.about-badge {
-    display: inline-block;
-    background: rgba(20, 184, 166, 0.12);
-    color: #0f766e;
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-/* FEATURES */
-.about-features {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin-top: 35px;
-}
-
-.feature-card {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 20px;
-    padding: 18px;
-    display: flex;
-    gap: 15px;
-    align-items: flex-start;
-    transition: 0.35s ease;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-}
-
-.feature-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 18px 40px rgba(20, 184, 166, 0.12);
-}
-
-/* ICON */
-.feature-card i {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-}
-
-/* TEXT */
-.feature-card h4 {
-    font-size: 15px;
-    color: #0f172a;
-    margin-bottom: 6px;
-}
-
-.feature-card p {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.6;
-}
-
-/* IMAGE */
-.about-image {
-    position: relative;
-}
-
-.about-image img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    border-radius: 28px;
-    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15);
-}
-
-/* OVERLAY */
-.about-overlay {
-    position: absolute;
-    bottom: 25px;
-    left: 25px;
-    right: 25px;
-}
-
-.overlay-card {
-    background: rgba(15, 23, 42, 0.82);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 22px;
-    padding: 22px;
-    color: white;
-}
-
-.overlay-card h3 {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.overlay-card p {
-    color: #cbd5e1;
-    font-size: 14px;
-}
-
-/* RESPONSIVE */
-@media(max-width: 980px){
-
-    .about-container {
-        grid-template-columns: 1fr;
-    }
-
-    .about-image img {
-        height: 420px;
-    }
-
-    .about-content h2 {
-        font-size: 34px;
-    }
-
-    .about-features {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media(max-width: 600px){
-
-    .about-section {
-        padding: 70px 20px;
-    }
-
-    .about-content h2 {
-        font-size: 28px;
-    }
-
-    .about-image img {
-        height: 320px;
-    }
-}
-</style>
-
-<style>
-    /* ================= PRICING SECTION ================= */
-.pricing-section {
-    padding: 90px 7%;
-    background: linear-gradient(180deg, #ffffff, #f8fafc);
-}
-
-/* HEADER */
-.pricing-header {
-    text-align: center;
-    max-width: 650px;
-    margin: 0 auto 55px;
-}
-
-.pricing-badge {
-    display: inline-block;
-    padding: 9px 18px;
-    border-radius: 999px;
-    background: rgba(20, 184, 166, 0.12);
-    color: #0f766e;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 16px;
-}
-
-.pricing-header h2 {
-    font-size: 40px;
-    color: #0f172a;
-    margin-bottom: 14px;
-    font-weight: 800;
-}
-
-.pricing-header p {
-    color: #64748b;
-    font-size: 15px;
-    line-height: 1.7;
-}
-
-/* GRID */
-.pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
-    justify-content: center;
-    gap: 28px;
-}
-
-/* CARD */
-.price-card {
-    position: relative;
-    background: #fff;
-    border-radius: 24px;
-    padding: 35px 28px;
-    border: 1px solid #e2e8f0;
-    transition: 0.35s ease;
-    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.05);
-}
-
-.price-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px rgba(20, 184, 166, 0.12);
-}
-
-/* FEATURED */
-.featured-plan {
-    border: 2px solid #14b8a6;
-    transform: scale(1.03);
-}
-
-.featured-badge {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-/* ICON */
-.plan-icon {
-    width: 65px;
-    height: 65px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 22px;
-}
-
-/* TEXT */
-.price-card h3 {
-    font-size: 28px;
-    color: #0f172a;
-    margin-bottom: 14px;
-}
-
-.price {
-    font-size: 48px;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 22px;
-}
-
-.price span {
-    font-size: 15px;
-    color: #64748b;
-    font-weight: 500;
-}
-
-/* FEATURES */
-.plan-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 28px;
-}
-
-.plan-features li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-    color: #334155;
-    font-size: 14px;
-}
-
-.plan-features i {
-    color: #14b8a6;
-    font-size: 13px;
-}
-
-/* BUTTON */
-.pricing-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 13px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.3s ease;
-}
-
-.pricing-btn:hover {
-    opacity: 0.92;
-    transform: translateY(-2px);
-}
-
-/* RESPONSIVE */
-@media(max-width: 768px){
-
-    .pricing-section {
-        padding: 75px 20px;
-    }
-
-    .pricing-header h2 {
-        font-size: 32px;
-    }
-
-    .featured-plan {
-        transform: none;
-    }
-}
-</style>
-
-<style>
-    /* ================= CONTACT SECTION ================= */
-.contact-section {
-    padding: 100px 7%;
-    background:
-        linear-gradient(
-            180deg,
-            #f8fafc 0%,
-            #eef6ff 100%
-        );
-}
-
-/* CONTAINER */
-.contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-}
-
-/* LEFT SIDE */
-.contact-info h2 {
-    font-size: 42px;
-    color: #0f172a;
-    margin-bottom: 18px;
-    font-weight: 800;
-}
-
-.contact-info p {
-    font-size: 15px;
-    color: #64748b;
-    line-height: 1.9;
-    margin-bottom: 30px;
-}
-
-/* BADGE */
-.contact-badge {
-    display: inline-block;
-    padding: 10px 18px;
-    border-radius: 999px;
-    background: rgba(20, 184, 166, 0.12);
-    color: #0f766e;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 18px;
-}
-
-/* CONTACT CARDS */
-.contact-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.contact-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(255,255,255,0.85);
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 20px;
-    padding: 18px;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-    transition: 0.3s ease;
-}
-
-.contact-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 18px 35px rgba(20, 184, 166, 0.10);
-}
-
-/* ICON */
-.contact-card i {
-    width: 55px;
-    height: 55px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.contact-card h4 {
-    font-size: 16px;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.contact-card p {
-    margin: 0;
-    color: #64748b;
-    font-size: 14px;
-}
-
-/* FORM */
-.contact-form-container {
-    background: rgba(255,255,255,0.88);
-    border-radius: 28px;
-    padding: 35px;
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
-}
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-}
-
-/* INPUT GROUP */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.input-group label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #0f172a;
-}
-
-.input-group input,
-.input-group textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 14px;
-    border: 1px solid #dbe4ee;
-    background: #fff;
-    font-size: 14px;
-    color: #0f172a;
-    outline: none;
-    transition: 0.3s ease;
-    resize: none;
-}
-
-.input-group input:focus,
-.input-group textarea:focus {
-    border-color: #14b8a6;
-    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
-}
-
-/* BUTTON */
-.contact-btn {
-    padding: 15px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s ease;
-}
-
-.contact-btn:hover {
-    transform: translateY(-2px);
-    opacity: 0.94;
-}
-
-/* RESPONSIVE */
-@media(max-width: 980px){
-
-    .contact-container {
-        grid-template-columns: 1fr;
-    }
-
-    .contact-info h2 {
-        font-size: 34px;
-    }
-}
-
-@media(max-width: 768px){
-
-    .contact-section {
-        padding: 75px 20px;
-    }
-
-    .contact-form-container {
-        padding: 25px;
-    }
-
-    .contact-info h2 {
-        font-size: 28px;
-    }
-}
-</style>
-
-
-<style>
-/* ================= FACILITIES SECTION ================= */
-.facilities-section {
-    padding: 80px 6%;
-    background: #f8fafc;
-}
-
-/* HEADER */
-.section-title {
-    font-size: 34px;
-    font-weight: 800;
-    color: #0f172a;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.section-subtitle {
-    text-align: center;
-    color: #64748b;
-    font-size: 15px;
-    max-width: 650px;
-    margin: 0 auto 35px;
-    line-height: 1.7;
-}
-
-/* FILTERS */
-.category-filters {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 35px;
-}
-
-.filter-btn {
-    padding: 10px 18px;
-    border: 1px solid #dbe4ee;
-    background: #fff;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: 0.3s;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: #fff;
-    border-color: transparent;
-}
-
-/* GRID */
-.facilities-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 300px));
-    justify-content: center;
-    gap: 28px;
-}
-
-/* CARD */
-.facility-card {
-    background: #fff;
-    border-radius: 22px;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-    transition: 0.3s;
-}
-
-.facility-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 35px rgba(0,0,0,0.1);
-}
-
-/* IMAGE */
-.facility-image {
-    width: 100%;
-    height: 210px;
-    overflow: hidden;
-}
-
-.facility-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: 0.4s;
-}
-
-.facility-card:hover .facility-image img {
-    transform: scale(1.05);
-}
-
-/* CONTENT */
-.facility-content {
-    padding: 20px;
-}
-
-.facility-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.facility-header h3 {
-    font-size: 20px;
-    color: #0f172a;
-    margin: 0;
-}
-
-.price {
-    background: #ecfeff;
-    color: #0f766e;
-    padding: 7px 12px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-/* DESCRIPTION */
-.facility-desc {
-    font-size: 14px;
-    color: #64748b;
-    line-height: 1.7;
-    margin-bottom: 18px;
-    min-height: 65px;
-}
-
-/* META */
-.facility-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    font-size: 13px;
-    color: #475569;
-}
-
-/* BUTTON */
-.book-btn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #14b8a6, #0f766e);
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.book-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(15,118,110,0.2);
-}
-
-/* EMPTY */
-.empty-state {
-    grid-column: 1/-1;
-    text-align: center;
-    padding: 50px;
-    background: #fff;
-    border-radius: 18px;
-    color: #64748b;
-}
-
-/* RESPONSIVE */
-@media(max-width: 768px){
-
-    .facilities-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .facility-card {
-        width: 100%;
-    }
-
-    .section-title {
-        font-size: 28px;
-    }
-}
-</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
-
-<script>
-async function sendPopupMessage() {
-    const input = document.getElementById("popupChatInput");
-    const message = input.value.trim();
-    if (message === "") return;
-
-    const chat = document.getElementById("popupChatMessages");
-
-    // USER MESSAGE
-    const userDiv = document.createElement("div");
-    userDiv.className = "user-msg";
-    userDiv.textContent = message;
-    chat.appendChild(userDiv);
-
-    input.value = "";
-    chat.scrollTop = chat.scrollHeight;
-
-    // TYPING INDICATOR
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "typing-indicator";
-    typingDiv.innerHTML = "<span></span><span></span><span></span>";
-    chat.appendChild(typingDiv);
-    chat.scrollTop = chat.scrollHeight;
-
-    try {
-        const response = await fetch("/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: message })
-        });
-
-        const data = await response.json();
-
-        chat.removeChild(typingDiv);
-
-        const botDiv = document.createElement("div");
-        botDiv.className = "bot-msg";
-        botDiv.innerHTML = data.response.replace(/\n/g, "<br>");
-        chat.appendChild(botDiv);
-
-    } catch (error) {
-        chat.removeChild(typingDiv);
-
-        const errDiv = document.createElement("div");
-        errDiv.className = "bot-msg";
-        errDiv.textContent = "⚠️ Server error. Please try again later.";
-        chat.appendChild(errDiv);
-    }
-
-    chat.scrollTop = chat.scrollHeight;
-}
-</script>
-
-<script>
-window.addEventListener("load", function () {
-    if (window.location.hash) {
-        const element = document.querySelector(window.location.hash);
-        if (element) element.scrollIntoView({ behavior: "smooth" });
-    }
-});
-</script>
-
-<script>
-function sendInquiry() {
-    let name = document.getElementById("name").value;
-    let email = document.getElementById("email").value;
-    let message = document.getElementById("message").value;
-
-    if (!name || !email || !message) {
-        Swal.fire("Error", "All fields are required!", "error");
-        return;
-    }
-
-    fetch("/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "success") {
-            Swal.fire("Success", "Inquiry sent successfully!", "success");
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("message").value = "";
-        } else {
-            Swal.fire("Error", data.message, "error");
-        }
-    })
-    .catch(() => {
-        Swal.fire("Error", "Server error occurred!", "error");
-    });
-}
-</script>
-
 
 <body>
 
-
 <!-- NAVBAR -->
 <div class="navbar">
-
     <div class="logo">
         <i></i> Sports Complex
     </div>
 
-    <!-- CENTER NAV -->
     <div class="nav-center">
         <div class="nav-links">
-
             <a href="{{ url_for('index') }}#home">Home</a>
             <a href="{{ url_for('index') }}#about">About</a>
             <a href="{{ url_for('index') }}#pricing">Pricing</a>
             <a href="{{ url_for('index') }}#facilities">Facilities</a>
             <a href="{{ url_for('index') }}#contact">Contact</a>
-
         </div>
     </div>
 
-    <!-- RIGHT AUTH -->
     <div class="auth-buttons">
         {% if not user %}
             <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
             <a href="{{ url_for('login') }}?form=signup" class="btn btn-signup">Sign Up</a>
         {% else %}
             <div class="profile-dropdown">
-
                 <div class="profile-btn">
                     {% if user.profile_image %}
                         <img src="{{ user.profile_image }}" alt="Profile">
@@ -1528,19 +41,14 @@ function sendInquiry() {
                         <img src="https://ui-avatars.com/api/?name={{ user.name }}&background=329D9C&color=fff&rounded=true">
                     {% endif %}
                 </div>
-
-                
-
                 <div class="dropdown-menu">
                     <a href="{{ url_for('my_bookings') }}">My Bookings</a>
                     <a href="{{ url_for('profile') }}">Profile</a>
                     <a href="{{ url_for('logout') }}" class="logout" id="logoutBtn">Logout</a>
                 </div>
-
             </div>
         {% endif %}
     </div>
-
 </div>
 
 
@@ -1549,11 +57,9 @@ function sendInquiry() {
     <div class="slide active">
         <img src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d">
     </div>
-
     <div class="slide">
         <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b">
     </div>
-
     <div class="slide">
         <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5">
     </div>
@@ -1561,36 +67,26 @@ function sendInquiry() {
     <div class="hero-content">
         <div class="hero-title" id="heroTitle"></div>
         <div class="hero-subtitle" id="heroText"></div>
-
         <a href="#facilities" class="hero-btn">Book Now</a>
     </div>
 
     <div class="dots" id="dots"></div>
 </section>
 
-<!-- ABOUT SECTION -->
-<section id="about" class="about-section">
 
+<!-- ABOUT -->
+<section id="about" class="about-section">
     <div class="about-container">
 
-        <!-- LEFT -->
         <div class="about-content">
-
-            <span class="about-badge">
-                About Us
-            </span>
-
-            <h2>
-                Modern Sports Facility Reservation Experience
-            </h2>
-
+            <span class="about-badge">About Us</span>
+            <h2>Modern Sports Facility Reservation Experience</h2>
             <p class="about-description">
-                Our platform is designed to simplify the process of reserving sports facilities by providing a fast, secure, and user-friendly booking experience for athletes, students, organizations, and sports enthusiasts.
+                Our platform is designed to simplify the process of reserving sports facilities by providing a fast,
+                secure, and user-friendly booking experience for athletes, students, organizations, and sports enthusiasts.
             </p>
 
-            <!-- FEATURES -->
             <div class="about-features">
-
                 <div class="feature-card">
                     <i class="fas fa-calendar-check"></i>
                     <div>
@@ -1598,7 +94,6 @@ function sendInquiry() {
                         <p>Book facilities anytime with a streamlined scheduling system.</p>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <i class="fas fa-clock"></i>
                     <div>
@@ -1606,7 +101,6 @@ function sendInquiry() {
                         <p>Monitor available schedules and active reservations instantly.</p>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <i class="fas fa-shield-alt"></i>
                     <div>
@@ -1614,7 +108,6 @@ function sendInquiry() {
                         <p>Reliable reservation and payment management for all users.</p>
                     </div>
                 </div>
-
                 <div class="feature-card">
                     <i class="fas fa-mobile-alt"></i>
                     <div>
@@ -1622,423 +115,249 @@ function sendInquiry() {
                         <p>Accessible across desktop, tablet, and mobile devices.</p>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
-        <!-- RIGHT -->
         <div class="about-image">
-
             <img src="{{ url_for('static', filename='images/stadium.jpg') }}"
                  alt="Sports Complex"
                  onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/facilities/default.png') }}';">
-
             <div class="about-overlay">
                 <div class="overlay-card">
                     <h3>24/7 Booking Access</h3>
                     <p>Reserve facilities online anytime and anywhere.</p>
                 </div>
             </div>
-
         </div>
 
     </div>
-
 </section>
 
 
-<!-- ================= PRICING SECTION ================= -->
+<!-- PRICING -->
 <section id="pricing" class="pricing-section">
-
-    <!-- HEADER -->
     <div class="pricing-header">
-
-        <span class="pricing-badge">
-            Pricing Plans
-        </span>
-
-        <h2>
-            Choose Your Reservation Plan
-        </h2>
-
-        <p>
-            Flexible and affordable facility rates for casual games,
-            training sessions, and tournaments.
-        </p>
-
+        <span class="pricing-badge">Pricing Plans</span>
+        <h2>Choose Your Reservation Plan</h2>
+        <p>Flexible and affordable facility rates for casual games, training sessions, and tournaments.</p>
     </div>
 
-    <!-- GRID -->
     <div class="pricing-grid">
 
-        <!-- BASIC -->
         <div class="price-card">
-
-            <div class="plan-icon">
-                <i class="fas fa-table-tennis"></i>
-            </div>
-
+            <div class="plan-icon"><i class="fas fa-table-tennis"></i></div>
             <h3>Basic</h3>
-
-            <div class="price">
-                ₱100
-                <span>/hour</span>
-            </div>
-
+            <div class="price">₱100 <span>/hour</span></div>
             <ul class="plan-features">
                 <li><i class="fas fa-check"></i> Standard Access</li>
                 <li><i class="fas fa-check"></i> 1 Hour Reservation</li>
                 <li><i class="fas fa-check"></i> Online Booking</li>
             </ul>
-
-            <a href="#facilities" class="pricing-btn">
-                Reserve
-            </a>
-
+            <a href="#facilities" class="pricing-btn">Reserve</a>
         </div>
 
-        <!-- STANDARD -->
         <div class="price-card featured-plan">
-
-            <div class="featured-badge">
-                Most Popular
-            </div>
-
-            <div class="plan-icon">
-                <i class="fas fa-basketball-ball"></i>
-            </div>
-
+            <div class="featured-badge">Most Popular</div>
+            <div class="plan-icon"><i class="fas fa-basketball-ball"></i></div>
             <h3>Standard</h3>
-
-            <div class="price">
-                ₱200
-                <span>/hour</span>
-            </div>
-
+            <div class="price">₱200 <span>/hour</span></div>
             <ul class="plan-features">
                 <li><i class="fas fa-check"></i> Premium Court Access</li>
                 <li><i class="fas fa-check"></i> Priority Booking</li>
                 <li><i class="fas fa-check"></i> Flexible Schedule</li>
             </ul>
-
-            <a href="#facilities" class="pricing-btn featured-btn">
-                Reserve
-            </a>
-
+            <a href="#facilities" class="pricing-btn">Reserve</a>
         </div>
 
-        <!-- PREMIUM -->
         <div class="price-card">
-
-            <div class="plan-icon">
-                <i class="fas fa-trophy"></i>
-            </div>
-
+            <div class="plan-icon"><i class="fas fa-trophy"></i></div>
             <h3>Premium</h3>
-
-            <div class="price">
-                ₱350
-                <span>/hour</span>
-            </div>
-
+            <div class="price">₱350 <span>/hour</span></div>
             <ul class="plan-features">
                 <li><i class="fas fa-check"></i> Full Facility Access</li>
                 <li><i class="fas fa-check"></i> VIP Reservation</li>
                 <li><i class="fas fa-check"></i> Event Ready Setup</li>
             </ul>
-
-            <a href="#facilities" class="pricing-btn">
-                Reserve
-            </a>
-
+            <a href="#facilities" class="pricing-btn">Reserve</a>
         </div>
 
     </div>
-
 </section>
 
-<!-- ================= FACILITIES SECTION ================= -->
+
+<!-- FACILITIES -->
 <section id="facilities" class="facilities-section">
-
-    <!-- SECTION HEADER -->
     <div class="facilities-header">
-
-        <h2 class="section-title">
-            Facilities List
-        </h2>
-
+        <h2 class="section-title">Facilities List</h2>
     </div>
 
-    <!-- CATEGORY FILTERS -->
     <div class="category-filters">
-
-        <button class="filter-btn active" data-category="all">
-            All
-        </button>
-
+        <button class="filter-btn active" data-category="all">All</button>
         {% for category in categories %}
-        <button class="filter-btn" data-category="{{ category.id }}">
-            {{ category.name }}
-        </button>
+        <button class="filter-btn" data-category="{{ category.id }}">{{ category.name }}</button>
         {% endfor %}
-
     </div>
 
-    <!-- FACILITIES GRID -->
     <div class="facilities-grid">
-
         {% if facilities and facilities|length > 0 %}
             {% for facility in facilities %}
+            <div class="facility-card" data-category="{{ facility.category_id }}">
 
-                <div class="facility-card"
-                    data-category="{{ facility.category_id }}">
+                <div class="facility-image">
+                    <img src="{{ facility.image_url }}"
+                         alt="{{ facility.name }}"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/facilities/default.png') }}';">
+                    <div class="facility-status">{{ facility.status }}</div>
+                </div>
 
-                    <!-- IMAGE -->
-                    <div class="facility-image">
-
-                        <img src="{{ facility.image_url }}"
-                            alt="{{ facility.name }}"
-                            loading="lazy"
-                            onerror="this.onerror=null; this.src='{{ url_for('static', filename='uploads/facilities/default.png') }}';">
-
-                        <!-- STATUS BADGE -->
-                        <div class="facility-status">
-                            {{ facility.status }}
+                <div class="facility-content">
+                    <div class="facility-header">
+                        <div>
+                            <h3>{{ facility.name }}</h3>
+                            <small class="facility-category">Sports Facility</small>
                         </div>
-
+                        <span class="price">₱{{ facility.price_per_hour }} <small>/hr</small></span>
                     </div>
 
-                    <!-- CONTENT -->
-                    <div class="facility-content">
+                    <p class="facility-desc">
+                        {{ facility.description if facility.description else 'Modern sports facility available for reservation and recreational activities.' }}
+                    </p>
 
-                        <!-- TOP -->
-                        <div class="facility-header">
-
+                    <div class="facility-meta">
+                        <div class="meta-item">
                             <div>
-                                <h3>{{ facility.name }}</h3>
-
-                                <small class="facility-category">
-                                    Sports Facility
-                                </small>
+                                <span class="label">Capacity</span>
+                                <span class="value">{{ facility.capacity }}</span>
                             </div>
-
-                            <span class="price">
-                                ₱{{ facility.price_per_hour }}
-                                <small>/hr</small>
-                            </span>
-
                         </div>
-
-                        <!-- DESCRIPTION -->
-                        <p class="facility-desc">
-                            {{ facility.description if facility.description else 'Modern sports facility available for reservation and recreational activities.' }}
-                        </p>
-
-                        <!-- META -->
-                        <div class="facility-meta">
-
-                            <div class="meta-item">
-
-                                <div>
-                                    <span class="label">Capacity</span>
-                                    <span class="value">
-                                        {{ facility.capacity }}
-                                    </span>
-                                </div>
+                        <div class="meta-item">
+                            <div>
+                                <span class="label">Availability</span>
+                                <span class="value">{{ facility.status }}</span>
                             </div>
-
-                            <div class="meta-item">
-                                <div>
-                                    <span class="label">Availability</span>
-                                    <span class="value">
-                                        {{ facility.status }}
-                                    </span>
-                                </div>
-                            </div>
-
                         </div>
+                    </div>
 
-                        <!-- BUTTON -->
-                        <button class="book-btn"
+                    <button class="book-btn"
                             onclick="openBookingModal(this)"
                             data-id="{{ facility.id }}"
                             data-price="{{ facility.price_per_hour }}">
-
-                            Book
-
-                        </button>
-
-                    </div>
-
+                        Book
+                    </button>
                 </div>
 
+            </div>
             {% endfor %}
         {% else %}
-
-            <!-- EMPTY -->
             <div class="empty-state">
-
                 <i class="fas fa-building"></i>
-
                 <h3>No Facilities Available</h3>
-
-                <p>
-                    There are currently no facilities available for reservation.
-                </p>
-
+                <p>There are currently no facilities available for reservation.</p>
             </div>
-
         {% endif %}
-
     </div>
-
 </section>
+
 
 <!-- BOOKING MODAL -->
 <div id="bookingModal" class="modal-overlay" onclick="handleOverlayClick(event)">
-
     <div class="modal-container minimal" onclick="event.stopPropagation()">
-
         <h2 class="modal-title">Book Schedule</h2>
-
         <form onsubmit="handleBookingSubmit(event)">
-
-            <!-- DATE -->
             <label>Date</label>
             <input type="date" id="startDate">
 
-            <!-- TIME -->
             <div class="time-grid">
-
                 <div>
                     <label>Start Time</label>
                     <select id="startTime"></select>
                 </div>
-
                 <div>
                     <label>End Time</label>
                     <select id="endTime" disabled></select>
                 </div>
-
             </div>
 
-            <!-- PURPOSE -->
             <label>Purpose of Booking</label>
             <textarea id="purpose" placeholder="Optional"></textarea>
 
             <div id="bookingError" class="error-box"></div>
 
-            <button class="submit-btn" type="submit">
-                Continue
-            </button>
-
+            <button class="submit-btn" type="submit">Continue</button>
         </form>
-
     </div>
-
 </div>
 
-<!-- ================= CONTACT SECTION ================= -->
-<section id="contact" class="contact-section">
 
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
     <div class="contact-container">
 
-        <!-- LEFT SIDE -->
         <div class="contact-info">
+            <span class="contact-badge">Contact Us</span>
+            <h2>Get In Touch With Us</h2>
+            <p>Have questions about facility reservations, schedules, or pricing? Send us a message and our team will respond as soon as possible.</p>
 
-            <span class="contact-badge">
-                Contact Us
-            </span>
-
-            <h2>
-                Get In Touch With Us
-            </h2>
-
-            <p>
-                Have questions about facility reservations, schedules, or pricing?
-                Send us a message and our team will respond as soon as possible.
-            </p>
-
-            <!-- CONTACT CARDS -->
             <div class="contact-cards">
-
                 <div class="contact-card">
                     <i class="fas fa-map-marker-alt"></i>
-
                     <div>
                         <h4>Location</h4>
                         <p>Sports Complex Facility Center</p>
                     </div>
                 </div>
-
                 <div class="contact-card">
                     <i class="fas fa-phone-alt"></i>
-
                     <div>
                         <h4>Phone</h4>
                         <p>+63 946 421 7995</p>
                     </div>
                 </div>
-
                 <div class="contact-card">
                     <i class="fas fa-envelope"></i>
-
                     <div>
                         <h4>Email</h4>
                         <p>sportscomplexx1@gmail.com</p>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
-        <!-- RIGHT SIDE -->
         <div class="contact-form-container">
-
             <div class="contact-form">
-
                 <div class="input-group">
                     <label>Full Name</label>
                     <input type="text" id="name" placeholder="Enter your full name">
                 </div>
-
                 <div class="input-group">
                     <label>Email Address</label>
                     <input type="email" id="email" placeholder="Enter your email">
                 </div>
-
                 <div class="input-group">
                     <label>Message</label>
                     <textarea id="message" rows="5" placeholder="Write your message here..."></textarea>
                 </div>
-
-                <button onclick="sendInquiry()" class="contact-btn">
-                    Send Message
-                </button>
-
+                <button onclick="sendInquiry()" class="contact-btn">Send Message</button>
             </div>
-
         </div>
 
     </div>
-
 </section>
+
 
 <!-- FOOTER -->
 <div class="footer">
     © 2026 Sports Complex Booking System
 </div>
 
-<!-- ================= FLOATING CHATBOT BUTTON ================= -->
+
+<!-- FLOATING CHATBOT -->
 <button class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()" title="Chat with us">
     <i class="fas fa-robot" id="fabIcon"></i>
 </button>
 
-<!-- ================= CHATBOT POPUP ================= -->
 <div class="chatbot-popup" id="chatbotPopup">
-
     <div class="chatbot-popup-header">
         <div class="chatbot-popup-header-left">
             <div class="chatbot-avatar">
@@ -2056,562 +375,19 @@ function sendInquiry() {
 
     <div class="chatbot-popup-messages" id="popupChatMessages">
         <div class="bot-msg">
-            Hello 👋 Welcome to Sports Complex Booking System.
-            How can I help you today?
+            Hello 👋 Welcome to Sports Complex Booking System. How can I help you today?
         </div>
     </div>
 
     <div class="chatbot-popup-input">
-        <input type="text"
-               id="popupChatInput"
-               placeholder="Type your message...">
+        <input type="text" id="popupChatInput" placeholder="Type your message...">
         <button onclick="sendPopupMessage()">
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
-
 </div>
 
 
-<script>
-/* =======================
-   CHATBOT TOGGLE
-======================= */
-let chatbotOpen = false;
-
-function toggleChatbot() {
-    const popup   = document.getElementById("chatbotPopup");
-    const fabIcon = document.getElementById("fabIcon");
-
-    chatbotOpen = !chatbotOpen;
-
-    if (chatbotOpen) {
-        popup.style.display = "flex";
-        // small delay so transition plays after display:flex
-        setTimeout(() => popup.classList.add("open"), 10);
-        fabIcon.className = "fas fa-times";
-        document.getElementById("popupChatInput").focus();
-    } else {
-        popup.classList.remove("open");
-        fabIcon.className = "fas fa-robot";
-        setTimeout(() => { popup.style.display = "none"; }, 300);
-    }
-}
-
-document.getElementById("popupChatInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") sendPopupMessage();
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-    let slides = document.querySelectorAll(".slide");
-    let title = document.getElementById("heroTitle");
-    let text = document.getElementById("heroText");
-    let dotsContainer = document.getElementById("dots");
-
-    let index = 0;
-
-    /* KEEP TEXT SIMPLE (NO OVER-EXPANSION) */
-    const heroData = [
-        {
-            title: "Play. Book. Enjoy.",
-            text: "Reserve sports facilities quickly and easily anytime."
-        },
-        {
-            title: "Modern Sports Booking",
-            text: "Manage schedules and reservations in one system."
-        },
-        {
-            title: "Easy Facility Access",
-            text: "Book courts and venues without hassle."
-        }
-    ];
-
-    /* FORCE EXACT 3 DOTS ONLY */
-    dotsContainer.innerHTML = "";
-
-    for (let i = 0; i < 3; i++) {
-        let dot = document.createElement("div");
-        dot.classList.add("dot");
-        dot.addEventListener("click", () => {
-            index = i;
-            update();
-        });
-        dotsContainer.appendChild(dot);
-    }
-
-    let dots = document.querySelectorAll(".dot");
-
-    function update() {
-
-        slides.forEach(s => s.classList.remove("active"));
-        dots.forEach(d => d.classList.remove("active"));
-
-        slides[index].classList.add("active");
-        dots[index].classList.add("active");
-
-        title.textContent = heroData[index].title;
-        text.textContent = heroData[index].text;
-    }
-
-    function next() {
-        index = (index + 1) % 3; // STRICT 3 LOOP
-        update();
-    }
-
-    update();
-
-    /* 1 MINUTE PER SLIDE */
-    setInterval(next, 10000);
-
-});
-</script>
-
-<script>
-function filterFacilities(category) {
-    document.querySelectorAll(".facility-card").forEach(card => {
-        if (category === "all" || card.dataset.category === category) {
-            card.style.display = "";
-        } else {
-            card.style.display = "none";
-        }
-    });
-
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.category === category);
-    });
-}
-
-document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        filterFacilities(btn.dataset.category);
-    });
-});
-
-update();
-setInterval(next, 10000);
-</script>
-
-
-<script>
-function filterFacilities(categoryId) {
-    let cards = document.querySelectorAll('.facility-card');
-    let buttons = document.querySelectorAll('.filter-btn');
-
-    // button active state
-    buttons.forEach(btn => btn.classList.remove('active'));
-
-    event.target.classList.add('active');
-
-    cards.forEach(card => {
-        if (categoryId === 'all' || card.dataset.category == categoryId) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-</script>
-
-<script>
-const buttons = document.querySelectorAll(".filter-btn");
-const cards = document.querySelectorAll(".facility-card");
-
-buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-
-        // active button highlight
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const category = btn.getAttribute("data-category");
-
-        cards.forEach(card => {
-            const cardCategory = card.getAttribute("data-category");
-
-            if (category === "all" || category === cardCategory) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
-
-    });
-});
-</script>
-
-<script>
-
-let selectedFacilityId = null;
-let pricePerHour = 0;
-let computedTotal = 0;
-
-/* OPEN MODAL */
-function openBookingModal(btn) {
-
-    document.getElementById("bookingModal").style.display = "flex";
-
-    selectedFacilityId = btn.dataset.id;
-    pricePerHour = parseFloat(btn.dataset.price);
-
-    let today = new Date();
-    let dateInput = document.getElementById("startDate");
-
-    dateInput.value = today.toISOString().split('T')[0];
-    dateInput.min = dateInput.value;
-
-    setupTime(today);
-
-    dateInput.onchange = handleDateChange;
-    document.getElementById("startTime").onchange = handleStart;
-    document.getElementById("endTime").onchange = calculateTotal;
-}
-
-/* DATE LOGIC */
-function handleDateChange() {
-
-    let selected = new Date(this.value);
-    let today = new Date();
-
-    let isToday = selected.toDateString() === today.toDateString();
-
-    setupTime(isToday ? today : null);
-}
-
-/* TIME SETUP */
-function setupTime(now) {
-
-    let start = document.getElementById("startTime");
-    let end = document.getElementById("endTime");
-
-    start.innerHTML = "";
-    end.innerHTML = "";
-    end.disabled = true;
-
-    let currentHour = now ? now.getHours() : 8;
-
-    for (let i = 8; i <= 22; i++) {
-
-        if (now && i < currentHour) continue;
-
-        start.add(new Option(format(i), i));
-    }
-
-    start.value = now ? currentHour : 8;
-}
-
-/* START TIME */
-function handleStart() {
-
-    let start = parseInt(this.value);
-    let end = document.getElementById("endTime");
-
-    end.disabled = false;
-    end.innerHTML = "";
-
-    for (let i = start + 1; i <= 22; i++) {
-        end.add(new Option(format(i), i));
-    }
-}
-
-/* CALCULATE */
-function calculateTotal() {
-
-    let s = parseInt(document.getElementById("startTime").value);
-    let e = parseInt(document.getElementById("endTime").value);
-
-    if (!s || !e || e <= s) return 0;
-
-    let hours = e - s;
-
-    computedTotal = hours * pricePerHour;
-
-    return computedTotal;
-}
-
-/* SUBMIT BOOKING */
-function handleBookingSubmit(event) {
-
-    event.preventDefault();
-
-    let errorBox = document.getElementById("bookingError");
-
-    errorBox.style.display = "none";
-    errorBox.innerHTML = "";
-
-    let bookingDate = document.getElementById("startDate").value;
-    let start = document.getElementById("startTime").value;
-    let end = document.getElementById("endTime").value;
-    let purpose = document.getElementById("purpose").value;
-
-    let total = calculateTotal();
-
-    if (!start || !end || end <= start) {
-        showError("Please select a valid time range.");
-        return;
-    }
-
-    if (total <= 0) {
-        showError("Invalid booking duration.");
-        return;
-    }
-
-    let deposit = total * 0.30;
-
-    closeBookingModal();
-
-    openPaymentModal({
-        facility_id: selectedFacilityId,
-        booking_date: bookingDate,
-        start_time: format(start),
-        end_time: format(end),
-        total_amount: total,
-        deposit_amount: deposit,
-        purpose: purpose
-    });
-}
-
-function showError(msg) {
-
-    let errorBox = document.getElementById("bookingError");
-
-    errorBox.innerHTML = msg;
-    errorBox.style.display = "block";
-}
-
-/* PAYMENT FLOW */
-function openPaymentModal(bookingData) {
-
-    let savedRef = "";
-    let savedFile = null;
-
-    // =========================
-    // STEP 1
-    // =========================
-    function step1() {
-
-        Swal.fire({
-
-            title: "Gcash Details",
-            width: 440,
-            showCancelButton: true,
-            confirmButtonText: "Continue",
-            cancelButtonText: "Close",
-            confirmButtonColor: "#1e88e5",
-            cancelButtonColor: "#aaa",
-
-            html: `
-            <div style="font-family:Arial;text-align:center;">
-
-                <div style="background:#f8f9fb;padding:18px;border-radius:14px;margin-bottom:15px;">
-                    <img src="/static/images/qr.png"
-                         style="width:170px;height:170px;border-radius:12px;object-fit:cover;">
-                    <p style="font-size:12px;color:#666;margin-top:10px;">
-                        Scan QR using GCash
-                    </p>
-                </div>
-
-                <div style="text-align:left;font-size:14px;background:#fff;border:1px solid #eee;padding:12px;border-radius:10px;margin-bottom:12px;">
-                    <p><b>GCash Name:</b> Sports Complex</p>
-                    <p><b>GCash Number:</b> 09464217995</p>
-                </div>
-
-                <div style="text-align:left;background:#e3f2fd;padding:12px;border-radius:10px;">
-                    <p><b>Total:</b> ₱${bookingData.total_amount}</p>
-                    <p><b>Deposit (30%):</b> ₱${bookingData.deposit_amount.toFixed(2)}</p>
-                </div>
-
-            </div>
-            `
-
-        }).then((res) => {
-
-            if (res.isConfirmed) {
-                step2();
-            }
-        });
-    }
-
-    // =========================
-    // STEP 2
-    // =========================
-    function step2() {
-
-        Swal.fire({
-
-            title: "Reference Details",
-            width: 420,
-            showCancelButton: true,
-            confirmButtonText: "Submit Booking",
-            cancelButtonText: "Back",
-            confirmButtonColor: "#1e88e5",
-            cancelButtonColor: "#aaa",
-
-            html: `
-            <div style="font-family:Arial;text-align:left;">
-
-                <label style="font-size:13px;font-weight:bold;">
-                    GCash Reference Number
-                </label>
-
-                <input id="gcashRef"
-                    placeholder="Enter reference number"
-                    value="${savedRef}"
-                    style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin-bottom:12px;">
-
-                <label style="font-size:13px;font-weight:bold;">
-                    Upload Screenshot
-                </label>
-
-                <input id="gcashReceipt"
-                    type="file"
-                    accept="image/*"
-                    style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;">
-
-            </div>
-            `,
-
-            preConfirm: () => {
-
-                let ref = document.getElementById("gcashRef").value;
-                let file = document.getElementById("gcashReceipt").files[0];
-
-                if (!ref) {
-                    Swal.showValidationMessage("Reference number is required");
-                    return false;
-                }
-
-                if (!file) {
-                    Swal.showValidationMessage("Please upload screenshot");
-                    return false;
-                }
-
-                savedRef = ref;
-                savedFile = file;
-
-                return true;
-            }
-
-        }).then(async (res) => {
-
-            if (res.isConfirmed) {
-
-                let formData = new FormData();
-
-                formData.append("facility_id", bookingData.facility_id);
-                formData.append("booking_date", bookingData.booking_date);
-                formData.append("start_time", bookingData.start_time);
-                formData.append("end_time", bookingData.end_time);
-
-                formData.append("total_amount", bookingData.total_amount);
-                formData.append("deposit_amount", bookingData.deposit_amount);
-
-                formData.append("purpose", bookingData.purpose);
-
-                formData.append("gcash_reference", savedRef);
-                formData.append("payment_screenshot", savedFile);
-
-                try {
-
-                    let response = await fetch("/create_reservation", {
-                        method: "POST",
-                        body: formData
-                    });
-
-                    let data = await response.json();
-
-                    if (data.status === "success") {
-
-                        Swal.fire({
-                            icon: "success",
-                            title: "Booking Submitted",
-                            text: "Waiting for admin approval",
-                            confirmButtonColor: "#1e88e5"
-                        });
-
-                    } else {
-
-                        Swal.fire({
-                            icon: "error",
-                            title: "Booking Failed",
-                            text: data.message || "Something went wrong"
-                        });
-                    }
-
-                } catch (err) {
-
-                    Swal.fire({
-                        icon: "error",
-                        title: "Server Error",
-                        text: "Unable to submit reservation"
-                    });
-
-                    console.error(err);
-                }
-            }
-
-            if (res.dismiss === Swal.DismissReason.cancel) {
-                step1();
-            }
-        });
-    }
-
-    step1();
-}
-
-/* FORMAT */
-function format(h) {
-
-    h = parseInt(h);
-
-    let ampm = h >= 12 ? "PM" : "AM";
-    let hour = h % 12 || 12;
-
-    return hour + ":00 " + ampm;
-}
-
-/* CLOSE MODAL */
-function closeBookingModal() {
-    document.getElementById("bookingModal").style.display = "none";
-}
-
-/* OUTSIDE CLICK */
-function handleOverlayClick(event) {
-
-    let modal = document.querySelector(".modal-container.minimal");
-
-    if (!modal.contains(event.target)) {
-        closeBookingModal();
-    }
-}
-
-</script>
-
-
-<script>
-document.getElementById("logoutBtn").addEventListener("click", function(e) {
-    e.preventDefault();
-
-    const logoutUrl = this.href;
-
-    Swal.fire({
-        title: "Logout?",
-        text: "Are you sure you want to logout?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, Logout",
-        cancelButtonText: "Cancel"
-    }).then((result) => {
-
-        if (result.isConfirmed) {
-            window.location.href = logoutUrl;
-        }
-
-    });
-});
-</script>
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

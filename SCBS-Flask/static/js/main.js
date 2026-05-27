@@ -823,10 +823,12 @@ async function sendPopupMessage() {
     chat.scrollTop = chat.scrollHeight;
 }
 
-document.getElementById("popupChatInput").addEventListener("keypress", function (e) {
-    if (e.key === "Enter") sendPopupMessage();
-});
-
+const popupChatInput = document.getElementById("popupChatInput");
+if (popupChatInput) {
+    popupChatInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") sendPopupMessage();
+    });
+}
 
 /* =====================================================
    LOGOUT CONFIRMATION

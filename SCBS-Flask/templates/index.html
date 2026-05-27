@@ -8,6 +8,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Equipment Options Standalone Styles -->
+    <!-- Added here so it won't depend on chatbot CSS -->
+    <style>
+        .equipment-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .equipment-option-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background-color: #f0f9f9;
+            color: #205072;
+            border: 1.5px solid #329D9C;
+            border-radius: 20px;
+            font-family: 'Poppins', Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .equipment-option-btn:hover {
+            background-color: #329D9C;
+            color: #ffffff;
+        }
+
+        .equipment-option-btn i {
+            font-size: 13px;
+        }
+
+        .equipment-option-btn.selected {
+            background-color: #205072;
+            color: #ffffff;
+            border-color: #205072;
+        }
+    </style>
 </head>
 
 <body>
@@ -352,7 +394,10 @@
 </div>
 
 
-<!-- FLOATING CHATBOT -->
+<!-- ====================== -->
+<!-- CHATBOT (COMMENTED OUT) -->
+<!-- ====================== -->
+<!--
 <button class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()" title="Chat with us">
     <i class="fas fa-robot" id="fabIcon"></i>
 </button>
@@ -386,6 +431,7 @@
         </button>
     </div>
 </div>
+-->
 
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>

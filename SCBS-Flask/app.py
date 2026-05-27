@@ -55,6 +55,36 @@ email_service = EmailNotification(
     sender_password="kaiu ouav fgqv kfsa"
 )
 
+
+# ======================
+# EMAIL HELPER
+# ======================
+def build_email(title, name, body_html):
+    """
+    Wraps any email body in the standard Sports Complex card template.
+    """
+    return f"""
+    <div style="font-family: 'Poppins', Arial, sans-serif; max-width: 520px;
+                margin: 0 auto; padding: 30px; border-radius: 12px;
+                border: 1px solid #e0e0e0; background: #ffffff;">
+
+        <h2 style="color: #205072; margin-bottom: 8px;">{title}</h2>
+
+        <p style="color: #555; font-size: 14px; line-height: 1.6;">
+            Hi <strong>{name}</strong>,
+        </p>
+
+        {body_html}
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+
+        <p style="color: #aaa; font-size: 11px; text-align: center;">
+            © 2026 Sports Complex Booking System
+        </p>
+    </div>
+    """
+
+
 # ======================
 # CREATE TABLES
 # ======================
@@ -63,36 +93,20 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS reservations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        -- 🔗 RELATIONSHIPS
         facility_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
-
-        -- 📅 SCHEDULE
         booking_date TEXT NOT NULL,
         start_time TEXT NOT NULL,
         end_time TEXT NOT NULL,
-
-        -- 💰 PAYMENT INFO
         total_amount REAL NOT NULL,
         deposit_amount REAL NOT NULL,
         payment_method TEXT DEFAULT 'GCash',
-
         gcash_reference TEXT,
-        payment_screenshot TEXT,  -- filename/path
-
-        -- 📊 STATUS FLOW
-        status TEXT DEFAULT 'Pending',  
-        -- Pending / Approved / Rejected / Cancelled
-
-        -- 📝 OPTIONAL INFO
+        payment_screenshot TEXT,
+        status TEXT DEFAULT 'Pending',
         purpose TEXT,
-
-        -- ⏱ TIMESTAMPS
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         date_updated TIMESTAMP,
-
-        -- 🔗 FOREIGN KEYS
         FOREIGN KEY (facility_id) REFERENCES facilities(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     )
@@ -101,31 +115,26 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         phone TEXT,
         address TEXT,
-        role TEXT DEFAULT 'user',              -- admin / user
-        status TEXT DEFAULT 'active',          -- active / inactive / banned
+        role TEXT DEFAULT 'user',
+        status TEXT DEFAULT 'active',
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        profile_image TEXT                    -- optional (path or URL)
+        profile_image TEXT
     )
     """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS inquiries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         message TEXT NOT NULL,
-
-        status TEXT DEFAULT 'unread',         -- unread / read
-
-        remarks TEXT,                         -- admin notes / decision
-
+        status TEXT DEFAULT 'unread',
+        remarks TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME
     )
@@ -170,6 +179,7 @@ def init_db():
     conn.commit()
 
 init_db()
+
 
 # ======================
 # HELPERS
@@ -264,12 +274,24 @@ def login():
                 email_service.send_email(
                     recipient_email=email,
                     subject="Welcome to Sports Complex Booking System",
-                    message_html=f"""
-                        <h2>Welcome {name}!</h2>
-                        <p>Your account has been created successfully.</p>
-                        <p>Status: <b>Inactive</b></p>
-                        <p>Please wait for admin approval before you can log in.</p>
-                    """
+                    message_html=build_email(
+                        title="Welcome to Sports Complex!",
+                        name=name,
+                        body_html=f"""
+                        <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                            Your account has been created successfully.
+                            You can now log in to the Sports Complex Booking System.
+                        </p>
+                        <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                            <strong>Status:</strong>
+                            <span style="color: #38a169; font-weight: 600;">Active</span>
+                        </p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+                        <p style="color: #888; font-size: 12px; line-height: 1.6;">
+                            If you did not create this account, please contact our support team immediately.
+                        </p>
+                        """
+                    )
                 )
 
                 return jsonify({"status": "success", "message": "Account created successfully"})
@@ -293,38 +315,75 @@ def login():
                 if status == "inactive":
                     email_service.send_email(
                         recipient_email=email,
-                        subject="Login Attempt Failed - Inactive Account",
-                        message_html=f"""
-                            <h3>Hello {name},</h3>
-                            <p>We detected a login attempt on your account.</p>
-                            <p><b>Status:</b> Inactive</p>
-                            <p>Please contact support to activate your account.</p>
-                        """
+                        subject="Login Attempt Failed – Sports Complex",
+                        message_html=build_email(
+                            title="Login Attempt Failed",
+                            name=name,
+                            body_html="""
+                            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                                We detected a login attempt on your <strong>Sports Complex</strong>
+                                account. However, your account is currently
+                                <strong style="color: #f59e0b;">Inactive</strong>.
+                            </p>
+                            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                                Please contact our support team to activate your account.
+                            </p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+                            <p style="color: #888; font-size: 12px; line-height: 1.6;">
+                                If you did not attempt to log in, please ignore this email.
+                            </p>
+                            """
+                        )
                     )
-                    return jsonify({"status": "error", "message": "Your account is not activated yet."})
+                    return jsonify({"status": "error", "message": "This account is not active. Please contact support."})
 
                 if status == "banned":
                     email_service.send_email(
                         recipient_email=email,
-                        subject="Login Attempt Blocked - Banned Account",
-                        message_html=f"""
-                            <h3>Hello {name},</h3>
-                            <p>We detected a login attempt on your account.</p>
-                            <p><b>Status:</b> Banned</p>
-                            <p>You are not allowed to access this system.</p>
-                        """
+                        subject="Login Attempt Blocked – Sports Complex",
+                        message_html=build_email(
+                            title="Login Attempt Blocked",
+                            name=name,
+                            body_html="""
+                            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                                We detected a login attempt on your <strong>Sports Complex</strong>
+                                account. However, your account has been
+                                <strong style="color: #e53e3e;">Banned</strong>.
+                            </p>
+                            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                                You are not allowed to access this system.
+                                Please contact our support team for more information.
+                            </p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+                            <p style="color: #888; font-size: 12px; line-height: 1.6;">
+                                If you did not attempt to log in, please ignore this email.
+                            </p>
+                            """
+                        )
                     )
                     return jsonify({"status": "error", "message": "Your account has been banned. Please contact support for more information."})
 
                 if check_password_hash(user['password'], password):
                     session['user'] = user['email']
+
                     email_service.send_email(
                         recipient_email=email,
-                        subject="Login Notification",
-                        message_html=f"""
-                            <h3>Hello {name},</h3>
-                            <p>You have successfully logged in to your account.</p>
-                        """
+                        subject="Login Notification – Sports Complex",
+                        message_html=build_email(
+                            title="Login Notification",
+                            name=name,
+                            body_html="""
+                            <p style="color: #555; font-size: 14px; line-height: 1.6;">
+                                You have successfully logged in to your
+                                <strong>Sports Complex</strong> account.
+                                If you did not perform this action, please reset your password immediately.
+                            </p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+                            <p style="color: #888; font-size: 12px; line-height: 1.6;">
+                                If this was you, no further action is required.
+                            </p>
+                            """
+                        )
                     )
                     return jsonify({"status": "success", "message": "Login successful"})
 
@@ -390,6 +449,7 @@ def profile():
 
     stats = {"total": total, "approved": approved, "pending": pending}
     return render_template("profile.html", user=user, stats=stats)
+
 
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
@@ -479,6 +539,7 @@ def change_password():
     conn.close()
 
     return jsonify({"status": "success"})
+
 
 # ======================
 # ADMIN PAGES
@@ -575,14 +636,14 @@ def get_booked_slots():
     bookings    = Reservation.query.filter_by(
                       facility_id=facility_id,
                       booking_date=date,
-                      status='approved'    # only approved count
+                      status='approved'
                   ).all()
     slots = [{'start_hour': int(b.start_time.split(':')[0]),
               'end_hour':   int(b.end_time.split(':')[0])}
              for b in bookings]
     return jsonify({'booked_slots': slots})
 
-    
+
 @app.route('/categories')
 def categories():
     return render_with_active('admin/categories.html', 'categories')
@@ -694,6 +755,7 @@ def cancel_booking(id):
         return jsonify({"status": "error", "message": "Booking not found or cannot be cancelled."})
 
     return jsonify({"status": "success"})
+
 
 # ======================
 # CONTACT

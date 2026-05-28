@@ -353,8 +353,9 @@ function renderGrid(date) {
         else if (isBooked)                                       stateClass = 'ts-booked';
         else if (slotStart !== null && slotEnd !== null
                  && h === slotStart)                             stateClass = 'ts-start';
+        // AFTER:
         else if (slotStart !== null && slotEnd !== null
-                 && h === slotEnd - 1)                           stateClass = 'ts-end';
+                && h === slotEnd)        stateClass = 'ts-end';
         else if (slotStart !== null && slotEnd !== null
                  && h > slotStart && h < slotEnd)                stateClass = 'ts-range';
         else if (slotStart !== null && slotEnd === null
@@ -391,7 +392,6 @@ function handleSlotClick(hour) {
     clearField('bookingError');
 
     if (selStep === 'start') {
-        // ─ Picking start ─
         slotStart = hour;
         slotEnd   = null;
         selStep   = 'end';
@@ -401,29 +401,41 @@ function handleSlotClick(hour) {
         renderGrid(document.getElementById("startDate").value);
 
     } else {
-        // ─ Picking end ─
-        if (hour <= slotStart) {
-            // Clicked on or before start → shake and prompt
+        if (hour < slotStart) {          // strictly less-than: clicking same slot resets
             shakeSlot(hour);
             showHint('end', 'Choose a time <strong>after</strong> the start.');
             return;
         }
+        if (hour === slotStart) {        // same slot clicked → reset to pick start again
+            slotStart = null;
+            slotEnd   = null;
+            selStep   = 'start';
+            setSubmitBtn(false);
+            hideSummary();
+            showHint('start');
+            renderGrid(document.getElementById("startDate").value);
+            return;
+        }
+        // hour is the last block included; duration = hour - slotStart + 1 ... 
+        // wait — keep original math: slotEnd = hour means booking covers [slotStart, hour),
+        // but we NOW want the slot AT hour to be highlighted and be the last included block.
+        // Simplest: keep slotEnd = hour (exclusive end of booking = hour+1 in block terms),
+        // and update renderGrid to show ts-end at slotEnd (the clicked slot boundary marker).
 
-        // Max duration guard
-        if (hour - slotStart > MAX_BOOKING_HOURS) {
+        const durationHours = hour - slotStart;   // e.g. click 11, start 8 → 3 hours ✓
+
+        if (durationHours > MAX_BOOKING_HOURS) {
             shakeSlot(hour);
             showError(`Maximum booking duration is ${MAX_BOOKING_HOURS} hours.`);
             return;
         }
-
-        // Range conflict check (is any block between start and end already booked?)
         if (rangeHasConflict(slotStart, hour)) {
             shakeSlot(hour);
             showError('There is a booked slot within your selected range. Choose a shorter or different time.');
             return;
         }
 
-        slotEnd = hour;
+        slotEnd = hour;   // exclusive upper bound (same as before)
         selStep = 'done';
         setSubmitBtn(true);
         showHint('done');

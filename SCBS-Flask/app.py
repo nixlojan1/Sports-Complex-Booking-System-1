@@ -633,16 +633,38 @@ def reservations():
 def get_booked_slots():
     facility_id = request.args.get('facility_id')
     date        = request.args.get('date')
-    bookings    = Reservation.query.filter_by(
-                      facility_id=facility_id,
-                      booking_date=date,
-                      status='approved'
-                  ).all()
-    slots = [{'start_hour': int(b.start_time.split(':')[0]),
-              'end_hour':   int(b.end_time.split(':')[0])}
-             for b in bookings]
-    return jsonify({'booked_slots': slots})
 
+    if not facility_id or not date:
+        return jsonify({'booked_slots': []})
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT start_time, end_time
+        FROM reservations
+        WHERE facility_id = ?
+          AND booking_date = ?
+          AND status IN ('Pending', 'Approved')
+    """, (facility_id, date))
+
+    rows  = cursor.fetchall()
+    conn.close()
+
+    slots = []
+    for row in rows:
+        try:
+            start_dt = datetime.strptime(row['start_time'], "%I:%M %p")
+            end_dt   = datetime.strptime(row['end_time'],   "%I:%M %p")
+            slots.append({
+                'start_hour': start_dt.hour,
+                'end_hour':   end_dt.hour
+            })
+        except Exception as e:
+            print("Slot parse error:", e)
+
+    return jsonify({'booked_slots': slots})
 
 @app.route('/categories')
 def categories():

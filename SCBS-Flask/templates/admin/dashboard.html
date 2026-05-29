@@ -4,675 +4,847 @@
 <meta charset="UTF-8">
 <title>Sports Complex Booking System</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
-}
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",Arial,sans-serif; }
+body { display:flex; background:#0f1117; color:#e6f1ff; }
 
-body {
-    display: flex;
-    background: #0f1117;
-    color: #e6f1ff;
-}
-
-/* SIDEBAR */
 .sidebar {
-    width: 230px;
-    height: 100vh;
-    background: linear-gradient(180deg, #0f1117, #0a1f2e, #0c2d3f);
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #1f2a38;
+    width:230px; height:100vh; background:linear-gradient(180deg,#0f1117,#0a1f2e,#0c2d3f);
+    position:fixed; display:flex; flex-direction:column; border-right:1px solid #1f2a38;
 }
-
-.sidebar-header {
-    padding: 15px;
-    border-bottom: 1px solid #1f2a38;
-    color: #00e5ff;
-}
-
-.menu {
-    padding: 20px 0;
-}
-
+.sidebar-header { padding:15px; border-bottom:1px solid #1f2a38; color:#00e5ff; }
+.menu { padding:20px 0; }
 .menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    color: #9fb3c8;
-    text-decoration: none;
-    font-size: 14px;
+    display:flex; align-items:center; gap:12px; padding:10px 20px;
+    color:#9fb3c8; text-decoration:none; font-size:14px;
 }
-
-.menu a:hover,
-.menu a.active {
-    background: rgba(0, 229, 255, 0.15);
-    color: #00e5ff;
-    border-left: 3px solid #00e5ff;
+.menu a:hover, .menu a.active {
+    background:rgba(0,229,255,0.15); color:#00e5ff; border-left:3px solid #00e5ff;
 }
-
-.menu-title {
-    padding: 15px 20px 5px;
-    font-size: 11px;
-    color: #6b85a6;
-    text-transform: uppercase;
-}
-
-/* MAIN */
-.main {
-    margin-left: 230px;
-    width: 100%;
-}
-
-
-/* TOPBAR */
+.menu-title { padding:15px 20px 5px; font-size:11px; color:#6b85a6; text-transform:uppercase; }
+.main { margin-left:230px; width:100%; }
 .topbar {
-    background: #0f1117;
-    padding: 12px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #1f2a38;
+    background:#0f1117; padding:12px 25px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom:1px solid #1f2a38;
+}
+.topbar h3 { font-size:18px; color:#00e5ff; }
+.content { padding:25px; }
+
+.cards { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-bottom:25px; }
+.card {
+    background:linear-gradient(145deg,#0f1117,#111827); padding:18px; border-radius:12px;
+    display:flex; align-items:center; gap:15px; border:1px solid #1f2a38; transition:0.3s; min-height:90px;
+}
+.card:hover { transform:translateY(-4px); box-shadow:0 0 15px rgba(0,229,255,0.2); }
+.icon {
+    width:50px; height:50px; border-radius:12px; display:flex; align-items:center;
+    justify-content:center; font-size:18px; color:#001018; background:linear-gradient(135deg,#00cfff,#00e5ff);
+}
+.card-text { font-size:13px; color:#9fb3c8; }
+.card-text span { display:block; font-size:20px; font-weight:bold; color:#e6f1ff; }
+
+/* =====================
+   LIVE MONITORING TABLE
+===================== */
+.monitoring-wrapper {
+    background:linear-gradient(145deg,#0a0e18,#0d1520);
+    border:1px solid #1a2840;
+    border-radius:16px;
+    overflow:hidden;
+    margin-top:25px;
 }
 
-.topbar h3 {
-    font-size: 18px;
-    color: #00e5ff;
+.monitoring-header {
+    padding:18px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #1a2840;
+    background:rgba(0,229,255,0.03);
 }
 
-/* PROFILE MENU */
-#profileMenu {
-    display:none;
-    position:absolute;
-    right:0;
-    top:45px;
-    background:#0f1722;
+.monitoring-title {
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.monitoring-title h4 {
+    font-size:15px;
+    font-weight:600;
+    color:#e6f1ff;
+    letter-spacing:0.3px;
+}
+
+.live-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:rgba(0,229,255,0.1);
+    border:1px solid rgba(0,229,255,0.25);
+    color:#00e5ff;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:20px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+}
+
+.live-badge .pulse-dot {
+    width:6px; height:6px;
+    border-radius:50%;
+    background:#00e5ff;
+    animation:pulse-glow 1.5s infinite;
+}
+
+@keyframes pulse-glow {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.4; transform:scale(0.8); }
+}
+
+.header-right {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.search-box input {
+    padding:8px 14px 8px 36px;
     border-radius:8px;
     border:1px solid #1f2a38;
-    width:150px;
+    background:#0a0f1a;
+    color:#e6f1ff;
+    outline:none;
+    font-size:13px;
+    width:220px;
+    transition:0.3s;
 }
-
-#profileMenu a {
-    display:block;
-    padding:10px;
-    color:#cfe8ff;
-    text-decoration:none;
-}
-
-#profileMenu a:hover {
-    background: rgba(0,229,255,0.1);
-}
-
-/* CONTENT */
-.content {
-    padding: 25px;
-}
-
-/* ======================
-   DASHBOARD GRID (UPDATED)
-====================== */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 25px;
-}
-
-.card {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    padding: 18px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border: 1px solid #1f2a38;
-    transition: 0.3s;
-    min-height: 90px;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 0 15px rgba(0,229,255,0.2);
-}
-
-.icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #001018;
-    background: linear-gradient(135deg, #00cfff, #00e5ff);
-}
-
-.card-text {
-    font-size: 13px;
-    color: #9fb3c8;
-}
-
-.card-text span {
-    display: block;
-    font-size: 20px;
-    font-weight: bold;
-    color: #e6f1ff;
-}
-
-/* RESPONSIVE */
-@media(max-width: 900px){
-    .cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media(max-width: 600px){
-    .sidebar { display: none; }
-    .main { margin-left: 0; }
-    .cards { grid-template-columns: 1fr; }
-}
-
-
-
-/* TABLE CONTAINER */
-.table-container {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-/* HEADER */
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.table-header h4 {
-    color: #00e5ff;
-}
-
-/* SEARCH */
-.search-box input {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #1f2a38;
-    background: #0a0f1a;
-    color: #e6f1ff;
-    outline: none;
-    transition: 0.3s;
-}
-
-.search-box input:focus {
-    border-color: #00e5ff;
-    box-shadow: 0 0 8px rgba(0,229,255,0.3);
-}
-
-.search-box input::placeholder {
-    color: #6b85a6;
+.search-box input:focus { border-color:#00e5ff; box-shadow:0 0 8px rgba(0,229,255,0.2); }
+.search-box input::placeholder { color:#4a6080; }
+.search-wrapper { position:relative; }
+.search-wrapper .search-icon {
+    position:absolute; left:11px; top:50%; transform:translateY(-50%);
+    color:#4a6080; font-size:12px; pointer-events:none;
 }
 
 /* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
+.monitoring-table {
+    width:100%;
+    border-collapse:collapse;
 }
 
-thead {
-    background: #0a1f2e;
+.monitoring-table thead tr {
+    background:rgba(0,15,30,0.5);
 }
 
-th {
-    color: #00e5ff;
-    font-weight: 500;
+.monitoring-table th {
+    padding:11px 16px;
+    font-size:11px;
+    font-weight:600;
+    color:#4a7090;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    text-align:left;
+    border-bottom:1px solid #1a2840;
 }
 
-th, td {
-    padding: 10px;
-    font-size: 13px;
-    text-align: left;
+.monitoring-table tbody tr {
+    border-bottom:1px solid rgba(26,40,64,0.6);
+    transition:background 0.2s;
 }
 
-tbody tr {
-    border-top: 1px solid #1f2a38;
-    transition: 0.2s;
+.monitoring-table tbody tr:hover {
+    background:rgba(0,229,255,0.04);
 }
 
-tbody tr:hover {
-    background: rgba(0, 229, 255, 0.08);
+.monitoring-table td {
+    padding:14px 16px;
+    font-size:13px;
+    color:#c8ddf0;
+    vertical-align:middle;
 }
 
-/* ACTION BUTTON */
-.action-btn {
-    background: linear-gradient(90deg, #00cfff, #00e5ff);
-    border: none;
-    color: #001018;
-    padding: 5px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 12px;
+/* FACILITY CELL */
+.facility-cell {
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
+.facility-icon {
+    width:36px; height:36px;
+    border-radius:8px;
+    background:linear-gradient(135deg,rgba(0,207,255,0.15),rgba(0,229,255,0.08));
+    border:1px solid rgba(0,229,255,0.2);
+    display:flex; align-items:center; justify-content:center;
+    color:#00e5ff;
+    font-size:14px;
+    flex-shrink:0;
+}
 
+.facility-name {
+    font-weight:600;
+    color:#e6f1ff;
+    font-size:13px;
+}
+
+.facility-category {
+    font-size:11px;
+    color:#4a7090;
+    margin-top:2px;
+}
+
+/* USER CELL */
+.user-cell {
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.user-avatar {
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700;
+    flex-shrink:0;
+}
+
+.avatar-a { background:rgba(0,229,255,0.15); color:#00e5ff; }
+.avatar-b { background:rgba(130,80,255,0.15); color:#a37dff; }
+.avatar-c { background:rgba(255,130,80,0.15); color:#ff9a60; }
+.avatar-d { background:rgba(80,200,120,0.15); color:#4ec878; }
+.avatar-e { background:rgba(255,200,50,0.15); color:#ffd040; }
+
+.user-name { font-size:13px; color:#c8ddf0; }
+
+/* TIME CELL */
+.time-range {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:12px;
+}
+
+.time-val { color:#e6f1ff; font-weight:500; }
+.time-sep { color:#2a4060; }
+
+/* STATUS BADGE */
+.status-ongoing {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:rgba(0,229,255,0.08);
+    border:1px solid rgba(0,229,255,0.2);
+    color:#00e5ff;
+    font-size:11px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:20px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+}
+.status-ongoing .s-dot {
+    width:5px; height:5px;
+    border-radius:50%;
+    background:#00e5ff;
+    animation:pulse-glow 1.5s infinite;
+}
+
+/* COUNTDOWN */
+.countdown-cell {
+    font-family:"Courier New",monospace;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.countdown-timer {
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:#e6f1ff;
+}
+
+.countdown-bar-wrap {
+    width:100px;
+    height:4px;
+    background:rgba(255,255,255,0.07);
+    border-radius:2px;
+    overflow:hidden;
+}
+
+.countdown-bar {
+    height:100%;
+    border-radius:2px;
+    transition:width 1s linear, background 1s;
+}
+
+.bar-green  { background:#00e5ff; }
+.bar-yellow { background:#ffd040; }
+.bar-red    { background:#ff5555; animation:blink-bar 1s infinite; }
+
+@keyframes blink-bar {
+    0%,100% { opacity:1; }
+    50% { opacity:0.5; }
+}
+
+.timer-warning { color:#ffd040 !important; }
+.timer-critical { color:#ff5555 !important; animation:blink-bar 1s infinite; }
+
+/* ACTION BUTTONS */
+.action-group {
+    display:flex;
+    gap:7px;
+}
+
+.btn-extend, .btn-end {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:6px 12px;
+    border-radius:6px;
+    font-size:11px;
+    font-weight:600;
+    cursor:pointer;
+    border:none;
+    transition:all 0.2s;
+    letter-spacing:0.2px;
+}
+
+.btn-extend {
+    background:rgba(0,229,255,0.1);
+    border:1px solid rgba(0,229,255,0.3);
+    color:#00e5ff;
+}
+.btn-extend:hover {
+    background:rgba(0,229,255,0.2);
+    box-shadow:0 0 10px rgba(0,229,255,0.15);
+}
+
+.btn-end {
+    background:rgba(255,80,80,0.08);
+    border:1px solid rgba(255,80,80,0.25);
+    color:#ff6060;
+}
+.btn-end:hover {
+    background:rgba(255,80,80,0.18);
+    box-shadow:0 0 10px rgba(255,80,80,0.15);
+}
 
 /* EMPTY STATE */
 .empty-state {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    color: #6b85a6;
+    padding:60px 40px;
+    text-align:center;
+    color:#4a6080;
+}
+.empty-state i { font-size:42px; color:#1a3050; margin-bottom:14px; }
+.empty-state h3 { font-size:16px; color:#6a8090; margin-bottom:6px; }
+.empty-state p { font-size:13px; }
+
+/* FOOTER */
+.monitoring-footer {
+    padding:12px 24px;
+    border-top:1px solid #1a2840;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+    color:#3a5070;
 }
 
-.empty-state i {
-    font-size: 40px;
-    color: #00e5ff;
-    margin-bottom: 10px;
+.footer-count { display:flex; align-items:center; gap:6px; }
+.footer-count strong { color:#00e5ff; }
+
+/* RESPONSIVE */
+@media(max-width:900px){ .cards { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){
+    .sidebar { display:none; }
+    .main { margin-left:0; }
+    .cards { grid-template-columns:1fr; }
 }
 </style>
-
-
 </head>
-
 <body>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-
     <div class="sidebar-header">
         <h2>SCBS - Admin</h2>
     </div>
-
     <div class="menu">
-
-        <a href="{{ url_for('dashboard') }}"
-        class="{% if active_page == 'dashboard' %}active{% endif %}">
+        <a href="{{ url_for('dashboard') }}" class="{% if active_page == 'dashboard' %}active{% endif %}">
             <i class="fas fa-home"></i> Dashboard
         </a>
-
-        <a href="{{ url_for('reservations') }}"
-        class="{% if active_page == 'reservations' %}active{% endif %}">
+        <a href="{{ url_for('reservations') }}" class="{% if active_page == 'reservations' %}active{% endif %}">
             <i class="fas fa-calendar-check"></i> Reservations
         </a>
-
         <div class="menu-title">Management</div>
-
-        <a href="{{ url_for('categories') }}"
-        class="{% if active_page == 'categories' %}active{% endif %}">
+        <a href="{{ url_for('categories') }}" class="{% if active_page == 'categories' %}active{% endif %}">
             <i class="fas fa-layer-group"></i> Categories
         </a>
-
-        <a href="{{ url_for('facilities') }}"
-        class="{% if active_page == 'facilities' %}active{% endif %}">
+        <a href="{{ url_for('facilities') }}" class="{% if active_page == 'facilities' %}active{% endif %}">
             <i class="fas fa-building"></i> Facilities
         </a>
-
-        <a href="{{ url_for('users') }}"
-        class="{% if active_page == 'users' %}active{% endif %}">
+        <a href="{{ url_for('users') }}" class="{% if active_page == 'users' %}active{% endif %}">
             <i class="fas fa-users"></i> Users
         </a>
-
-        <a href="{{ url_for('inquiries') }}"
-        class="{% if active_page == 'inquiries' %}active{% endif %}">
+        <a href="{{ url_for('inquiries') }}" class="{% if active_page == 'inquiries' %}active{% endif %}">
             <i class="fas fa-envelope"></i> Inquiries
         </a>
-
         <div class="menu-title">Logs</div>
-
-        <a href="{{ url_for('history_log') }}"
-        class="{% if active_page == 'history_log' %}active{% endif %}">
+        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
-
         <div class="menu-title">Account</div>
-
-        <a href="{{ url_for('logout') }}"
-           style="color:#ff6b6b;"
-           onclick="return confirm('Are you sure you want to logout?')">
+        <a href="{{ url_for('logout') }}" style="color:#ff6b6b;" onclick="return confirm('Are you sure you want to logout?')">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
-
     </div>
-
 </div>
+
 <!-- MAIN -->
 <div class="main">
-
     <div class="topbar">
         <h3>Dashboard Overview</h3>
     </div>
 
-<div class="content">
+    <div class="content">
 
-    <!-- ======================
-         DASHBOARD CARDS
-    ====================== -->
-    <div class="cards">
-
-        <div class="card">
-            <div class="icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="card-text">Reserved <span>{{ reservations_count }}</span></div>
+        <!-- CARDS -->
+        <div class="cards">
+            <div class="card">
+                <div class="icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="card-text">Reserved <span>{{ reservations_count }}</span></div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-layer-group"></i></div>
+                <div class="card-text">Categories <span>{{ categories_count }}</span></div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-building"></i></div>
+                <div class="card-text">Facilities <span>{{ facilities_count }}</span></div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-coins"></i></div>
+                <div class="card-text">Sales <span>₱{{ total_sales }}</span></div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-envelope"></i></div>
+                <div class="card-text">Inquiry <span>{{ inquiries_count }}</span></div>
+            </div>
+            <div class="card">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <div class="card-text">Users <span>{{ users_count }}</span></div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="icon"><i class="fas fa-layer-group"></i></div>
-            <div class="card-text">Categories <span>{{ categories_count }}</span></div>
-        </div>
+        <!-- =====================
+             LIVE FACILITY MONITORING
+        ===================== -->
+        <div class="monitoring-wrapper">
 
-        <div class="card">
-            <div class="icon"><i class="fas fa-building"></i></div>
-            <div class="card-text">Facilities <span>{{ facilities_count }}</span></div>
-        </div>
-
-        <div class="card">
-            <div class="icon"><i class="fas fa-coins"></i></div>
-            <div class="card-text">Sales <span>₱{{ total_sales }}</span></div>
-        </div>
-
-        <div class="card">
-            <div class="icon"><i class="fas fa-envelope"></i></div>
-            <div class="card-text">Inquiry <span>{{ inquiries_count }}</span></div>
-        </div>
-
-        <div class="card">
-            <div class="icon"><i class="fas fa-users"></i></div>
-            <div class="card-text">Users <span>{{ users_count }}</span></div>
-        </div>
-
-    </div>
-
-<!-- ======================
-     LIVE MONITORING TABLE
-     (ONGOING APPROVED RESERVATIONS)
-====================== -->
-<div class="table-container" style="margin-top:25px;">
-
-    <div class="table-header">
-        <h4>Live Facility Monitoring</h4>
-
-        <!-- SEARCH (NOW FUNCTIONAL) -->
-        <div class="search-box">
-            <input 
-                type="text" 
-                id="searchInput"
-                placeholder="Search active reservations..."
-                onkeyup="searchTable()"
-            >
-        </div>
-    </div>
-
-    <table>
-
-        <thead>
-            <tr>
-                <th>Facility</th>
-                <th>User</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-
-        <tbody id="liveMonitoringTable">
-
-            {% for r in active_reservations %}
-
-            <tr>
-
-                <td>{{ r.facility_name }}</td>
-                <td>{{ r.user_name }}</td>
-                <td>{{ r.start_time }}</td>
-                <td>{{ r.end_time }}</td>
-
-                <td>
-                    <span style="color:#00e5ff;">
-                        {{ r.status }}
+            <div class="monitoring-header">
+                <div class="monitoring-title">
+                    <h4>Live Facility Monitoring</h4>
+                    <span class="live-badge">
+                        <span class="pulse-dot"></span> Live
                     </span>
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-    <!-- EMPTY STATE -->
-    {% if not active_reservations %}
-    <div class="empty-state">
-        <i class="fas fa-calendar-times"></i>
-        <h3>No Active Reservations</h3>
-        <p>Approved bookings currently in progress will appear here.</p>
-    </div>
-    {% endif %}
-
-</div>
-</div>
-
-</div>
-
-</body>
-
-
-<script>
-
-// ======================
-// OPEN EXTEND (SWEETALERT MODAL)
-// ======================
-function openExtendModal(id, endTime) {
-
-    Swal.fire({
-        title: "Extend Reservation",
-        html: `
-            <div style="text-align:left; color:#cfe8ff; font-size:13px; margin-bottom:10px;">
-                Current End Time: <b style="color:#00e5ff;">${endTime}</b>
+                </div>
+                <div class="header-right">
+                    <div class="search-box search-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search facility, user..."
+                            onkeyup="searchTable()"
+                        >
+                    </div>
+                </div>
             </div>
 
-            <label style="color:#9fb3c8; font-size:13px;">Select Extension</label>
-            <select id="extendMinutes"
-                style="
-                    width:100%;
-                    padding:10px;
-                    margin-top:6px;
-                    border-radius:8px;
-                    border:1px solid #1f2a38;
-                    background:#0a0f1a;
-                    color:#e6f1ff;
-                    outline:none;
-                ">
-                <option value="30">30 Minutes</option>
-                <option value="60">1 Hour</option>
-            </select>
-        `,
-        background: "#0f1117",
-        color: "#e6f1ff",
-        showCancelButton: true,
-        confirmButtonText: "Extend",
-        cancelButtonText: "Cancel",
-        confirmButtonColor: "#00e5ff",
-        cancelButtonColor: "#1f2a38",
+            {% if active_reservations %}
+            <table class="monitoring-table">
+                <thead>
+                    <tr>
+                        <th>Facility</th>
+                        <th>User</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Time Remaining</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="liveMonitoringTable">
+                    {% for r in active_reservations %}
+                    <tr data-id="{{ r.id }}"
+                        data-end="{{ r.booking_date }} {{ r.end_time }}"
+                        data-start="{{ r.booking_date }} {{ r.start_time }}">
 
-        preConfirm: () => {
-            return document.getElementById("extendMinutes").value;
-        }
-    }).then((result) => {
+                        <!-- FACILITY -->
+                        <td>
+                            <div class="facility-cell">
+                                <div class="facility-icon">
+                                    {% if r.category_name and ('court' in r.category_name|lower or 'basketball' in r.category_name|lower or 'tennis' in r.category_name|lower) %}
+                                        <i class="fas fa-basketball-ball"></i>
+                                    {% elif r.category_name and ('pool' in r.category_name|lower or 'swim' in r.category_name|lower) %}
+                                        <i class="fas fa-swimming-pool"></i>
+                                    {% elif r.category_name and ('gym' in r.category_name|lower or 'fitness' in r.category_name|lower) %}
+                                        <i class="fas fa-dumbbell"></i>
+                                    {% elif r.category_name and ('field' in r.category_name|lower or 'football' in r.category_name|lower or 'soccer' in r.category_name|lower) %}
+                                        <i class="fas fa-futbol"></i>
+                                    {% else %}
+                                        <i class="fas fa-building"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="facility-name">{{ r.facility_name }}</div>
+                                    <div class="facility-category">
+                                        <i class="fas fa-layer-group" style="font-size:10px; margin-right:3px;"></i>
+                                        {{ r.category_name or 'Uncategorized' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
 
-        if (result.isConfirmed) {
+                        <!-- USER -->
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar avatar-{{ ['a','b','c','d','e'][loop.index0 % 5] }}">
+                                    {{ (r.user_name or 'N/A')[:2]|upper }}
+                                </div>
+                                <span class="user-name">{{ r.user_name or 'Unknown User' }}</span>
+                            </div>
+                        </td>
 
-            let minutes = result.value;
+                        <!-- TIME SLOT -->
+                        <td>
+                            <div class="time-range">
+                                <i class="fas fa-clock" style="color:#3a5a80; font-size:11px;"></i>
+                                <span class="time-val">{{ r.start_time }}</span>
+                                <span class="time-sep">→</span>
+                                <span class="time-val end-time-label">{{ r.end_time }}</span>
+                            </div>
+                            <div style="font-size:11px; color:#3a5a80; margin-top:3px;">
+                                <i class="fas fa-calendar-day" style="font-size:10px; margin-right:3px;"></i>
+                                {{ r.booking_date }}
+                            </div>
+                        </td>
 
-            fetch("/extend_reservation", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    reservation_id: id,
-                    minutes: minutes
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
+                        <!-- STATUS -->
+                        <td>
+                            <span class="status-ongoing">
+                                <span class="s-dot"></span>
+                                Ongoing
+                            </span>
+                        </td>
 
-                if (data.status === "success") {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Extended Successfully",
-                        text: data.message,
-                        background: "#0f1117",
-                        color: "#e6f1ff",
-                        confirmButtonColor: "#00e5ff"
-                    });
+                        <!-- COUNTDOWN -->
+                        <td>
+                            <div class="countdown-cell">
+                                <div class="countdown-timer" id="timer-{{ r.id }}">--:--:--</div>
+                                <div class="countdown-bar-wrap">
+                                    <div class="countdown-bar bar-green" id="bar-{{ r.id }}" style="width:100%"></div>
+                                </div>
+                            </div>
+                        </td>
 
-                    location.reload();
+                        <!-- ACTIONS -->
+                        <td>
+                            <div class="action-group">
+                                <button class="btn-extend"
+                                    onclick="openExtendModal({{ r.id }}, '{{ r.end_time }}', '{{ r.booking_date }}')">
+                                    <i class="fas fa-plus-circle"></i> Extend
+                                </button>
+                                <button class="btn-end"
+                                    onclick="confirmEnd({{ r.id }}, '{{ r.facility_name }}', '{{ r.user_name }}')">
+                                    <i class="fas fa-stop-circle"></i> End
+                                </button>
+                            </div>
+                        </td>
 
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Failed",
-                        text: data.message,
-                        background: "#0f1117",
-                        color: "#e6f1ff",
-                        confirmButtonColor: "#00e5ff"
-                    });
-                }
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-            })
-            .catch(() => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Server Error",
-                    text: "Something went wrong.",
-                    background: "#0f1117",
-                    color: "#e6f1ff"
-                });
-            });
-        }
+            <div class="monitoring-footer">
+                <div class="footer-count">
+                    <i class="fas fa-circle" style="color:#00e5ff; font-size:7px; animation:pulse-glow 1.5s infinite;"></i>
+                    <span><strong>{{ active_reservations|length }}</strong> active session{{ 's' if active_reservations|length != 1 else '' }} in progress</span>
+                </div>
+                <span>Auto-refreshes every 60s</span>
+            </div>
 
-    });
-}
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <h3>No Active Sessions</h3>
+                <p>Approved bookings currently in progress will appear here.</p>
+            </div>
+            {% endif %}
 
-</script>
+        </div><!-- end monitoring-wrapper -->
 
+    </div><!-- end content -->
+</div><!-- end main -->
 
 <script>
 
-// ======================
-// SEARCH FUNCTION (LIVE FILTER)
-// ======================
-function searchTable() {
-    let input = document.getElementById("searchInput");
-    let filter = input.value.toLowerCase();
-    let rows = document.querySelectorAll("#liveMonitoringTable tr");
-
-    rows.forEach(row => {
-        let text = row.innerText.toLowerCase();
-        row.style.display = text.includes(filter) ? "" : "none";
-    });
+// =====================
+// COUNTDOWN TIMERS
+// =====================
+function parseDateTime(dateStr, timeStr) {
+    return new Date(dateStr + "T" + timeStr);
 }
 
+function updateTimers() {
+    const rows = document.querySelectorAll("#liveMonitoringTable tr[data-end]");
+    const now = new Date();
 
-// ======================
-// SUBMIT EXTEND REQUEST
-// ======================
-document.addEventListener("DOMContentLoaded", function () {
+    rows.forEach(row => {
+        const id = row.dataset.id;
+        const endStr  = row.dataset.end;
+        const startStr = row.dataset.start;
 
-    const form = document.getElementById("extendForm");
+        // Parse "YYYY-MM-DD HH:MM:SS" or "YYYY-MM-DD HH:MM"
+        const endParts   = endStr.split(" ");
+        const startParts = startStr.split(" ");
 
-    if (!form) return;
+        const endDT   = new Date(endParts[0] + "T" + endParts[1]);
+        const startDT = new Date(startParts[0] + "T" + startParts[1]);
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+        const timerEl = document.getElementById("timer-" + id);
+        const barEl   = document.getElementById("bar-" + id);
 
-        let reservationId = document.getElementById("reservationId").value;
-        let minutes = document.getElementById("extendMinutes").value;
+        if (!timerEl || !barEl) return;
 
-        if (!minutes || minutes <= 0) {
-            Swal.fire({
-                icon: "warning",
-                title: "Invalid Input",
-                text: "Please enter valid minutes.",
-                background: "#111827",
-                color: "#e6f1ff",
-                confirmButtonColor: "#00e5ff"
-            });
+        const totalMs    = endDT - startDT;
+        const remainMs   = endDT - now;
+
+        if (remainMs <= 0) {
+            timerEl.textContent = "00:00:00";
+            timerEl.className = "countdown-timer timer-critical";
+            barEl.style.width = "0%";
+            barEl.className = "countdown-bar bar-red";
             return;
         }
 
+        const hrs  = Math.floor(remainMs / 3600000);
+        const mins = Math.floor((remainMs % 3600000) / 60000);
+        const secs = Math.floor((remainMs % 60000) / 1000);
+
+        timerEl.textContent =
+            String(hrs).padStart(2,"0") + ":" +
+            String(mins).padStart(2,"0") + ":" +
+            String(secs).padStart(2,"0");
+
+        const pct = Math.max(0, Math.min(100, (remainMs / totalMs) * 100));
+        barEl.style.width = pct + "%";
+
+        if (pct > 40) {
+            timerEl.className = "countdown-timer";
+            barEl.className = "countdown-bar bar-green";
+        } else if (pct > 15) {
+            timerEl.className = "countdown-timer timer-warning";
+            barEl.className = "countdown-bar bar-yellow";
+        } else {
+            timerEl.className = "countdown-timer timer-critical";
+            barEl.className = "countdown-bar bar-red";
+        }
+    });
+}
+
+// Kick off immediately + every second
+updateTimers();
+setInterval(updateTimers, 1000);
+
+// Auto-refresh page every 60s
+setInterval(() => location.reload(), 60000);
+
+
+// =====================
+// SEARCH
+// =====================
+function searchTable() {
+    const filter = document.getElementById("searchInput").value.toLowerCase();
+    const rows   = document.querySelectorAll("#liveMonitoringTable tr");
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+    });
+}
+
+
+// =====================
+// EXTEND MODAL
+// =====================
+function openExtendModal(id, endTime, bookingDate) {
+    Swal.fire({
+        title: "Extend Session",
+        html: `
+            <div style="text-align:left; margin-bottom:16px;">
+                <div style="font-size:12px; color:#6b85a6; margin-bottom:4px;">CURRENT END TIME</div>
+                <div style="font-size:22px; font-weight:700; color:#00e5ff; font-family:monospace; letter-spacing:2px;">${endTime}</div>
+            </div>
+            <div style="text-align:left;">
+                <div style="font-size:12px; color:#6b85a6; margin-bottom:8px;">EXTEND BY</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;" id="extendOptions">
+                    <label style="cursor:pointer;">
+                        <input type="radio" name="extMin" value="30" style="display:none;">
+                        <div class="ext-opt" data-val="30">
+                            <span style="font-size:20px; font-weight:700; color:#00e5ff;">30</span>
+                            <span style="font-size:12px; color:#6b85a6; display:block;">minutes</span>
+                        </div>
+                    </label>
+                    <label style="cursor:pointer;">
+                        <input type="radio" name="extMin" value="60" style="display:none;">
+                        <div class="ext-opt" data-val="60">
+                            <span style="font-size:20px; font-weight:700; color:#00e5ff;">1</span>
+                            <span style="font-size:12px; color:#6b85a6; display:block;">hour</span>
+                        </div>
+                    </label>
+                    <label style="cursor:pointer;">
+                        <input type="radio" name="extMin" value="90" style="display:none;">
+                        <div class="ext-opt" data-val="90">
+                            <span style="font-size:20px; font-weight:700; color:#00e5ff;">1.5</span>
+                            <span style="font-size:12px; color:#6b85a6; display:block;">hours</span>
+                        </div>
+                    </label>
+                    <label style="cursor:pointer;">
+                        <input type="radio" name="extMin" value="120" style="display:none;">
+                        <div class="ext-opt" data-val="120">
+                            <span style="font-size:20px; font-weight:700; color:#00e5ff;">2</span>
+                            <span style="font-size:12px; color:#6b85a6; display:block;">hours</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        `,
+        background: "#0d1520",
+        color: "#e6f1ff",
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-plus-circle"></i> Extend Session',
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#00e5ff",
+        cancelButtonColor: "#1a2840",
+        didOpen: () => {
+            const style = document.createElement("style");
+            style.textContent = `
+                .ext-opt {
+                    padding:14px 12px; border-radius:10px;
+                    border:1px solid #1a2840; text-align:center;
+                    background:#0a0e18; transition:0.2s;
+                }
+                .ext-opt:hover { border-color:#00e5ff; background:rgba(0,229,255,0.06); }
+                .ext-opt.selected { border-color:#00e5ff; background:rgba(0,229,255,0.12); box-shadow:0 0 10px rgba(0,229,255,0.15); }
+            `;
+            document.head.appendChild(style);
+            document.querySelectorAll(".ext-opt").forEach(opt => {
+                opt.addEventListener("click", () => {
+                    document.querySelectorAll(".ext-opt").forEach(o => o.classList.remove("selected"));
+                    opt.classList.add("selected");
+                    const val = opt.dataset.val;
+                    document.querySelector(`input[name="extMin"][value="${val}"]`).checked = true;
+                });
+            });
+        },
+        preConfirm: () => {
+            const checked = document.querySelector('input[name="extMin"]:checked');
+            if (!checked) {
+                Swal.showValidationMessage("Please select an extension duration.");
+                return false;
+            }
+            return checked.value;
+        }
+    }).then(result => {
+        if (!result.isConfirmed) return;
         fetch("/extend_reservation", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                reservation_id: reservationId,
-                minutes: minutes
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reservation_id: id, minutes: result.value })
         })
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
-
             if (data.status === "success") {
                 Swal.fire({
-                    icon: "success",
-                    title: "Time Extended",
-                    text: data.message,
-                    background: "#111827",
-                    color: "#e6f1ff",
-                    confirmButtonColor: "#00e5ff"
-                });
-
-                closeModal();
-                location.reload();
-
+                    icon: "success", title: "Session Extended",
+                    text: data.message, background: "#0d1520",
+                    color: "#e6f1ff", confirmButtonColor: "#00e5ff"
+                }).then(() => location.reload());
             } else {
                 Swal.fire({
-                    icon: "error",
-                    title: "Failed",
-                    text: data.message,
-                    background: "#111827",
-                    color: "#e6f1ff",
-                    confirmButtonColor: "#00e5ff"
+                    icon: "error", title: "Failed", text: data.message,
+                    background: "#0d1520", color: "#e6f1ff", confirmButtonColor: "#00e5ff"
                 });
             }
-
         })
-        .catch(err => {
-            Swal.fire({
-                icon: "error",
-                title: "Server Error",
-                text: "Something went wrong.",
-                background: "#111827",
-                color: "#e6f1ff"
-            });
+        .catch(() => {
+            Swal.fire({ icon:"error", title:"Server Error", text:"Something went wrong.", background:"#0d1520", color:"#e6f1ff" });
         });
     });
-});
+}
 
 
-// ======================
-// CLOSE MODAL ON OUTSIDE CLICK
-// ======================
-window.onclick = function(event) {
-    const modal = document.getElementById("extendModal");
-    if (event.target === modal) {
-        modal.style.display = "none";
-    }
-};
+// =====================
+// END SESSION
+// =====================
+function confirmEnd(id, facilityName, userName) {
+    Swal.fire({
+        title: "End Session?",
+        html: `
+            <p style="color:#9fb3c8; font-size:14px; margin-bottom:16px;">
+                You are about to end the active session for:
+            </p>
+            <div style="background:#0a0e18; border:1px solid #1a2840; border-radius:10px; padding:14px; text-align:left;">
+                <div style="font-size:12px; color:#4a7090; margin-bottom:4px;">FACILITY</div>
+                <div style="font-size:15px; font-weight:600; color:#e6f1ff; margin-bottom:10px;">${facilityName}</div>
+                <div style="font-size:12px; color:#4a7090; margin-bottom:4px;">USER</div>
+                <div style="font-size:14px; color:#c8ddf0;">${userName}</div>
+            </div>
+            <p style="color:#ff6060; font-size:12px; margin-top:14px;">
+                <i class="fas fa-exclamation-triangle" style="margin-right:5px;"></i>
+                This action cannot be undone.
+            </p>
+        `,
+        background: "#0d1520",
+        color: "#e6f1ff",
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-stop-circle"></i> End Session',
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#cc3333",
+        cancelButtonColor: "#1a2840",
+        reverseButtons: true
+    }).then(result => {
+        if (!result.isConfirmed) return;
+        fetch("/end_reservation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reservation_id: id })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire({
+                    icon: "success", title: "Session Ended",
+                    text: data.message, background: "#0d1520",
+                    color: "#e6f1ff", confirmButtonColor: "#00e5ff"
+                }).then(() => location.reload());
+            } else {
+                Swal.fire({
+                    icon: "error", title: "Failed", text: data.message,
+                    background: "#0d1520", color: "#e6f1ff", confirmButtonColor: "#00e5ff"
+                });
+            }
+        })
+        .catch(() => {
+            Swal.fire({ icon:"error", title:"Server Error", text:"Something went wrong.", background:"0d1520", color:"#e6f1ff" });
+        });
+    });
+}
 
 </script>
+</body>
 </html>

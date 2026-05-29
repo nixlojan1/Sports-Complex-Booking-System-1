@@ -794,6 +794,39 @@ def contact():
         (name, email, message)
     )
     conn.commit()
+
+    # Send confirmation email to the user
+    email_service.send_email(
+        recipient_email=email,
+        subject="We received your inquiry – Sports Complex",
+        message_html=build_email(
+            title="Inquiry Received",
+            name=name,
+            body_html=f"""
+            <p style="color:#555;font-size:14px;line-height:1.6;">
+                Thank you for reaching out! We have received your message and our team
+                will get back to you as soon as possible.
+            </p>
+
+            <div style="background:#f9f9f9;border-left:4px solid #329D9C;
+                        padding:14px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
+                <p style="color:#555;font-size:13px;margin:0 0 6px;">
+                    <strong>Your message:</strong>
+                </p>
+                <p style="color:#666;font-size:13px;line-height:1.6;margin:0;">
+                    {message}
+                </p>
+            </div>
+
+            <p style="color:#888;font-size:12px;line-height:1.6;">
+                If you have additional questions, feel free to reply to this email
+                or contact us at <a href="mailto:sportscomplexx1@gmail.com"
+                style="color:#329D9C;">sportscomplexx1@gmail.com</a>.
+            </p>
+            """
+        )
+    )
+
     return jsonify({"status": "success"})
 
 

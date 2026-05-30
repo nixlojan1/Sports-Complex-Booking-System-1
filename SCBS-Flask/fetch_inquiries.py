@@ -69,14 +69,6 @@ def get_inquiry(id):
 
     conn.commit()
 
-    # LOG VIEW ACTION (human-readable)
-    log_action(
-        action="VIEW",
-        table_name="inquiries",
-        record_id=id,
-        description=f"Admin viewed inquiry from '{row['name']}'"
-    )
-
     conn.close()
 
     return jsonify(dict(row))

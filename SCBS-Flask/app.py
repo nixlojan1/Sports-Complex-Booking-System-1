@@ -15,6 +15,7 @@ from create_reservation import create_reservation
 from chatbot import chatbot
 from email_notifications import EmailNotification
 from process_forgot_password import forgot_password, reset_password, create_reset_tokens_table
+from fetch_sales import fetch_sales
 
 # ======================
 # BASE DIRECTORY
@@ -34,6 +35,7 @@ app.register_blueprint(fetch_facility)
 app.register_blueprint(fetch_reservations)
 app.register_blueprint(create_reservation)
 app.register_blueprint(chatbot)
+app.register_blueprint(fetch_sales)
 
 # ======================
 # FORGOT PASSWORD ROUTES
@@ -707,12 +709,36 @@ def update_inquiry(id):
 # ======================
 # HISTORY LOG
 # ======================
+# ======================
+# HISTORY LOG
+# ======================
 @app.route('/history_log')
 def history_log():
-    cursor.execute("SELECT * FROM history_log ORDER BY created_at ASC")
-    logs = cursor.fetchall()
-    return render_template('admin/history-log.html', history_logs=logs, active_page='history_log')
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
 
+    # Only fetch CRUD actions
+    cursor.execute("""
+        SELECT * FROM history_log
+        WHERE LOWER(action) IN ('create', 'update', 'delete', 'insert', 'add', 'edit', 'remove')
+        ORDER BY created_at DESC
+    """)
+    raw_logs = cursor.fetchall()
+    conn.close()
+
+    logs = []
+    for log in raw_logs:
+        row = dict(log)
+        try:
+            dt = datetime.strptime(row['created_at'], "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            dt = datetime.now()
+        row['date'] = dt.strftime("%B %d, %Y")
+        row['time'] = dt.strftime("%I:%M %p")
+        logs.append(row)
+
+    return render_template('admin/history-log.html', history_logs=logs, active_page='history_log')
 
 # ======================
 # OTHER PAGES
@@ -888,6 +914,10 @@ def extend_reservation():
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/sales')
+def sales():
+    return render_with_active('admin/sales.html', 'sales')
 
 
 # ======================

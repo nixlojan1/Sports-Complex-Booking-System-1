@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sales – Sports Complex Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Export Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://unpkg.com/docx@7.8.2/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",Arial,sans-serif; }
+body { display:flex; background:#0f1117; color:#e6f1ff; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+    width:230px; height:100vh;
+    background:linear-gradient(180deg,#0f1117,#0a1f2e,#0c2d3f);
+    position:fixed; display:flex; flex-direction:column;
+    border-right:1px solid #1f2a38;
+}
+.sidebar-header { padding:15px; border-bottom:1px solid #1f2a38; color:#00e5ff; }
+.menu { padding:20px 0; }
+.menu a {
+    display:flex; align-items:center; gap:12px; padding:10px 20px;
+    color:#9fb3c8; text-decoration:none; font-size:14px; transition:0.3s;
+}
+.menu a:hover, .menu a.active {
+    background:rgba(0,229,255,0.15); color:#00e5ff; border-left:3px solid #00e5ff;
+}
+.menu-title {
+    padding:15px 20px 5px; font-size:11px;
+    color:#6b85a6; text-transform:uppercase;
+}
+
+/* ── MAIN ── */
+.main { margin-left:230px; width:100%; min-height:100vh; }
+
+.topbar {
+    background:#0f1117; padding:12px 25px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom:1px solid #1f2a38; position:sticky; top:0; z-index:100;
+}
+.topbar h3 { font-size:18px; color:#00e5ff; font-weight:600; }
+
+#profileMenu {
+    display:none; position:absolute; right:0; top:45px;
+    background:#0f1722; border-radius:8px;
+    border:1px solid #1f2a38; width:150px; z-index:200;
+}
+#profileMenu a { display:block; padding:10px; color:#cfe8ff; text-decoration:none; }
+#profileMenu a:hover { background:rgba(0,229,255,0.1); }
+
+/* ── CONTENT ── */
+.content { padding:25px; display:flex; flex-direction:column; gap:22px; }
+
+/* ── PERIOD FILTER BAR ── */
+.filter-bar {
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px; padding:14px 18px;
+}
+.filter-bar label { font-size:12px; color:#6b85a6; margin-right:4px; }
+.filter-bar select,
+.filter-bar input[type="date"] {
+    padding:7px 11px; border-radius:6px;
+    border:1px solid #1f2a38; background:#0a0f1a;
+    color:#e6f1ff; font-size:13px; cursor:pointer; outline:none;
+    transition:border-color 0.2s;
+}
+.filter-bar select:focus,
+.filter-bar input[type="date"]:focus { border-color:#00e5ff; }
+
+.custom-range {
+    display:none; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.custom-range.show { display:flex; }
+
+.apply-btn {
+    padding:7px 16px; border:none; border-radius:6px;
+    background:#00e5ff; color:#000; font-weight:700;
+    font-size:13px; cursor:pointer; transition:opacity 0.2s;
+}
+.apply-btn:hover { opacity:0.82; }
+
+/* ── EXPORT BUTTON GROUP ── */
+.export-wrapper {
+    position: relative;
+    margin-left: auto;
+}
+
+.export-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #1f3a50;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #0a1f2e, #0c2d3f);
+    color: #00e5ff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.export-btn:hover {
+    border-color: #00e5ff;
+    background: rgba(0,229,255,0.1);
+    box-shadow: 0 0 12px rgba(0,229,255,0.15);
+}
+.export-btn i { font-size: 14px; }
+.export-btn .chevron {
+    font-size: 10px;
+    margin-left: 2px;
+    transition: transform 0.2s;
+}
+.export-btn.open .chevron { transform: rotate(180deg); }
+
+.export-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #0a1622;
+    border: 1px solid #1f2a38;
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 170px;
+    z-index: 300;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    animation: dropIn 0.15s ease;
+}
+.export-dropdown.show { display: block; }
+
+@keyframes dropIn {
+    from { opacity:0; transform: translateY(-6px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+
+.export-option {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 16px;
+    font-size: 13px;
+    color: #cfe8ff;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+.export-option:hover { background: rgba(0,229,255,0.08); color:#00e5ff; }
+.export-option:not(:last-child) { border-bottom: 1px solid #1f2a38; }
+
+.export-option .exp-icon {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+}
+.exp-pdf  { background: rgba(239,68,68,0.15);  color: #f87171; }
+.exp-docx { background: rgba(96,165,250,0.15); color: #60a5fa; }
+.exp-csv  { background: rgba(52,211,153,0.15); color: #34d399; }
+
+.export-option .exp-info .exp-name { font-weight: 600; font-size: 13px; }
+.export-option .exp-info .exp-desc { font-size: 11px; color: #6b85a6; margin-top: 1px; }
+
+/* ── STAT CARDS ── */
+.stats-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+}
+.stat-card {
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px;
+    padding:20px 22px;
+    display:flex; flex-direction:column; gap:10px;
+    transition:border-color 0.25s;
+}
+.stat-card:hover { border-color:#1f3a50; }
+.stat-card .stat-label {
+    font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.6px; color:#6b85a6;
+}
+.stat-card .stat-value {
+    font-size:28px; font-weight:700; color:#e2e8f0; line-height:1;
+}
+.stat-card .stat-sub {
+    font-size:12px; color:#6b85a6;
+}
+.stat-card .stat-accent { width:36px; height:3px; border-radius:999px; }
+.accent-teal  { background:#00e5ff; }
+.accent-green { background:#34d399; }
+.accent-blue  { background:#60a5fa; }
+.accent-amber { background:#fbbf24; }
+
+/* ── TWO-COL SECTION ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+/* ── CARD (generic) ── */
+.card {
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px; padding:20px;
+}
+.card-title {
+    font-size:12px; font-weight:700; color:#00e5ff;
+    text-transform:uppercase; letter-spacing:0.6px;
+    margin-bottom:16px; padding-bottom:10px;
+    border-bottom:1px solid #1f2a38;
+}
+
+/* ── FACILITY TABLE ── */
+.fac-table { width:100%; border-collapse:collapse; }
+.fac-table th {
+    font-size:11px; color:#6b85a6; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.4px;
+    padding:6px 8px; border-bottom:1px solid #1f2a38; text-align:left;
+}
+.fac-table td { padding:9px 8px; font-size:13px; border-bottom:1px solid #0f1722; }
+.fac-table tr:last-child td { border-bottom:none; }
+.fac-table tr:hover td { background:rgba(0,229,255,0.03); }
+
+/* Progress bar */
+.prog-wrap { height:6px; background:#1f2a38; border-radius:999px; overflow:hidden; }
+.prog-bar  { height:100%; border-radius:999px; background:#00e5ff; transition:width 0.5s; }
+
+/* ── TRANSACTIONS SECTION ── */
+.txn-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px; flex-wrap:wrap; gap:10px;
+}
+.search-box input {
+    padding:8px 12px; border-radius:6px;
+    border:1px solid #1f2a38; background:#0a0f1a;
+    color:#e6f1ff; font-size:13px; outline:none; transition:0.2s;
+    min-width:220px;
+}
+.search-box input:focus { border-color:#00e5ff; }
+.search-box input::placeholder { color:#6b85a6; }
+
+.txn-table { width:100%; border-collapse:collapse; }
+.txn-table thead { background:#0a1f2e; }
+.txn-table th {
+    font-size:11px; color:#00e5ff; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.4px;
+    padding:10px; text-align:left;
+}
+.txn-table td { padding:10px; font-size:13px; border-top:1px solid #1f2a38; }
+.txn-table tr:hover td { background:rgba(0,229,255,0.04); }
+
+.badge-approved {
+    display:inline-block; padding:3px 10px; border-radius:999px;
+    font-size:11px; font-weight:700;
+    background:#052e16; color:#34d399;
+}
+
+/* ── FOOTER ── */
+.footer { text-align:center; padding:14px; font-size:12px; color:#6b85a6; }
+
+/* ── LOADING ── */
+.loading-row td {
+    text-align:center; padding:40px;
+    color:#6b85a6; font-size:13px;
+}
+
+/* ── EXPORT TOAST ── */
+.export-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #0a1622;
+    border: 1px solid #1f3a50;
+    border-left: 3px solid #00e5ff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #e6f1ff;
+    z-index: 9999;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+}
+.export-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+.export-toast i { color: #00e5ff; font-size: 16px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .two-col    { grid-template-columns:1fr; }
+}
+@media(max-width:600px){
+    .sidebar  { display:none; }
+    .main     { margin-left:0; }
+    .stats-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════
+     SIDEBAR
+══════════════════════════════════ -->
+<div class="sidebar">
+    <div class="sidebar-header"><h2>SCBS - Admin</h2></div>
+    <div class="menu">
+        <a href="{{ url_for('dashboard') }}"    class="{% if active_page=='dashboard'    %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{{ url_for('reservations') }}" class="{% if active_page=='reservations' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Reservations</a>
+        <div class="menu-title">Management</div>
+        <a href="{{ url_for('categories') }}"   class="{% if active_page=='categories'   %}active{% endif %}"><i class="fas fa-layer-group"></i> Categories</a>
+        <a href="{{ url_for('facilities') }}"   class="{% if active_page=='facilities'   %}active{% endif %}"><i class="fas fa-building"></i> Facilities</a>
+        <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+        <a href="{{ url_for('inquiries') }}"    class="{% if active_page=='inquiries'    %}active{% endif %}"><i class="fas fa-envelope"></i> Inquiries</a>
+        <div class="menu-title">Logs</div>
+        <a href="{{ url_for('sales') }}"        class="{% if active_page=='sales'        %}active{% endif %}"><i class="fas fa-chart-line"></i> Sales</a>
+        <a href="{{ url_for('history_log') }}"  class="{% if active_page=='history_log'  %}active{% endif %}"><i class="fas fa-history"></i> History Log</a>
+        <div class="menu-title">Account</div>
+        <a href="{{ url_for('logout') }}" style="color:#ff6b6b;"
+           onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MAIN
+══════════════════════════════════ -->
+<div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <h3>Sales Overview</h3>
+        <div class="user" style="position:relative;">
+            <img src="https://i.pravatar.cc/40"
+                 style="width:35px;height:35px;border-radius:50%;cursor:pointer;"
+                 onclick="toggleMenu()">
+            <div id="profileMenu">
+                <a href="#">Profile</a>
+                <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- ── FILTER BAR ── -->
+        <div class="filter-bar">
+            <div>
+                <label>Period</label>
+                <select id="periodSelect" onchange="onPeriodChange()">
+                    <option value="this_month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="last_3_months">Last 3 Months</option>
+                    <option value="this_year">This Year</option>
+                    <option value="all" selected>All Time</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+
+            <div class="custom-range" id="customRange">
+                <label>From</label>
+                <input type="date" id="fromDate">
+                <label>To</label>
+                <input type="date" id="toDate">
+                <button class="apply-btn" onclick="loadAll()">Apply</button>
+            </div>
+
+            <span id="rangeLabel"
+                  style="font-size:12px;color:#6b85a6;margin-left:auto;"></span>
+
+            <!-- ── EXPORT BUTTON ── -->
+            <div class="export-wrapper" id="exportWrapper">
+                <button class="export-btn" id="exportToggle" onclick="toggleExportMenu()">
+                    <i class="fas fa-file-export"></i>
+                    Export
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="export-dropdown" id="exportDropdown">
+                    <button class="export-option" onclick="exportPDF()">
+                        <span class="exp-icon exp-pdf"><i class="fas fa-file-pdf"></i></span>
+                        <span class="exp-info">
+                            <div class="exp-name">PDF Report</div>
+                            <div class="exp-desc">Full report with tables</div>
+                        </span>
+                    </button>
+                    <button class="export-option" onclick="exportCSV()">
+                        <span class="exp-icon exp-csv"><i class="fas fa-file-csv"></i></span>
+                        <span class="exp-info">
+                            <div class="exp-name">CSV Spreadsheet</div>
+                            <div class="exp-desc">Raw data for Excel</div>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STAT CARDS ── -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-accent accent-teal"></div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value" id="statRevenue">—</div>
+                <div class="stat-sub">from approved bookings</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-accent accent-green"></div>
+                <div class="stat-label">Approved Bookings</div>
+                <div class="stat-value" id="statBookings">—</div>
+                <div class="stat-sub" id="statPending">— pending</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-accent accent-blue"></div>
+                <div class="stat-label">Average per Booking</div>
+                <div class="stat-value" id="statAvg">—</div>
+                <div class="stat-sub">per approved reservation</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-accent accent-amber"></div>
+                <div class="stat-label">Deposits Collected</div>
+                <div class="stat-value" id="statDeposits">—</div>
+                <div class="stat-sub">30% of grand total</div>
+            </div>
+
+        </div>
+
+        <!-- ── CHART  +  TOP FACILITIES ── -->
+        <div class="two-col">
+
+            <!-- Monthly Revenue Chart -->
+            <div class="card">
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1f2a38;">
+                    <span class="card-title" style="margin:0;padding:0;border:none;">
+                        Monthly Revenue
+                    </span>
+                    <select id="chartYear" onchange="loadChart()"
+                            style="padding:5px 10px;border-radius:6px;border:1px solid #1f2a38;
+                                   background:#0a0f1a;color:#e6f1ff;font-size:12px;cursor:pointer;">
+                    </select>
+                </div>
+                <div style="position:relative;height:240px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Facilities -->
+            <div class="card">
+                <div class="card-title">Revenue by Facility</div>
+                <table class="fac-table">
+                    <thead>
+                        <tr>
+                            <th>Facility</th>
+                            <th style="text-align:right;">Revenue</th>
+                            <th style="text-align:right;">Bookings</th>
+                            <th style="min-width:80px;">Share</th>
+                        </tr>
+                    </thead>
+                    <tbody id="facilityTable">
+                        <tr class="loading-row"><td colspan="4">Loading…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ── TRANSACTIONS TABLE ── -->
+        <div class="card">
+            <div class="txn-header">
+                <span class="card-title" style="margin:0;padding:0;border:none;">
+                    Transactions
+                </span>
+                <div class="search-box">
+                    <input type="text" id="txnSearch"
+                           placeholder="Search by customer, facility, reference…">
+                </div>
+            </div>
+
+            <table class="txn-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Facility</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Amount</th>
+                        <th>Deposit</th>
+                        <th>Reference</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="txnTable">
+                    <tr class="loading-row"><td colspan="9">Loading…</td></tr>
+                </tbody>
+            </table>
+
+            <div id="txnCount"
+                 style="margin-top:12px;font-size:12px;color:#6b85a6;text-align:right;"></div>
+        </div>
+
+    </div><!-- /content -->
+
+    <div class="footer">© 2026 Sports Complex Booking System</div>
+</div><!-- /main -->
+
+<!-- Export Toast Notification -->
+<div class="export-toast" id="exportToast">
+    <i class="fas fa-check-circle"></i>
+    <span id="exportToastMsg">Export successful!</span>
+</div>
+
+
+<script>
+/* ══════════════════════════════════
+   HELPERS
+══════════════════════════════════ */
+const peso = n => '₱' + parseFloat(n || 0).toLocaleString('en-PH', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+});
+
+function getParams() {
+    const period = document.getElementById('periodSelect').value;
+    let p = `period=${period}`;
+    if (period === 'custom') {
+        p += `&from=${document.getElementById('fromDate').value}`;
+        p += `&to=${document.getElementById('toDate').value}`;
+    }
+    return p;
+}
+
+function getPeriodLabel() {
+    const period = document.getElementById('periodSelect').value;
+    const map = {
+        'this_month': 'This Month',
+        'last_month': 'Last Month',
+        'last_3_months': 'Last 3 Months',
+        'this_year': 'This Year',
+        'all': 'All Time',
+        'custom': `${document.getElementById('fromDate').value} to ${document.getElementById('toDate').value}`
+    };
+    return map[period] || period;
+}
+
+function getFilename(ext) {
+    const period = document.getElementById('periodSelect').value;
+    const now = new Date().toISOString().slice(0,10);
+    return `sales_report_${period}_${now}.${ext}`;
+}
+
+function toggleMenu() {
+    const m = document.getElementById('profileMenu');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+window.onclick = e => {
+    if (!e.target.closest('.user'))
+        document.getElementById('profileMenu').style.display = 'none';
+    if (!e.target.closest('#exportWrapper'))
+        closeExportMenu();
+};
+
+/* ══════════════════════════════════
+   EXPORT DROPDOWN
+══════════════════════════════════ */
+function toggleExportMenu() {
+    const dd  = document.getElementById('exportDropdown');
+    const btn = document.getElementById('exportToggle');
+    const isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+}
+
+function closeExportMenu() {
+    document.getElementById('exportDropdown').classList.remove('show');
+    document.getElementById('exportToggle').classList.remove('open');
+}
+
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function showToast(msg, isError = false) {
+    const toast = document.getElementById('exportToast');
+    const msgEl = document.getElementById('exportToastMsg');
+    msgEl.textContent = msg;
+    toast.style.borderLeftColor = isError ? '#f87171' : '#00e5ff';
+    toast.querySelector('i').style.color = isError ? '#f87171' : '#00e5ff';
+    toast.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+/* ══════════════════════════════════
+   PERIOD CHANGE
+══════════════════════════════════ */
+function onPeriodChange() {
+    const v   = document.getElementById('periodSelect').value;
+    const cr  = document.getElementById('customRange');
+    cr.classList.toggle('show', v === 'custom');
+    if (v !== 'custom') loadAll();
+}
+
+
+/* ══════════════════════════════════
+   LOAD ALL SECTIONS
+══════════════════════════════════ */
+function loadAll() {
+    loadSummary();
+    loadFacilities();
+    loadTransactions();
+}
+
+
+/* ══════════════════════════════════
+   SUMMARY CARDS
+══════════════════════════════════ */
+let summaryData = {};
+
+function loadSummary() {
+    fetch(`/get_sales_summary?${getParams()}`)
+    .then(r => r.json())
+    .then(d => {
+        summaryData = d;
+        document.getElementById('statRevenue').textContent  = peso(d.total_revenue);
+        document.getElementById('statBookings').textContent = d.total_bookings;
+        document.getElementById('statPending').textContent  = `${d.pending_count} pending`;
+        document.getElementById('statAvg').textContent      = peso(d.avg_amount);
+        document.getElementById('statDeposits').textContent = peso(d.total_deposits);
+    })
+    .catch(() => console.error('Failed to load summary'));
+}
+
+
+/* ══════════════════════════════════
+   MONTHLY CHART
+══════════════════════════════════ */
+let chartInstance = null;
+
+function buildYearSelect() {
+    const sel  = document.getElementById('chartYear');
+    const year = new Date().getFullYear();
+    for (let y = year; y >= year - 4; y--) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = y;
+        sel.appendChild(opt);
+    }
+}
+
+function loadChart() {
+    const year = document.getElementById('chartYear').value;
+
+    fetch(`/get_sales_by_month?year=${year}`)
+    .then(r => r.json())
+    .then(data => {
+
+        const labels   = data.map(d => d.month);
+        const revenues = data.map(d => d.revenue);
+
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(
+            document.getElementById('revenueChart'),
+            {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Revenue (₱)',
+                        data: revenues,
+                        backgroundColor: 'rgba(0,229,255,0.18)',
+                        borderColor: '#00e5ff',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0a1622',
+                            borderColor: '#1f2a38',
+                            borderWidth: 1,
+                            titleColor: '#00e5ff',
+                            bodyColor: '#e2e8f0',
+                            callbacks: {
+                                label: ctx => ` ${peso(ctx.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid:  { color:'#1f2a38' },
+                            ticks: { color:'#6b85a6', font:{ size:11 } }
+                        },
+                        y: {
+                            grid:  { color:'#1f2a38' },
+                            ticks: {
+                                color:'#6b85a6',
+                                font:{ size:11 },
+                                callback: v => '₱' + v.toLocaleString()
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+    })
+    .catch(() => console.error('Chart load failed'));
+}
+
+
+/* ══════════════════════════════════
+   FACILITY TABLE
+══════════════════════════════════ */
+let facilityData = [];
+
+function loadFacilities() {
+    const tbody = document.getElementById('facilityTable');
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="4">Loading…</td></tr>';
+
+    fetch(`/get_sales_by_facility?${getParams()}`)
+    .then(r => r.json())
+    .then(rows => {
+        facilityData = rows;
+        if (!rows.length) {
+            tbody.innerHTML = '<tr class="loading-row"><td colspan="4">No data for this period.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map((r, i) => `
+            <tr>
+                <td>
+                    <span style="font-size:11px;color:#6b85a6;margin-right:6px;">${i+1}</span>
+                    <span style="font-weight:600;color:#e2e8f0;">${r.facility_name || 'N/A'}</span>
+                </td>
+                <td style="text-align:right;font-weight:700;color:#34d399;">${peso(r.revenue)}</td>
+                <td style="text-align:right;color:#94a3b8;">${r.bookings}</td>
+                <td style="padding-right:8px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="prog-wrap" style="flex:1;">
+                            <div class="prog-bar" style="width:${r.pct}%;"></div>
+                        </div>
+                        <span style="font-size:11px;color:#6b85a6;width:32px;text-align:right;">
+                            ${r.pct}%
+                        </span>
+                    </div>
+                </td>
+            </tr>`).join('');
+    })
+    .catch(() => {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="4" style="color:#f87171;">Failed to load.</td></tr>';
+    });
+}
+
+
+/* ══════════════════════════════════
+   TRANSACTIONS TABLE
+══════════════════════════════════ */
+let allTransactions = [];
+
+function loadTransactions() {
+    const tbody = document.getElementById('txnTable');
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="9">Loading…</td></tr>';
+
+    fetch(`/get_sales_transactions?${getParams()}`)
+    .then(r => r.json())
+    .then(rows => {
+        allTransactions = rows;
+        renderTransactions(rows);
+    })
+    .catch(() => {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="9" style="color:#f87171;">Failed to load.</td></tr>';
+    });
+}
+
+function renderTransactions(rows) {
+    const tbody = document.getElementById('txnTable');
+    const count = document.getElementById('txnCount');
+
+    if (!rows.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="9">No transactions found.</td></tr>';
+        count.textContent = '';
+        return;
+    }
+
+    tbody.innerHTML = rows.map(r => `
+        <tr>
+            <td style="color:#6b85a6;font-size:12px;">#${r.id}</td>
+            <td>
+                <div style="font-weight:600;color:#e2e8f0;">${r.user_name || 'N/A'}</div>
+                <div style="font-size:11px;color:#6b85a6;">${r.user_email || ''}</div>
+            </td>
+            <td style="color:#cbd5e1;">${r.facility_name || '—'}</td>
+            <td style="color:#94a3b8;font-size:12px;">${r.booking_date}</td>
+            <td style="color:#94a3b8;font-size:12px;">${r.start_time} – ${r.end_time}</td>
+            <td style="font-weight:700;color:#34d399;">${peso(r.total_amount)}</td>
+            <td style="color:#94a3b8;">${peso(r.deposit_amount)}</td>
+            <td style="font-size:12px;color:#6b85a6;">${r.gcash_reference || '—'}</td>
+            <td><span class="badge-approved">Approved</span></td>
+        </tr>`).join('');
+
+    count.textContent = `Showing ${rows.length} transaction${rows.length !== 1 ? 's' : ''}`;
+}
+
+/* live search */
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('txnSearch').addEventListener('input', function () {
+        const q = this.value.toLowerCase().trim();
+        if (!q) { renderTransactions(allTransactions); return; }
+        renderTransactions(allTransactions.filter(r =>
+            (r.user_name     || '').toLowerCase().includes(q) ||
+            (r.facility_name || '').toLowerCase().includes(q) ||
+            (r.booking_date  || '').toLowerCase().includes(q) ||
+            (r.gcash_reference || '').toLowerCase().includes(q)
+        ));
+    });
+});
+
+
+/* ══════════════════════════════════
+   EXPORT — CSV
+══════════════════════════════════ */
+function exportCSV() {
+    closeExportMenu();
+
+    if (!allTransactions.length) {
+        showToast('No transaction data to export.', true);
+        return;
+    }
+
+    const headers = ['#','Customer','Email','Facility','Date','Start Time','End Time','Amount','Deposit','GCash Reference','Status'];
+    const rows = allTransactions.map(r => [
+        r.id,
+        r.user_name     || '',
+        r.user_email    || '',
+        r.facility_name || '',
+        r.booking_date  || '',
+        r.start_time    || '',
+        r.end_time      || '',
+        parseFloat(r.total_amount   || 0).toFixed(2),
+        parseFloat(r.deposit_amount || 0).toFixed(2),
+        r.gcash_reference || '',
+        'Approved'
+    ]);
+
+    const allRows = [headers, ...rows];
+    const csvContent = allRows
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, getFilename('csv'));
+    showToast('CSV exported successfully!');
+}
+
+
+/* ══════════════════════════════════
+   EXPORT — PDF
+══════════════════════════════════ */
+function exportPDF() {
+    closeExportMenu();
+
+    if (!allTransactions.length) {
+        showToast('No transaction data to export.', true);
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc  = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const now   = new Date().toLocaleString('en-PH');
+
+    // Header band
+    doc.setFillColor(10, 31, 46);
+    doc.rect(0, 0, pageW, 20, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(0, 229, 255);
+    doc.text('Sports Complex Booking System — Sales Transactions', 14, 9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(160, 180, 200);
+    doc.text(`Period: ${getPeriodLabel()}   •   Generated: ${now}`, 14, 16);
+
+    doc.autoTable({
+        startY: 24,
+        head: [['#', 'Customer', 'Email', 'Facility', 'Date', 'Time', 'Amount', 'Deposit', 'Reference', 'Status']],
+        body: allTransactions.map(r => [
+            `#${r.id}`,
+            r.user_name     || 'N/A',
+            r.user_email    || '',
+            r.facility_name || '—',
+            r.booking_date  || '',
+            `${r.start_time} – ${r.end_time}`,
+            peso(r.total_amount),
+            peso(r.deposit_amount),
+            r.gcash_reference || '—',
+            'Approved'
+        ]),
+        styles:             { fontSize: 7, cellPadding: 2.5, textColor: [200, 215, 230], fillColor: [15, 17, 23] },
+        headStyles:         { fillColor: [10, 31, 46], textColor: [0, 229, 255], fontStyle: 'bold', fontSize: 7 },
+        alternateRowStyles: { fillColor: [11, 19, 30] },
+        columnStyles: {
+            6: { halign: 'right' },
+            7: { halign: 'right' },
+            9: { textColor: [52, 211, 153] }
+        },
+        tableLineColor: [31, 42, 56],
+        tableLineWidth: 0.1,
+        margin: { left: 14, right: 14 },
+        didDrawPage: () => {
+            doc.setFontSize(7);
+            doc.setTextColor(107, 133, 166);
+            const pg = doc.internal.getCurrentPageInfo().pageNumber;
+            doc.text(`Sports Complex Booking System  •  Page ${pg}`, pageW / 2, pageH - 5, { align: 'center' });
+        }
+    });
+
+    doc.save(getFilename('pdf'));
+    showToast('PDF exported successfully!');
+}
+
+
+/* ══════════════════════════════════
+   EXPORT — DOCX
+══════════════════════════════════ */
+async function exportDOCX() {
+    closeExportMenu();
+
+    if (!allTransactions.length) {
+        showToast('No transaction data to export.', true);
+        return;
+    }
+
+    try {
+        const {
+            Document, Packer, Paragraph, Table, TableRow, TableCell,
+            TextRun, AlignmentType, WidthType
+        } = window.docx;
+
+        const now    = new Date().toLocaleString('en-PH');
+        const period = getPeriodLabel();
+
+        // Shared border definition (plain object — no BorderStyle enum needed)
+        const border = { style: 'single', size: 4, color: 'CCCCCC' };
+        const borders = { top: border, bottom: border, left: border, right: border };
+
+        const mkCell = (text, { bold = false, color = '333333', bg = 'FFFFFF', align = AlignmentType.LEFT } = {}) =>
+            new TableCell({
+                children: [new Paragraph({
+                    alignment: align,
+                    spacing: { before: 40, after: 40 },
+                    children: [new TextRun({ text: String(text ?? ''), bold, color, size: 18 })],
+                })],
+                shading: { fill: bg },
+                borders,
+                margins: { top: 60, bottom: 60, left: 80, right: 80 },
+            });
+
+        // Header columns
+        const COLS = ['#', 'Customer', 'Email', 'Facility', 'Date', 'Time', 'Amount', 'Deposit', 'Reference', 'Status'];
+
+        const headerRow = new TableRow({
+            tableHeader: true,
+            height: { value: 400, rule: 'exact' },
+            children: COLS.map(col => mkCell(col, { bold: true, color: 'FFFFFF', bg: '1A3A5C', align: AlignmentType.CENTER })),
+        });
+
+        const bodyRows = allTransactions.map((r, idx) => new TableRow({
+            height: { value: 340, rule: 'atLeast' },
+            children: [
+                mkCell(`#${r.id}`,               { color: '888888', bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(r.user_name || 'N/A',      { bold: true, bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(r.user_email || '',         { color: '666666', bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(r.facility_name || '—',    { bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(r.booking_date || '',       { color: '555555', bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(`${r.start_time} – ${r.end_time}`, { color: '555555', bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(peso(r.total_amount),       { bold: true, color: '1A7A4A', align: AlignmentType.RIGHT, bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(peso(r.deposit_amount),     { align: AlignmentType.RIGHT, bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell(r.gcash_reference || '—',  { color: '888888', bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+                mkCell('Approved',                 { bold: true, color: '1A7A4A', align: AlignmentType.CENTER, bg: idx % 2 === 0 ? 'FFFFFF' : 'F5F8FA' }),
+            ],
+        }));
+
+        const document = new Document({
+            sections: [{
+                properties: {
+                    page: {
+                        size: { orientation: 'landscape', width: 16838, height: 11906 },
+                        margin: { top: 720, bottom: 720, left: 720, right: 720 },
+                    }
+                },
+                children: [
+                    // Title
+                    new Paragraph({
+                        spacing: { after: 80 },
+                        children: [new TextRun({ text: 'Sales Transactions Report', bold: true, size: 36, color: '1A3A5C' })],
+                    }),
+                    // Subtitle
+                    new Paragraph({
+                        spacing: { after: 60 },
+                        children: [new TextRun({ text: 'Sports Complex Booking System', size: 22, color: '555555' })],
+                    }),
+                    new Paragraph({
+                        spacing: { after: 400 },
+                        children: [new TextRun({ text: `Period: ${period}   |   Generated: ${now}`, size: 18, color: '888888' })],
+                    }),
+                    // Table
+                    new Table({
+                        layout: 'fixed',
+                        width: { size: 100, type: WidthType.PERCENTAGE },
+                        rows: [headerRow, ...bodyRows],
+                    }),
+                    // Footer
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 600 },
+                        children: [new TextRun({ text: '© 2026 Sports Complex Booking System', size: 16, color: 'AAAAAA' })],
+                    }),
+                ],
+            }],
+        });
+
+        const blob = await Packer.toBlob(document);
+        saveAs(blob, getFilename('docx'));
+        showToast('Word document exported!');
+
+    } catch (err) {
+        console.error('DOCX export error:', err);
+        showToast('Failed to generate DOCX. Check console for details.', true);
+    }
+}
+
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+buildYearSelect();
+loadAll();
+loadChart();
+</script>
+</body>
+</html>

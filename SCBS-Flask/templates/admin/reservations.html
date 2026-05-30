@@ -117,7 +117,12 @@ tbody tr:hover { background:rgba(0,229,255,0.04); }
         <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
         <a href="{{ url_for('inquiries') }}"    class="{% if active_page=='inquiries'    %}active{% endif %}"><i class="fas fa-envelope"></i> Inquiries</a>
         <div class="menu-title">Logs</div>
-        <a href="{{ url_for('history_log') }}"  class="{% if active_page=='history_log'  %}active{% endif %}"><i class="fas fa-history"></i> History Log</a>
+        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
+            <i class="fas fa-chart-line"></i> Sales
+        </a>
+        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
+            <i class="fas fa-history"></i> History Log
+        </a>
         <div class="menu-title">Account</div>
         <a href="{{ url_for('logout') }}" style="color:#ff6b6b;"
            onclick="return confirm('Are you sure you want to logout?')">

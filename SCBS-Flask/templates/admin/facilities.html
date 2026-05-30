@@ -395,9 +395,10 @@ tbody tr:hover {
         </a>
 
         <div class="menu-title">Logs</div>
-
-        <a href="{{ url_for('history_log') }}"
-           class="{% if active_page == 'history_log' %}active{% endif %}">
+        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
+            <i class="fas fa-chart-line"></i> Sales
+        </a>
+        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
 

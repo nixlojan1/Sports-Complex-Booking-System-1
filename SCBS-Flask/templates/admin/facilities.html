@@ -39,10 +39,7 @@ body {
     color: #00e5ff;
 }
 
-.menu {
-    padding: 20px 0;
-    flex-grow: 1;
-}
+.menu { padding: 20px 0; flex-grow: 1; }
 
 .menu a {
     display: flex;
@@ -100,6 +97,7 @@ body {
     border-radius: 8px;
     border: 1px solid #1f2a38;
     width: 150px;
+    z-index: 10;
 }
 
 #profileMenu a {
@@ -110,7 +108,7 @@ body {
 }
 
 #profileMenu a:hover {
-    background: rgba(0, 229, 255, 0.1);
+    background: rgba(0,229,255,0.1);
 }
 
 /* CONTENT */
@@ -132,6 +130,26 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.table-header h4 {
+    color: #00e5ff;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* SEARCH */
@@ -147,22 +165,29 @@ body {
 
 .search-box input:focus {
     border-color: #00e5ff;
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+    box-shadow: 0 0 8px rgba(0,229,255,0.3);
 }
 
 .search-box input::placeholder {
     color: #6b85a6;
 }
 
-/* FILTER SELECT — matches inquiries statusFilter style */
+/* CATEGORY FILTER SELECT */
 #categoryFilter {
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 6px;
     background: #0a0f1a;
     color: #e6f1ff;
     border: 1px solid #1f2a38;
     outline: none;
     cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+#categoryFilter:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 0 8px rgba(0,229,255,0.3);
 }
 
 /* TABLE */
@@ -195,31 +220,54 @@ tbody tr:hover {
     background: rgba(0, 229, 255, 0.08);
 }
 
-/* ACTION BUTTON */
+/* BUTTONS */
 .action-btn {
     background: linear-gradient(90deg, #00cfff, #00e5ff);
     border: none;
     color: #001018;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+    white-space: nowrap;
 }
 
-/* EMPTY */
+.action-btn:hover { opacity: 0.85; }
+
+/* STATUS BADGE */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-available {
+    background: rgba(0, 229, 150, 0.15);
+    color: #00e596;
+    border: 1px solid rgba(0, 229, 150, 0.3);
+}
+
+.badge-unavailable {
+    background: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.badge-maintenance {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+/* EMPTY STATE */
 .empty-state {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 40px;
     text-align: center;
     color: #6b85a6;
-}
-
-.empty-state i {
-    font-size: 40px;
-    color: #00e5ff;
-    margin-bottom: 10px;
+    padding: 30px;
 }
 
 /* FOOTER */
@@ -231,14 +279,12 @@ tbody tr:hover {
 }
 
 /* RESPONSIVE */
-@media(max-width: 600px) {
+@media(max-width: 600px){
     .sidebar { display: none; }
     .main { margin-left: 0; }
 }
 
-/* ==========================================
-   PAGINATION — exact match to inquiries.html
-   ========================================== */
+/* PAGINATION */
 .pagination {
     margin-top: 12px;
     display: flex;
@@ -259,7 +305,7 @@ tbody tr:hover {
 }
 
 .pagination button:hover {
-    background: rgba(0, 229, 255, 0.15);
+    background: rgba(0,229,255,0.15);
 }
 
 .pagination button.active {
@@ -276,26 +322,25 @@ tbody tr:hover {
 /* MODAL */
 .modal {
     display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
     z-index: 999;
-    pointer-events: auto;
 }
 
 .modal-content {
     background: linear-gradient(145deg, #0f1722, #111827);
     border: 1px solid #1f2a38;
     width: 420px;
-    margin: 8% auto;
+    margin: 5% auto;
     padding: 25px;
     border-radius: 12px;
     color: #e6f1ff;
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
-    animation: fadeIn 0.3s ease;
+    box-shadow: 0 0 20px rgba(0,229,255,0.1);
+    animation: fadeIn 0.25s ease;
+    max-height: 88vh;
+    overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -324,14 +369,15 @@ tbody tr:hover {
     border: 1px solid #1f2a38;
     background: #0a0f1a;
     color: #e6f1ff;
+    outline: none;
+    transition: 0.2s;
 }
 
 .modal-content input:focus,
 .modal-content textarea:focus,
 .modal-content select:focus {
     border-color: #00e5ff;
-    box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
-    outline: none;
+    box-shadow: 0 0 6px rgba(0,229,255,0.3);
 }
 
 .submit-btn {
@@ -343,13 +389,20 @@ tbody tr:hover {
     color: #001018;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
+
+.submit-btn:hover { opacity: 0.85; }
 
 .close {
     float: right;
     font-size: 18px;
     cursor: pointer;
+    color: #6b85a6;
+    transition: 0.2s;
 }
+
+.close:hover { color: #ff6b6b; }
 </style>
 </head>
 
@@ -395,15 +448,16 @@ tbody tr:hover {
         </a>
 
         <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
+        <a href="{{ url_for('sales') }}"
+           class="{% if active_page == 'sales' %}active{% endif %}">
             <i class="fas fa-chart-line"></i> Sales
         </a>
-        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
+        <a href="{{ url_for('history_log') }}"
+           class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
 
         <div class="menu-title">Account</div>
-
         <a href="{{ url_for('logout') }}"
            style="color:#ff6b6b;"
            onclick="return confirm('Are you sure you want to logout?')">
@@ -417,12 +471,10 @@ tbody tr:hover {
 
     <div class="topbar">
         <h3>Facilities</h3>
-
         <div class="user" style="position: relative;">
             <img src="https://i.pravatar.cc/40"
                  style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
                  onclick="toggleMenu()">
-
             <div id="profileMenu">
                 <a href="#">Profile</a>
                 <a href="#">Settings</a>
@@ -435,31 +487,29 @@ tbody tr:hover {
 
         <div class="table-container">
 
-            <!-- TABLE HEADER -->
             <div class="table-header">
 
-                <!-- LEFT: ADD BUTTON + CATEGORY FILTER -->
-                <div style="display:flex; align-items:center; gap:12px;">
-
+                <!-- LEFT: title + add button -->
+                <div class="header-left">
                     <button class="action-btn" onclick="openCreateModal()">
-                        + Add Facility
+                        <i class="fas fa-plus"></i> Add Facility
                     </button>
+                </div>
 
+                <!-- RIGHT: category filter + search -->
+                <div class="header-right">
                     <select id="categoryFilter" onchange="applyFilters()">
                         <option value="all">All Categories</option>
                         {% for c in categories %}
                             <option value="{{ c.id }}">{{ c.name }}</option>
                         {% endfor %}
                     </select>
-
-                </div>
-
-                <!-- RIGHT: SEARCH -->
-                <div class="search-box">
-                    <input type="text"
-                           id="searchInput"
-                           placeholder="Search facility..."
-                           oninput="applyFilters()">
+                    <div class="search-box">
+                        <input type="text"
+                               id="searchInput"
+                               placeholder="Search facility..."
+                               oninput="applyFilters()">
+                    </div>
                 </div>
 
             </div>
@@ -468,30 +518,26 @@ tbody tr:hover {
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Category</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Capacity</th>
-                        <th>Price/hr</th>
-                        <th>Status</th>
-                        <th style="text-align:center;">Action</th>
+                        <th>#</th>
+                        <th>IMAGE</th>
+                        <th>CATEGORY</th>
+                        <th>NAME</th>
+                        <th>DESCRIPTION</th>
+                        <th>CAPACITY</th>
+                        <th>PRICE/HR</th>
+                        <th>STATUS</th>
+                        <th style="text-align:center;">ACTION</th>
                     </tr>
                 </thead>
-                <tbody id="facilityTableBody">
-                    <!-- Populated by JS -->
-                </tbody>
+                <tbody id="facilityTableBody"></tbody>
             </table>
 
         </div>
 
-        <!-- PAGINATION — outside table container, same as inquiries.html -->
+        <!-- PAGINATION OUTSIDE CONTAINER -->
         <div class="pagination" id="pagination"></div>
 
-        <br>
-
-    </div><!-- /content -->
+    </div>
 
     <div class="footer">
         © 2026 Sports Complex Booking System
@@ -500,13 +546,10 @@ tbody tr:hover {
     <!-- FACILITY MODAL -->
     <div id="facilityModal" class="modal">
         <div class="modal-content">
-
             <span class="close" onclick="closeModal()">&times;</span>
-
             <h3 id="modalTitle">Add Facility</h3>
 
             <form id="facilityForm" enctype="multipart/form-data">
-
                 <input type="hidden" id="facilityId">
 
                 <label>Category *</label>
@@ -521,13 +564,12 @@ tbody tr:hover {
                 <input type="text" id="facilityName" required>
 
                 <label>Description</label>
-                <textarea id="facilityDescription"></textarea>
+                <textarea id="facilityDescription" rows="3"></textarea>
 
                 <label>Image</label>
                 <input type="file" id="facilityImage" accept="image/*">
-
                 <img id="imagePreview"
-                     style="margin-top:10px; max-width:100%; display:none; border-radius:8px;" />
+                     style="margin-top:5px; max-width:100%; display:none; border-radius:8px; margin-bottom:10px;" />
 
                 <label>Capacity</label>
                 <input type="number" id="facilityCapacity">
@@ -543,29 +585,25 @@ tbody tr:hover {
                 </select>
 
                 <button type="submit" class="submit-btn">Save</button>
-
             </form>
         </div>
     </div>
 
-</div><!-- /main -->
+</div>
 
 <script>
-// =============================================
+// ============================================================
 // STATE
-// =============================================
+// ============================================================
 let allFacilities = [];
 let currentPage   = 1;
 const rowsPerPage = 5;
-
-const pagination = document.getElementById("pagination");
-
 let searchValue   = "";
 let categoryValue = "all";
 
-// =============================================
-// LOAD FACILITIES FROM SERVER
-// =============================================
+// ============================================================
+// LOAD
+// ============================================================
 function loadFacilities() {
     fetch("/facilities_data")
         .then(res => res.json())
@@ -577,9 +615,9 @@ function loadFacilities() {
         .catch(err => console.error("Failed to load facilities:", err));
 }
 
-// =============================================
-// APPLY FILTERS
-// =============================================
+// ============================================================
+// FILTER
+// ============================================================
 function applyFilters() {
     searchValue   = document.getElementById("searchInput").value.toLowerCase();
     categoryValue = document.getElementById("categoryFilter").value;
@@ -601,135 +639,122 @@ function getFilteredRows() {
     });
 }
 
-// =============================================
-// RENDER TABLE ROWS
-// =============================================
+// ============================================================
+// RENDER TABLE
+// ============================================================
 function renderTable() {
-    const filtered  = getFilteredRows();
-    const start     = (currentPage - 1) * rowsPerPage;
-    const end       = start + rowsPerPage;
-    const pageData  = filtered.slice(start, end);
-
-    const tbody = document.getElementById("facilityTableBody");
+    const filtered = getFilteredRows();
+    const start    = (currentPage - 1) * rowsPerPage;
+    const pageData = filtered.slice(start, start + rowsPerPage);
+    const tbody    = document.getElementById("facilityTableBody");
     tbody.innerHTML = "";
 
     if (pageData.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align:center; color:#6b85a6; padding:20px;">
+                <td colspan="9" style="text-align:center; color:#6b85a6; padding:30px;">
                     No facilities found.
                 </td>
             </tr>`;
-    } else {
-        pageData.forEach(f => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${f.id}</td>
-                    <td>
-                        ${f.image
-                            ? `<img src="/static/uploads/facilities/${f.image}"
-                                    style="width:50px;height:50px;object-fit:cover;border-radius:6px;">`
-                            : '-'}
-                    </td>
-                    <td>${f.category_name || '-'}</td>
-                    <td>${f.name}</td>
-                    <td>${f.description || '-'}</td>
-                    <td>${f.capacity || '-'}</td>
-                    <td>${f.price_per_hour ? '&#8369;' + parseFloat(f.price_per_hour).toFixed(2) : '-'}</td>
-                    <td>${f.status}</td>
-                    <td style="white-space:nowrap; text-align:center;">
-                        <button class="action-btn"
-                                onclick="openEditModal(${f.id})">
-                            Edit
-                        </button>
-                        <button class="action-btn"
-                                style="background:#ff6b6b; color:#fff;"
-                                onclick="deleteFacility(${f.id})">
-                            Delete
-                        </button>
-                    </td>
-                </tr>`;
-        });
+        renderPagination(filtered.length);
+        return;
     }
+
+    pageData.forEach(f => {
+        const statusMap = {
+            "Available":   "badge badge-available",
+            "Unavailable": "badge badge-unavailable",
+            "Maintenance": "badge badge-maintenance"
+        };
+        const badgeClass = statusMap[f.status] || "badge";
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${f.id}</td>
+                <td>
+                    ${f.image
+                        ? `<img src="/static/uploads/facilities/${f.image}"
+                                style="width:46px;height:46px;object-fit:cover;border-radius:6px;border:1px solid #1f2a38;">`
+                        : '<span style="color:#6b85a6;">—</span>'}
+                </td>
+                <td>${f.category_name || '—'}</td>
+                <td>${f.name}</td>
+                <td>${f.description || '—'}</td>
+                <td>${f.capacity || '—'}</td>
+                <td>${f.price_per_hour ? '&#8369;' + parseFloat(f.price_per_hour).toFixed(2) : '—'}</td>
+                <td><span class="${badgeClass}">${f.status}</span></td>
+                <td style="text-align:center; white-space:nowrap;">
+                    <button class="action-btn" onclick="openEditModal(${f.id})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="action-btn"
+                            style="background:#ff6b6b; color:#fff; margin-left:4px;"
+                            onclick="deleteFacility(${f.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>`;
+    });
 
     renderPagination(filtered.length);
 }
 
-// =============================================
-// PAGINATION — exact match to inquiries.html
-// =============================================
+// ============================================================
+// PAGINATION
+// ============================================================
 function renderPagination(totalRows) {
-    pagination.innerHTML = "";
+    const container  = document.getElementById("pagination");
+    container.innerHTML = "";
 
     const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
-
     if (currentPage > totalPages) currentPage = 1;
+    if (totalPages <= 1) return;
 
     // PREV
     const prev = document.createElement("button");
-    prev.innerHTML = "&lt;";
-    prev.disabled  = currentPage === 1;
-    prev.onclick   = () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    };
-    pagination.appendChild(prev);
+    prev.textContent = "<";
+    prev.disabled    = currentPage === 1;
+    prev.onclick     = () => { currentPage--; renderTable(); };
+    container.appendChild(prev);
 
     // PAGE NUMBERS
     for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
-        btn.innerText = i;
+        btn.textContent = i;
         if (i === currentPage) btn.classList.add("active");
-        btn.onclick = () => {
-            currentPage = i;
-            renderTable();
-        };
-        pagination.appendChild(btn);
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        container.appendChild(btn);
     }
 
     // NEXT
     const next = document.createElement("button");
-    next.innerHTML = "&gt;";
-    next.disabled  = currentPage === totalPages;
-    next.onclick   = () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-        }
-    };
-    pagination.appendChild(next);
+    next.textContent = ">";
+    next.disabled    = currentPage === totalPages;
+    next.onclick     = () => { currentPage++; renderTable(); };
+    container.appendChild(next);
 }
 
-// =============================================
-// PAGE LOAD
-// =============================================
-window.onload = function () {
-    loadFacilities();
-};
-
-// =============================================
-// PROFILE MENU TOGGLE
-// =============================================
+// ============================================================
+// PROFILE MENU
+// ============================================================
 function toggleMenu() {
     const menu = document.getElementById("profileMenu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
-window.onclick = function (e) {
-    if (!e.target.closest('.user')) {
+window.addEventListener("click", function (e) {
+    if (!e.target.closest(".user")) {
         document.getElementById("profileMenu").style.display = "none";
     }
-};
+});
 
-// =============================================
-// MODAL OPEN / CLOSE
-// =============================================
+// ============================================================
+// MODAL
+// ============================================================
 function openCreateModal() {
-    document.getElementById("modalTitle").innerText = "Add Facility";
+    document.getElementById("modalTitle").innerText      = "Add Facility";
     document.getElementById("facilityForm").reset();
-    document.getElementById("facilityId").value = "";
+    document.getElementById("facilityId").value          = "";
     document.getElementById("imagePreview").style.display = "none";
     document.getElementById("facilityModal").style.display = "block";
 }
@@ -738,9 +763,15 @@ function closeModal() {
     document.getElementById("facilityModal").style.display = "none";
 }
 
-// =============================================
-// OPEN EDIT MODAL
-// =============================================
+// Close on backdrop click
+window.addEventListener("click", function (e) {
+    const modal = document.getElementById("facilityModal");
+    if (e.target === modal) closeModal();
+});
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
 function openEditModal(id) {
     fetch(`/get_facility/${id}`)
         .then(res => res.json())
@@ -767,15 +798,14 @@ function openEditModal(id) {
         });
 }
 
-// =============================================
+// ============================================================
 // SAVE (CREATE + UPDATE)
-// =============================================
+// ============================================================
 document.getElementById("facilityForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const id        = document.getElementById("facilityId").value;
-    const fileInput = document.getElementById("facilityImage");
-    const formData  = new FormData();
+    const id       = document.getElementById("facilityId").value;
+    const formData = new FormData();
 
     formData.append("category_id",    document.getElementById("facilityCategory").value);
     formData.append("name",           document.getElementById("facilityName").value);
@@ -784,6 +814,7 @@ document.getElementById("facilityForm").addEventListener("submit", function (e) 
     formData.append("price_per_hour", document.getElementById("facilityPrice").value);
     formData.append("status",         document.getElementById("facilityStatus").value);
 
+    const fileInput = document.getElementById("facilityImage");
     if (fileInput.files.length > 0) {
         formData.append("image", fileInput.files[0]);
     }
@@ -801,46 +832,43 @@ document.getElementById("facilityForm").addEventListener("submit", function (e) 
                 showConfirmButton: false
             });
             closeModal();
-            setTimeout(() => location.reload(), 800);
+            loadFacilities();
         })
-        .catch(err => {
-            Swal.fire("Error", "Something went wrong!", "error");
-            console.error(err);
-        });
+        .catch(() => Swal.fire("Error", "Something went wrong!", "error"));
 });
 
-// =============================================
+// ============================================================
 // DELETE
-// =============================================
+// ============================================================
 function deleteFacility(id) {
     Swal.fire({
-        title: "Are you sure?",
-        text: "This facility will be permanently deleted.",
+        title: "Delete Facility?",
+        text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#ff6b6b",
         cancelButtonColor: "#6b85a6",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes, delete it"
     }).then(result => {
-        if (result.isConfirmed) {
-            fetch(`/delete_facility/${id}`, { method: "POST" })
-                .then(res => res.json())
-                .then(data => {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: data.message,
-                        icon: "success",
-                        timer: 1200,
-                        showConfirmButton: false
-                    }).then(() => location.reload());
+        if (!result.isConfirmed) return;
+        fetch(`/delete_facility/${id}`, { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: data.message,
+                    icon: "success",
+                    timer: 1200,
+                    showConfirmButton: false
                 });
-        }
+                loadFacilities();
+            });
     });
 }
 
-// =============================================
+// ============================================================
 // IMAGE PREVIEW
-// =============================================
+// ============================================================
 document.getElementById("facilityImage").addEventListener("change", function (e) {
     const file    = e.target.files[0];
     const preview = document.getElementById("imagePreview");
@@ -849,6 +877,11 @@ document.getElementById("facilityImage").addEventListener("change", function (e)
         preview.style.display = "block";
     }
 });
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = loadFacilities;
 </script>
 
 </body>

@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 * {
@@ -38,10 +39,7 @@ body {
     color: #00e5ff;
 }
 
-.menu {
-    padding: 20px 0;
-    flex-grow: 1;
-}
+.menu { padding: 20px 0; flex-grow: 1; }
 
 .menu a {
     display: flex;
@@ -91,31 +89,28 @@ body {
 
 /* PROFILE MENU */
 #profileMenu {
-    display:none;
-    position:absolute;
-    right:0;
-    top:45px;
-    background:#0f1722;
-    border-radius:8px;
-    border:1px solid #1f2a38;
-    width:150px;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: #0f1722;
+    border-radius: 8px;
+    border: 1px solid #1f2a38;
+    width: 150px;
+    z-index: 10;
 }
 
 #profileMenu a {
-    display:block;
-    padding:10px;
-    color:#cfe8ff;
-    text-decoration:none;
+    display: block;
+    padding: 10px;
+    color: #cfe8ff;
+    text-decoration: none;
 }
 
-#profileMenu a:hover {
-    background: rgba(0,229,255,0.1);
-}
+#profileMenu a:hover { background: rgba(0,229,255,0.1); }
 
 /* CONTENT */
-.content {
-    padding: 25px;
-}
+.content { padding: 25px; }
 
 /* TABLE CONTAINER */
 .table-container {
@@ -125,16 +120,48 @@ body {
     padding: 20px;
 }
 
-/* HEADER */
+/* TABLE HEADER */
 .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.table-header h4 {
-    color: #00e5ff;
+.table-header h4 { color: #00e5ff; }
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* FILTER SELECT */
+.filter-select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #0a0f1a;
+    color: #e6f1ff;
+    border: 1px solid #1f2a38;
+    outline: none;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.filter-select:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 0 8px rgba(0,229,255,0.3);
 }
 
 /* SEARCH */
@@ -153,9 +180,7 @@ body {
     box-shadow: 0 0 8px rgba(0,229,255,0.3);
 }
 
-.search-box input::placeholder {
-    color: #6b85a6;
-}
+.search-box input::placeholder { color: #6b85a6; }
 
 /* TABLE */
 table {
@@ -163,9 +188,7 @@ table {
     border-collapse: collapse;
 }
 
-thead {
-    background: #0a1f2e;
-}
+thead { background: #0a1f2e; }
 
 th {
     color: #00e5ff;
@@ -183,53 +206,54 @@ tbody tr {
     transition: 0.2s;
 }
 
-tbody tr:hover {
-    background: rgba(0, 229, 255, 0.08);
+tbody tr:hover { background: rgba(0, 229, 255, 0.08); }
+
+/* UNREAD ROW HIGHLIGHT */
+tbody tr.unread-row {
+    border-left: 3px solid #ffcc00;
 }
 
-/* ACTION BUTTON */
+/* BUTTONS */
 .action-btn {
     background: linear-gradient(90deg, #00cfff, #00e5ff);
     border: none;
     color: #001018;
-    padding: 5px 12px;
+    padding: 6px 12px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+    white-space: nowrap;
 }
 
-/* ACTION MENU */
-.action-container {
-    position: relative;
+.action-btn:hover { opacity: 0.85; }
+
+/* BADGES */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.action-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 35px;
-    background: #0f1722;
-    border: 1px solid #1f2a38;
-    border-radius: 8px;
-    width: 130px;
+.badge-read {
+    background: rgba(0, 229, 255, 0.15);
+    color: #00e5ff;
+    border: 1px solid rgba(0, 229, 255, 0.3);
 }
 
-.action-menu button {
-    width: 100%;
-    padding: 8px;
-    background: none;
-    border: none;
-    color: #cfe8ff;
-    text-align: left;
-    cursor: pointer;
+.badge-unread {
+    background: rgba(255, 204, 0, 0.15);
+    color: #ffcc00;
+    border: 1px solid rgba(255, 204, 0, 0.3);
 }
 
-.action-menu button:hover {
-    background: rgba(0,229,255,0.1);
-}
-
-.action-menu button.delete {
-    color: #ff6b6b;
+.badge-replied {
+    background: rgba(0, 229, 150, 0.15);
+    color: #00e596;
+    border: 1px solid rgba(0, 229, 150, 0.3);
 }
 
 /* FOOTER */
@@ -246,14 +270,13 @@ tbody tr:hover {
     .main { margin-left: 0; }
 }
 
-
 /* PAGINATION */
 .pagination {
     margin-top: 12px;
     display: flex;
-    justify-content: center;   /* centers horizontally */
+    justify-content: center;
     align-items: center;
-    gap: 6px;                  /* replaces margin spacing */
+    gap: 6px;
     flex-wrap: wrap;
 }
 
@@ -267,9 +290,7 @@ tbody tr:hover {
     transition: 0.2s;
 }
 
-.pagination button:hover {
-    background: rgba(0,229,255,0.15);
-}
+.pagination button:hover { background: rgba(0,229,255,0.15); }
 
 .pagination button.active {
     background: #00e5ff;
@@ -281,87 +302,257 @@ tbody tr:hover {
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.65);
+    z-index: 999;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #0f1722, #111827);
+    border: 1px solid #1f2a38;
+    width: 520px;
+    max-width: 92%;
+    margin: 5% auto;
+    padding: 28px;
+    border-radius: 12px;
+    color: #e6f1ff;
+    box-shadow: 0 0 24px rgba(0,229,255,0.1);
+    animation: fadeIn 0.25s ease;
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content h3 {
+    margin-bottom: 18px;
+    color: #00e5ff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-content label {
+    font-size: 13px;
+    color: #9fb3c8;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 14px;
+    border-radius: 6px;
+    border: 1px solid #1f2a38;
+    background: #0a0f1a;
+    color: #e6f1ff;
+    outline: none;
+    transition: 0.2s;
+    font-size: 13px;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus,
+.modal-content select:focus {
+    border-color: #00e5ff;
+    box-shadow: 0 0 6px rgba(0,229,255,0.3);
+}
+
+/* VIEW modal info rows */
+.info-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.info-label {
+    color: #6b85a6;
+    min-width: 80px;
+}
+
+.info-value {
+    color: #e6f1ff;
+    flex: 1;
+    word-break: break-word;
+}
+
+.message-box {
+    background: #0a0f1a;
+    border: 1px solid #1f2a38;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    color: #cfe8ff;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    white-space: pre-wrap;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #1f2a38;
+    margin: 16px 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 10px;
+    background: linear-gradient(90deg, #00cfff, #00e5ff);
+    border: none;
+    border-radius: 6px;
+    color: #001018;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-danger {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255,107,107,0.15);
+    border: 1px solid rgba(255,107,107,0.4);
+    border-radius: 6px;
+    color: #ff6b6b;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-danger:hover { background: rgba(255,107,107,0.25); }
+
+.btn-ghost {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: 1px solid #1f2a38;
+    border-radius: 6px;
+    color: #9fb3c8;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-ghost:hover {
+    border-color: #00e5ff;
+    color: #00e5ff;
+}
+
+.close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6b85a6;
+    transition: 0.2s;
+    line-height: 1;
+}
+
+.close:hover { color: #ff6b6b; }
+
+/* CHAR COUNT */
+.char-count {
+    font-size: 11px;
+    color: #6b85a6;
+    text-align: right;
+    margin-top: -12px;
+    margin-bottom: 10px;
+}
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 
 <body>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-
     <div class="sidebar-header">
         <h2>SCBS - Admin</h2>
     </div>
 
     <div class="menu">
-
         <a href="{{ url_for('dashboard') }}"
-        class="{% if active_page == 'dashboard' %}active{% endif %}">
+           class="{% if active_page == 'dashboard' %}active{% endif %}">
             <i class="fas fa-home"></i> Dashboard
         </a>
 
         <a href="{{ url_for('reservations') }}"
-        class="{% if active_page == 'reservations' %}active{% endif %}">
+           class="{% if active_page == 'reservations' %}active{% endif %}">
             <i class="fas fa-calendar-check"></i> Reservations
         </a>
 
         <div class="menu-title">Management</div>
 
         <a href="{{ url_for('categories') }}"
-        class="{% if active_page == 'categories' %}active{% endif %}">
+           class="{% if active_page == 'categories' %}active{% endif %}">
             <i class="fas fa-layer-group"></i> Categories
         </a>
 
         <a href="{{ url_for('facilities') }}"
-        class="{% if active_page == 'facilities' %}active{% endif %}">
+           class="{% if active_page == 'facilities' %}active{% endif %}">
             <i class="fas fa-building"></i> Facilities
         </a>
 
         <a href="{{ url_for('users') }}"
-        class="{% if active_page == 'users' %}active{% endif %}">
+           class="{% if active_page == 'users' %}active{% endif %}">
             <i class="fas fa-users"></i> Users
         </a>
 
         <a href="{{ url_for('inquiries') }}"
-        class="{% if active_page == 'inquiries' %}active{% endif %}">
+           class="{% if active_page == 'inquiries' %}active{% endif %}">
             <i class="fas fa-envelope"></i> Inquiries
         </a>
 
         <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
+        <a href="{{ url_for('sales') }}"
+           class="{% if active_page == 'sales' %}active{% endif %}">
             <i class="fas fa-chart-line"></i> Sales
         </a>
-        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
+        <a href="{{ url_for('history_log') }}"
+           class="{% if active_page == 'history_log' %}active{% endif %}">
             <i class="fas fa-history"></i> History Log
         </a>
 
         <div class="menu-title">Account</div>
-
         <a href="{{ url_for('logout') }}"
            style="color:#ff6b6b;"
            onclick="return confirm('Are you sure you want to logout?')">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
-
     </div>
-
 </div>
-
 
 <!-- MAIN -->
 <div class="main">
 
     <div class="topbar">
         <h3>Inquiries</h3>
-
         <div class="user" style="position: relative;">
             <img src="https://i.pravatar.cc/40"
-                style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
-                onclick="toggleMenu()">
-
+                 style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
+                 onclick="toggleMenu()">
             <div id="profileMenu">
                 <a href="#">Profile</a>
                 <a href="#">Settings</a>
@@ -372,332 +563,448 @@ tbody tr:hover {
 
     <div class="content">
 
-    <div class="table-container">
+        <div class="table-container">
 
-        <div class="table-header">
+            <div class="table-header">
 
-            <!-- LEFT SIDE: FILTER -->
-            <div style="display:flex; align-items:center; gap:12px;">
+                <!-- LEFT: title + status filter -->
+                <div class="header-left">
+                    <select id="statusFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="all">All Status</option>
+                        <option value="unread">Unread</option>
+                        <option value="read">Read</option>
+                        <option value="replied">Replied</option>
+                    </select>
+                </div>
 
-                <select id="statusFilter"
-                        style="padding:6px 10px; border-radius:6px;
-                        background:#0a0f1a; color:#e6f1ff;
-                        border:1px solid #1f2a38;
-                        outline:none; cursor:pointer;">
-
-                    <option value="all">All</option>
-                    <option value="unread">Unread</option>
-                    <option value="read">Read</option>
-
-                </select>
+                <!-- RIGHT: search -->
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="searchInput"
+                               placeholder="Search inquiries..."
+                               oninput="applyFilters()">
+                    </div>
+                </div>
 
             </div>
 
-            <!-- RIGHT SIDE: SEARCH -->
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search Inquiries">
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>DATE</th>
+                        <th>NAME</th>
+                        <th>EMAIL</th>
+                        <th>MESSAGE</th>
+                        <th>REMARKS</th>
+                        <th>STATUS</th>
+                        <th style="text-align:center;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="inquiryTableBody">
+                    {% for inquiry in inquiries %}
+                    <tr class="inquiry-row {% if inquiry.status == 'unread' %}unread-row{% endif %}"
+                        data-status="{{ inquiry.status | lower }}">
+                        <td>{{ inquiry.id }}</td>
+                        <td>{{ inquiry.created_at if inquiry.created_at else '—' }}</td>
+                        <td>{{ inquiry.name }}</td>
+                        <td>{{ inquiry.email }}</td>
+                        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                            {{ inquiry.message[:60] }}{% if inquiry.message|length > 60 %}…{% endif %}
+                        </td>
+                        <td>{{ inquiry.remarks if inquiry.remarks else '—' }}</td>
+                        <td>
+                            {% if inquiry.status == 'replied' %}
+                                <span class="badge badge-replied">Replied</span>
+                            {% elif inquiry.status == 'read' %}
+                                <span class="badge badge-read">Read</span>
+                            {% else %}
+                                <span class="badge badge-unread">Unread</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center; white-space:nowrap;">
+                            <button class="action-btn"
+                                    onclick="viewInquiry('{{ inquiry.id }}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn"
+                                    style="background: linear-gradient(90deg,#00c896,#00e5a0); margin-left:4px;"
+                                    onclick="openReplyModal('{{ inquiry.id }}', '{{ inquiry.name }}', '{{ inquiry.email }}')">
+                                <i class="fas fa-reply"></i> Reply
+                            </button>
+                            <button class="action-btn"
+                                    style="background:#ff6b6b; color:#fff; margin-left:4px;"
+                                    onclick="deleteInquiry('{{ inquiry.id }}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
         </div>
 
-        <table id="inquiryTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Message</th>
-                    <th>Remarks</th>
-                    <th>Status</th>
-                    <th style="text-align:center;">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for inquiry in inquiries %}
-                <tr class="inquiry-row">
-
-                    <td>{{ inquiry.id }}</td>
-
-                    <td>{{ inquiry.created_at if inquiry.created_at else '—' }}</td>
-
-                    <td>{{ inquiry.name }}</td>
-
-                    <td>{{ inquiry.email }}</td>
-
-                    <td style="max-width:220px;">
-                        {{ inquiry.message[:50] }}{% if inquiry.message|length > 50 %}...{% endif %}
-                    </td>
-
-                    <td>
-                        {{ inquiry.remarks if inquiry.remarks else '—' }}
-                    </td>
-
-                    <td>
-                        {% if inquiry.status == 'read' %}
-                            <span style="color:#00e5ff;">Read</span>
-                        {% else %}
-                            <span style="color:#ffcc00;">Unread</span>
-                        {% endif %}
-                    </td>
-
-                    <td style="text-align:center; white-space:nowrap;">
-
-                        <button class="action-btn" onclick="viewInquiry('{{ inquiry.id }}')">
-                            View
-                        </button>
-
-                        <button class="action-btn" onclick="updateInquiry('{{ inquiry.id }}')">
-                            Update
-                        </button>
-
-                        <button class="action-btn"
-                                style="background:#ff6b6b; color:#fff;"
-                                onclick="deleteInquiry('{{ inquiry.id }}')">
-                            Delete
-                        </button>
-
-                    </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
+        <!-- PAGINATION OUTSIDE CONTAINER -->
+        <div class="pagination" id="pagination"></div>
 
     </div>
 
-</div>
-
-<!-- PAGINATION (OUTSIDE TABLE CONTAINER) -->
-<div class="pagination" id="pagination"></div>
-
-<br>
     <div class="footer">
         © 2026 Sports Complex Booking System
     </div>
 
 </div>
 
+<!-- ============================================================
+     VIEW MODAL
+     ============================================================ -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeViewModal()">&times;</span>
+        <h3><i class="fas fa-envelope-open"></i> Inquiry Details</h3>
+
+        <div class="info-row">
+            <span class="info-label">Name</span>
+            <span class="info-value" id="view_name"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value" id="view_email"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Date</span>
+            <span class="info-value" id="view_date"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Status</span>
+            <span class="info-value" id="view_status"></span>
+        </div>
+
+        <hr class="divider">
+
+        <label>Message</label>
+        <div class="message-box" id="view_message"></div>
+
+        <label>Remarks</label>
+        <textarea id="view_remarks" rows="3" placeholder="Add or update remarks..."></textarea>
+
+        <input type="hidden" id="view_id">
+
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="saveRemarks()">
+                <i class="fas fa-save"></i> Save Remarks
+            </button>
+            <button class="btn-ghost" onclick="openReplyFromView()">
+                <i class="fas fa-reply"></i> Reply
+            </button>
+            <button class="btn-ghost" onclick="closeViewModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     REPLY MODAL
+     ============================================================ -->
+<div id="replyModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeReplyModal()">&times;</span>
+        <h3><i class="fas fa-paper-plane"></i> Reply to Inquiry</h3>
+
+        <input type="hidden" id="reply_id">
+
+        <div class="info-row" style="margin-bottom:14px;">
+            <span class="info-label">To</span>
+            <span class="info-value" id="reply_to" style="color:#00e5ff;"></span>
+        </div>
+
+        <label>Subject</label>
+        <input type="text" id="reply_subject"
+               value="Re: Your Inquiry – Sports Complex Booking System">
+
+        <label>Message</label>
+        <textarea id="reply_message" rows="7"
+                  placeholder="Type your reply here..."
+                  oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span> characters</div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" onclick="sendReply()">
+                <i class="fas fa-paper-plane"></i> Send Reply
+            </button>
+            <button class="btn-ghost" onclick="closeReplyModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <script>
-function toggleMenu() {
-    var menu = document.getElementById("profileMenu");
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-}
+// ============================================================
+// STATE
+// ============================================================
+const allRows    = Array.from(document.querySelectorAll(".inquiry-row"));
+let filteredRows = [...allRows];
+let currentPage  = 1;
+const rowsPerPage = 6;
 
-// CLOSE ON CLICK OUTSIDE
-window.onclick = function(e) {
-    if (!e.target.closest('.user')) {
-        document.getElementById("profileMenu").style.display = "none";
-    }
-};
+// ============================================================
+// FILTER + SEARCH
+// ============================================================
+function applyFilters() {
+    const kw     = document.getElementById("searchInput").value.toLowerCase().trim();
+    const status = document.getElementById("statusFilter").value.toLowerCase();
 
-// ======================
-// STATE (IMPORTANT FIX)
-// ======================
-let currentPage = 1;
-const rowsPerPage = 5;
+    filteredRows = allRows.filter(row => {
+        const text      = row.innerText.toLowerCase();
+        const rowStatus = (row.dataset.status || "").toLowerCase();
 
-const table = document.getElementById("inquiryTable");
-const tbody = table.querySelector("tbody");
-const rows = Array.from(tbody.querySelectorAll("tr"));
-
-const pagination = document.getElementById("pagination");
-
-let searchValue = "";
-let statusValue = "all";
-
-// ======================
-// APPLY FILTERS + PAGINATION
-// ======================
-function getFilteredRows() {
-    return rows.filter(row => {
-
-        const text = row.innerText.toLowerCase();
-        const statusCell = row.querySelector("td:nth-child(7)").innerText.toLowerCase();
-
-        const matchSearch = text.includes(searchValue);
-        const matchStatus = (statusValue === "all") || statusCell.includes(statusValue);
+        const matchSearch = !kw || text.includes(kw);
+        const matchStatus = status === "all" || rowStatus === status;
 
         return matchSearch && matchStatus;
     });
+
+    currentPage = 1;
+    renderTable();
 }
 
-// ======================
+// ============================================================
 // RENDER TABLE
-// ======================
+// ============================================================
 function renderTable() {
-
-    const filtered = getFilteredRows();
+    allRows.forEach(r => r.style.display = "none");
 
     const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
+    filteredRows.slice(start, start + rowsPerPage)
+                .forEach(r => r.style.display = "");
 
-    rows.forEach(row => row.style.display = "none");
-
-    filtered.slice(start, end).forEach(row => {
-        row.style.display = "";
-    });
-
-    renderPagination(filtered.length);
+    renderPagination();
 }
 
-// ======================
+// ============================================================
 // PAGINATION
-// ======================
-function renderPagination(totalRows) {
+// ============================================================
+function renderPagination() {
+    const container  = document.getElementById("pagination");
+    container.innerHTML = "";
 
-    pagination.innerHTML = "";
-
-    const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
-
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
     if (currentPage > totalPages) currentPage = 1;
+    if (totalPages <= 1) return;
 
-    // PREV
     const prev = document.createElement("button");
-    prev.innerHTML = "&lt;";
-    prev.disabled = currentPage === 1;
+    prev.textContent = "<";
+    prev.disabled    = currentPage === 1;
+    prev.onclick     = () => { currentPage--; renderTable(); };
+    container.appendChild(prev);
 
-    prev.onclick = () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderTable();
-        }
-    };
-
-    pagination.appendChild(prev);
-
-    // NUMBERS
     for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
-        btn.innerText = i;
-
+        btn.textContent = i;
         if (i === currentPage) btn.classList.add("active");
-
-        btn.onclick = () => {
-            currentPage = i;
-            renderTable();
-        };
-
-        pagination.appendChild(btn);
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        container.appendChild(btn);
     }
 
-    // NEXT
     const next = document.createElement("button");
-    next.innerHTML = "&gt;";
-    next.disabled = currentPage === totalPages;
-
-    next.onclick = () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderTable();
-        }
-    };
-
-    pagination.appendChild(next);
+    next.textContent = ">";
+    next.disabled    = currentPage === totalPages;
+    next.onclick     = () => { currentPage++; renderTable(); };
+    container.appendChild(next);
 }
 
-// ======================
-// SEARCH (FIXED)
-// ======================
-document.getElementById("searchInput").addEventListener("keyup", function() {
-    searchValue = this.value.toLowerCase();
-    currentPage = 1;
-    renderTable();
+// ============================================================
+// PROFILE MENU
+// ============================================================
+function toggleMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest(".user")) {
+        document.getElementById("profileMenu").style.display = "none";
+    }
 });
 
-// ======================
-// STATUS FILTER (FIXED)
-// ======================
-document.getElementById("statusFilter").addEventListener("change", function () {
-    statusValue = this.value.toLowerCase();
-    currentPage = 1;
-    renderTable();
+// Close modals on backdrop click
+window.addEventListener("click", function (e) {
+    if (e.target === document.getElementById("viewModal"))  closeViewModal();
+    if (e.target === document.getElementById("replyModal")) closeReplyModal();
 });
 
-// ======================
+// ============================================================
 // VIEW INQUIRY
-// ======================
+// ============================================================
 function viewInquiry(id) {
     fetch(`/get_inquiry/${id}`)
-    .then(res => res.json())
-    .then(data => {
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("view_id").value      = data.id;
+            document.getElementById("view_name").innerText  = data.name;
+            document.getElementById("view_email").innerText = data.email;
+            document.getElementById("view_date").innerText  = data.created_at || "—";
+            document.getElementById("view_message").innerText = data.message;
+            document.getElementById("view_remarks").value   = data.remarks || "";
 
-        Swal.fire({
-            title: "Inquiry Details",
-            html: `
-                <b>Name:</b> ${data.name}<br>
-                <b>Email:</b> ${data.email}<br><br>
-                <b>Message:</b><br>${data.message}<br><br>
-                <b>Status:</b> ${data.status}<br>
-                <b>Remarks:</b> ${data.remarks || "—"}
-            `,
-            icon: "info"
-        })
-        .then(() => location.reload());
+            // Status badge
+            const statusMap = {
+                replied: '<span class="badge badge-replied">Replied</span>',
+                read:    '<span class="badge badge-read">Read</span>',
+                unread:  '<span class="badge badge-unread">Unread</span>'
+            };
+            document.getElementById("view_status").innerHTML =
+                statusMap[data.status] || data.status;
 
-    });
-}
-
-// ======================
-// UPDATE REMARKS
-// ======================
-function updateInquiry(id) {
-    fetch(`/get_inquiry/${id}`)
-    .then(res => res.json())
-    .then(data => {
-
-        Swal.fire({
-            title: "Update Remarks",
-            input: "textarea",
-            inputValue: data.remarks || "",
-            inputPlaceholder: "Enter remarks...",
-            showCancelButton: true,
-            confirmButtonText: "Save"
-        }).then((result) => {
-            if (result.isConfirmed) {
-
-                fetch(`/update_inquiry/${id}`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({ remarks: result.value })
-                })
-                .then(() => {
-                    Swal.fire("Updated!", "Remarks saved", "success")
-                    .then(() => location.reload());
-                });
-
+            // Mark as read if unread
+            if (data.status === "unread") {
+                fetch(`/mark_inquiry_read/${id}`, { method: "POST" });
             }
-        });
 
+            document.getElementById("viewModal").style.display = "block";
+        });
+}
+
+function closeViewModal() {
+    document.getElementById("viewModal").style.display = "none";
+}
+
+// ============================================================
+// SAVE REMARKS (from view modal)
+// ============================================================
+function saveRemarks() {
+    const id      = document.getElementById("view_id").value;
+    const remarks = document.getElementById("view_remarks").value.trim();
+
+    fetch(`/update_inquiry/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ remarks })
+    })
+    .then(res => res.json())
+    .then(() => {
+        Swal.fire({
+            title: "Saved!",
+            text: "Remarks updated successfully.",
+            icon: "success",
+            timer: 1400,
+            showConfirmButton: false
+        }).then(() => location.reload());
     });
 }
 
-// ======================
-// DELETE
-// ======================
+// ============================================================
+// OPEN REPLY MODAL (from table row)
+// ============================================================
+function openReplyModal(id, name, email) {
+    document.getElementById("reply_id").value     = id;
+    document.getElementById("reply_to").innerText = `${name} <${email}>`;
+    document.getElementById("reply_message").value = "";
+    document.getElementById("charCount").innerText = "0";
+    document.getElementById("replyModal").style.display = "block";
+}
+
+// ============================================================
+// OPEN REPLY FROM VIEW MODAL
+// ============================================================
+function openReplyFromView() {
+    const id    = document.getElementById("view_id").value;
+    const name  = document.getElementById("view_name").innerText;
+    const email = document.getElementById("view_email").innerText;
+    closeViewModal();
+    openReplyModal(id, name, email);
+}
+
+function closeReplyModal() {
+    document.getElementById("replyModal").style.display = "none";
+}
+
+function updateCharCount() {
+    const len = document.getElementById("reply_message").value.length;
+    document.getElementById("charCount").innerText = len;
+}
+
+// ============================================================
+// SEND REPLY  →  POST /reply_inquiry/<id>
+//
+// Your Flask route should:
+//   1. Send an email via Flask-Mail to the user's address
+//   2. Save the reply + update status to 'replied' in the DB
+//   3. Return JSON { success: true, message: "..." }
+// ============================================================
+function sendReply() {
+    const id      = document.getElementById("reply_id").value;
+    const subject = document.getElementById("reply_subject").value.trim();
+    const message = document.getElementById("reply_message").value.trim();
+
+    if (!message) {
+        Swal.fire("Empty Reply", "Please type a message before sending.", "warning");
+        return;
+    }
+
+    // Loading state
+    Swal.fire({
+        title: "Sending...",
+        text: "Sending reply to the user's email.",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    fetch(`/reply_inquiry/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, message })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                title: "Reply Sent!",
+                text: "The user has been notified via email.",
+                icon: "success",
+                timer: 1800,
+                showConfirmButton: false
+            }).then(() => {
+                closeReplyModal();
+                location.reload();
+            });
+        } else {
+            Swal.fire("Error", data.message || "Failed to send reply.", "error");
+        }
+    })
+    .catch(() => Swal.fire("Error", "Network error. Please try again.", "error"));
+}
+
+// ============================================================
+// DELETE INQUIRY
+// ============================================================
 function deleteInquiry(id) {
     Swal.fire({
-        title: "Delete inquiry?",
-        text: "This cannot be undone!",
+        title: "Delete Inquiry?",
+        text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Yes"
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmButtonColor: "#ff6b6b",
+        cancelButtonColor: "#6b85a6",
+        confirmButtonText: "Yes, delete it"
+    }).then(result => {
+        if (!result.isConfirmed) return;
 
-            fetch(`/delete_inquiry/${id}`, { method: "POST" })
+        fetch(`/delete_inquiry/${id}`, { method: "POST" })
+            .then(res => res.json())
             .then(() => {
-                Swal.fire("Deleted!", "", "success")
-                .then(() => location.reload());
+                Swal.fire({
+                    title: "Deleted!",
+                    icon: "success",
+                    timer: 1200,
+                    showConfirmButton: false
+                }).then(() => location.reload());
             });
-
-        }
     });
 }
 
+// ============================================================
 // INIT
+// ============================================================
 renderTable();
 </script>
 

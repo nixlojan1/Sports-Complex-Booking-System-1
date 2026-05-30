@@ -2,501 +2,637 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sports Complex Booking System</title>
+<title>History Log – Sports Complex Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
-}
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",Arial,sans-serif; }
+body { display:flex; background:#0f1117; color:#e6f1ff; }
 
-body {
-    display: flex;
-    background: #0f1117;
-    color: #e6f1ff;
-}
-
-/* SIDEBAR */
+/* ── SIDEBAR ── */
 .sidebar {
-    width: 230px;
-    height: 100vh;
-    background: linear-gradient(180deg, #0f1117, #0a1f2e, #0c2d3f);
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #1f2a38;
+    width:230px; height:100vh;
+    background:linear-gradient(180deg,#0f1117,#0a1f2e,#0c2d3f);
+    position:fixed; display:flex; flex-direction:column;
+    border-right:1px solid #1f2a38;
 }
-
-.sidebar-header {
-    padding: 15px;
-    border-bottom: 1px solid #1f2a38;
-    color: #00e5ff;
-}
-
-.menu { padding: 20px 0; flex-grow: 1; }
-
+.sidebar-header { padding:15px; border-bottom:1px solid #1f2a38; color:#00e5ff; }
+.menu { padding:20px 0; flex-grow:1; }
 .menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    color: #9fb3c8;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
+    display:flex; align-items:center; gap:12px; padding:10px 20px;
+    color:#9fb3c8; text-decoration:none; font-size:14px; transition:0.3s;
 }
-
-.menu a:hover,
-.menu a.active {
-    background: rgba(0, 229, 255, 0.15);
-    color: #00e5ff;
-    border-left: 3px solid #00e5ff;
+.menu a:hover, .menu a.active {
+    background:rgba(0,229,255,0.15); color:#00e5ff; border-left:3px solid #00e5ff;
 }
+.menu-title { padding:15px 20px 5px; font-size:11px; color:#6b85a6; text-transform:uppercase; }
 
-.menu-title {
-    padding: 15px 20px 5px;
-    font-size: 11px;
-    color: #6b85a6;
-    text-transform: uppercase;
-}
+/* ── MAIN ── */
+.main { margin-left:230px; width:100%; min-height:100vh; }
 
-/* MAIN */
-.main {
-    margin-left: 230px;
-    width: 100%;
-}
-
-/* TOPBAR */
 .topbar {
-    background: #0f1117;
-    padding: 12px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #1f2a38;
+    background:#0f1117; padding:12px 25px;
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom:1px solid #1f2a38; position:sticky; top:0; z-index:100;
 }
+.topbar h3 { font-size:18px; color:#00e5ff; font-weight:600; }
 
-.topbar h3 {
-    font-size: 18px;
-    color: #00e5ff;
-}
-
-/* PROFILE */
 #profileMenu {
-    display:none;
-    position:absolute;
-    right:0;
-    top:45px;
-    background:#0f1722;
-    border-radius:8px;
-    border:1px solid #1f2a38;
-    width:150px;
-    z-index: 10;
+    display:none; position:absolute; right:0; top:45px;
+    background:#0f1722; border-radius:8px;
+    border:1px solid #1f2a38; width:150px; z-index:200;
+}
+#profileMenu a { display:block; padding:10px; color:#cfe8ff; text-decoration:none; }
+#profileMenu a:hover { background:rgba(0,229,255,0.1); }
+
+/* ── CONTENT ── */
+.content { padding:25px; display:flex; flex-direction:column; gap:20px; }
+
+/* ── TOOLBAR (search + export) ── */
+.toolbar {
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:12px;
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px; padding:14px 18px;
 }
 
-#profileMenu a {
-    display:block;
-    padding:10px;
-    color:#cfe8ff;
-    text-decoration:none;
+.toolbar-left { display:flex; align-items:center; gap:10px; }
+
+.toolbar-left label { font-size:12px; color:#6b85a6; }
+.toolbar-left select {
+    padding:7px 11px; border-radius:6px;
+    border:1px solid #1f2a38; background:#0a0f1a;
+    color:#e6f1ff; font-size:13px; cursor:pointer; outline:none;
+    transition:border-color 0.2s;
 }
+.toolbar-left select:focus { border-color:#00e5ff; }
 
-#profileMenu a:hover {
-    background: rgba(0,229,255,0.1);
-}
-
-/* CONTENT */
-.content {
-    padding: 25px;
-}
-
-/* ===================== */
-/* YOUR REQUESTED STYLES */
-/* ===================== */
-
-.table-container {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 20px;
-}
-
-/* HEADER */
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.table-header h4 {
-    color: #00e5ff;
-}
-
-/* SEARCH */
 .search-box input {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #1f2a38;
-    background: #0a0f1a;
-    color: #e6f1ff;
-    outline: none;
-    transition: 0.3s;
+    padding:8px 12px; border-radius:6px;
+    border:1px solid #1f2a38; background:#0a0f1a;
+    color:#e6f1ff; font-size:13px; outline:none; transition:0.2s;
+    min-width:240px;
+}
+.search-box input:focus { border-color:#00e5ff; box-shadow:0 0 8px rgba(0,229,255,0.15); }
+.search-box input::placeholder { color:#6b85a6; }
+
+/* ── EXPORT BUTTON ── */
+.export-wrapper { position:relative; }
+
+.export-btn {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 16px; border:1px solid #1f3a50;
+    border-radius:8px;
+    background:linear-gradient(135deg,#0a1f2e,#0c2d3f);
+    color:#00e5ff; font-size:13px; font-weight:600;
+    cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.export-btn:hover { border-color:#00e5ff; background:rgba(0,229,255,0.1); box-shadow:0 0 12px rgba(0,229,255,0.15); }
+.export-btn .chevron { font-size:10px; transition:transform 0.2s; }
+.export-btn.open .chevron { transform:rotate(180deg); }
+
+.export-dropdown {
+    display:none; position:absolute; top:calc(100% + 6px); right:0;
+    background:#0a1622; border:1px solid #1f2a38; border-radius:10px;
+    overflow:hidden; min-width:160px; z-index:300;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    animation:dropIn 0.15s ease;
+}
+.export-dropdown.show { display:block; }
+
+@keyframes dropIn {
+    from { opacity:0; transform:translateY(-6px); }
+    to   { opacity:1; transform:translateY(0); }
 }
 
-.search-box input:focus {
-    border-color: #00e5ff;
-    box-shadow: 0 0 8px rgba(0,229,255,0.3);
+.export-option {
+    display:flex; align-items:center; gap:11px;
+    padding:11px 16px; font-size:13px; color:#cfe8ff;
+    cursor:pointer; transition:background 0.15s;
+    border:none; background:none; width:100%; text-align:left;
+}
+.export-option:hover { background:rgba(0,229,255,0.08); color:#00e5ff; }
+.export-option:not(:last-child) { border-bottom:1px solid #1f2a38; }
+.exp-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.exp-pdf  { background:rgba(239,68,68,0.15);  color:#f87171; }
+.exp-csv  { background:rgba(52,211,153,0.15); color:#34d399; }
+.exp-info .exp-name { font-weight:600; font-size:13px; }
+.exp-info .exp-desc { font-size:11px; color:#6b85a6; margin-top:1px; }
+
+/* ── LOG TABLE CARD ── */
+.card {
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px; padding:20px;
 }
 
-.search-box input::placeholder {
-    color: #6b85a6;
+.card-title {
+    font-size:12px; font-weight:700; color:#00e5ff;
+    text-transform:uppercase; letter-spacing:0.6px;
+    margin-bottom:16px; padding-bottom:10px;
+    border-bottom:1px solid #1f2a38;
+    display:flex; justify-content:space-between; align-items:center;
 }
 
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
+.record-count { font-size:12px; color:#6b85a6; font-weight:400; text-transform:none; letter-spacing:0; }
+
+/* ── TABLE ── */
+.log-table { width:100%; border-collapse:collapse; }
+.log-table thead { background:#0a1f2e; }
+.log-table th {
+    font-size:11px; color:#00e5ff; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.4px;
+    padding:10px 12px; text-align:left;
+}
+.log-table td { padding:10px 12px; font-size:13px; border-top:1px solid #1f2a38; }
+.log-table tr:hover td { background:rgba(0,229,255,0.04); }
+
+/* Action badge */
+.action-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:999px;
+    font-size:11px; font-weight:700; white-space:nowrap;
+}
+.badge-create { background:rgba(52,211,153,0.12); color:#34d399; }
+.badge-update { background:rgba(96,165,250,0.12); color:#60a5fa; }
+.badge-delete { background:rgba(248,113,113,0.12); color:#f87171; }
+.badge-other  { background:rgba(148,163,184,0.12); color:#94a3b8; }
+
+/* Description truncate */
+.desc-cell {
+    max-width:380px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    color:#94a3b8;
 }
 
-thead {
-    background: #0a1f2e;
-}
-
-th {
-    color: #00e5ff;
-    font-weight: 500;
-}
-
-th, td {
-    padding: 10px;
-    font-size: 13px;
-    text-align: left;
-}
-
-tbody tr {
-    border-top: 1px solid #1f2a38;
-    transition: 0.2s;
-}
-
-tbody tr:hover {
-    background: rgba(0, 229, 255, 0.08);
-}
-
-/* EMPTY STATE */
-.empty-state {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    color: #6b85a6;
-}
-
-.empty-state i {
-    font-size: 40px;
-    color: #00e5ff;
-    margin-bottom: 10px;
-}
-
-/* FOOTER */
-.footer {
-    text-align: center;
-    padding: 12px;
-    font-size: 12px;
-    color: #6b85a6;
-}
-
-/* RESPONSIVE */
-@media(max-width: 600px){
-    .sidebar { display: none; }
-    .main { margin-left: 0; }
-}
-
-/* PAGINATION */
+/* ── PAGINATION ── */
 .pagination {
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;   /* centers horizontally */
-    align-items: center;
-    gap: 6px;                  /* replaces margin spacing */
-    flex-wrap: wrap;
+    display:flex; justify-content:center; align-items:center;
+    gap:6px; flex-wrap:wrap; margin-top:16px;
 }
-
 .pagination button {
-    background: none;
-    border: 1px solid #1f2a38;
-    color: #cfe8ff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.2s;
+    background:none; border:1px solid #1f2a38; color:#cfe8ff;
+    padding:5px 11px; border-radius:6px; cursor:pointer; font-size:13px;
+    transition:0.2s;
 }
+.pagination button:hover  { background:rgba(0,229,255,0.12); border-color:#00e5ff; color:#00e5ff; }
+.pagination button.active { background:#00e5ff; color:#001018; font-weight:700; border-color:#00e5ff; }
+.pagination button:disabled { opacity:0.35; cursor:not-allowed; }
+.pagination .page-info { font-size:12px; color:#6b85a6; padding:0 6px; }
 
-.pagination button:hover {
-    background: rgba(0,229,255,0.15);
+/* ── EMPTY STATE ── */
+.empty-state {
+    background:linear-gradient(145deg,#0f1117,#111827);
+    border:1px solid #1f2a38; border-radius:12px;
+    padding:60px 40px; text-align:center; color:#6b85a6;
 }
+.empty-state i { font-size:48px; color:#1f3a50; margin-bottom:14px; display:block; }
+.empty-state h3 { font-size:16px; color:#94a3b8; margin-bottom:6px; }
+.empty-state p  { font-size:13px; }
 
-.pagination button.active {
-    background: #00e5ff;
-    color: #001018;
-    font-weight: bold;
+/* ── TOAST ── */
+.export-toast {
+    position:fixed; bottom:24px; right:24px;
+    background:#0a1622; border:1px solid #1f3a50;
+    border-left:3px solid #00e5ff; border-radius:10px;
+    padding:14px 18px; display:flex; align-items:center; gap:12px;
+    font-size:13px; color:#e6f1ff; z-index:9999;
+    box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    transform:translateY(80px); opacity:0;
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events:none;
 }
+.export-toast.show { transform:translateY(0); opacity:1; }
+.export-toast i { color:#00e5ff; font-size:16px; }
 
-.pagination button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+/* ── FOOTER ── */
+.footer { text-align:center; padding:14px; font-size:12px; color:#6b85a6; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){ .desc-cell { max-width:200px; } }
+@media(max-width:600px){
+    .sidebar { display:none; }
+    .main    { margin-left:0; }
+    .toolbar { flex-direction:column; align-items:stretch; }
+    .search-box input { min-width:100%; }
 }
-
 </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
+<!-- ══════════════════════════════════
+     SIDEBAR
+══════════════════════════════════ -->
 <div class="sidebar">
-
-    <div class="sidebar-header">
-        <h2>SCBS - Admin</h2>
-    </div>
-
+    <div class="sidebar-header"><h2>SCBS - Admin</h2></div>
     <div class="menu">
-
-        <a href="{{ url_for('dashboard') }}"
-        class="{% if active_page == 'dashboard' %}active{% endif %}">
-            <i class="fas fa-home"></i> Dashboard
-        </a>
-
-        <a href="{{ url_for('reservations') }}"
-        class="{% if active_page == 'reservations' %}active{% endif %}">
-            <i class="fas fa-calendar-check"></i> Reservations
-        </a>
-
+        <a href="{{ url_for('dashboard') }}"    class="{% if active_page=='dashboard'    %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{{ url_for('reservations') }}" class="{% if active_page=='reservations' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Reservations</a>
         <div class="menu-title">Management</div>
-
-        <a href="{{ url_for('categories') }}"
-        class="{% if active_page == 'categories' %}active{% endif %}">
-            <i class="fas fa-layer-group"></i> Categories
-        </a>
-
-        <a href="{{ url_for('facilities') }}"
-        class="{% if active_page == 'facilities' %}active{% endif %}">
-            <i class="fas fa-building"></i> Facilities
-        </a>
-
-        <a href="{{ url_for('users') }}"
-        class="{% if active_page == 'users' %}active{% endif %}">
-            <i class="fas fa-users"></i> Users
-        </a>
-
-        <a href="{{ url_for('inquiries') }}"
-        class="{% if active_page == 'inquiries' %}active{% endif %}">
-            <i class="fas fa-envelope"></i> Inquiries
-        </a>
-
+        <a href="{{ url_for('categories') }}"   class="{% if active_page=='categories'   %}active{% endif %}"><i class="fas fa-layer-group"></i> Categories</a>
+        <a href="{{ url_for('facilities') }}"   class="{% if active_page=='facilities'   %}active{% endif %}"><i class="fas fa-building"></i> Facilities</a>
+        <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+        <a href="{{ url_for('inquiries') }}"    class="{% if active_page=='inquiries'    %}active{% endif %}"><i class="fas fa-envelope"></i> Inquiries</a>
         <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
-            <i class="fas fa-chart-line"></i> Sales
-        </a>
-        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
-            <i class="fas fa-history"></i> History Log
-        </a>
-
+        <a href="{{ url_for('sales') }}"        class="{% if active_page=='sales'        %}active{% endif %}"><i class="fas fa-chart-line"></i> Sales</a>
+        <a href="{{ url_for('history_log') }}"  class="{% if active_page=='history_log'  %}active{% endif %}"><i class="fas fa-history"></i> History Log</a>
         <div class="menu-title">Account</div>
-
-        <a href="{{ url_for('logout') }}"
-           style="color:#ff6b6b;"
+        <a href="{{ url_for('logout') }}" style="color:#ff6b6b;"
            onclick="return confirm('Are you sure you want to logout?')">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
-
     </div>
-
 </div>
 
-
-<!-- MAIN -->
+<!-- ══════════════════════════════════
+     MAIN
+══════════════════════════════════ -->
 <div class="main">
 
+    <!-- TOPBAR -->
     <div class="topbar">
         <h3>History Log</h3>
-
-        <div class="user" style="position: relative;">
+        <div class="user" style="position:relative;">
             <img src="https://i.pravatar.cc/40"
-                 style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
+                 style="width:35px;height:35px;border-radius:50%;cursor:pointer;"
                  onclick="toggleMenu()">
-
             <div id="profileMenu">
                 <a href="#">Profile</a>
-                <a href="#">Settings</a>
-                <a href="#" style="color:#ff6b6b;">Logout</a>
+                <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">Logout</a>
             </div>
         </div>
     </div>
 
-<div class="content">
+    <div class="content">
 
-{% if history_logs and history_logs|length > 0 %}
+        {% if history_logs and history_logs|length > 0 %}
 
-<div class="table-container">
+        <!-- ── TOOLBAR ── -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <label>Filter</label>
+                <select id="actionFilter" onchange="applyFilters()">
+                    <option value="">All Actions</option>
+                    <option value="create">Create</option>
+                    <option value="update">Update</option>
+                    <option value="delete">Delete</option>
+                </select>
+            </div>
 
-    <div class="table-header">
-        <h4>History Records</h4>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search logs…" oninput="applyFilters()">
+            </div>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search history...">
+            <!-- Export -->
+            <div class="export-wrapper" id="exportWrapper">
+                <button class="export-btn" id="exportToggle" onclick="toggleExportMenu()">
+                    <i class="fas fa-file-export"></i>
+                    Export
+                    <i class="fas fa-chevron-down chevron"></i>
+                </button>
+                <div class="export-dropdown" id="exportDropdown">
+                    <button class="export-option" onclick="exportPDF()">
+                        <span class="exp-icon exp-pdf"><i class="fas fa-file-pdf"></i></span>
+                        <span class="exp-info">
+                            <div class="exp-name">PDF Report</div>
+                            <div class="exp-desc">Print-ready table</div>
+                        </span>
+                    </button>
+                    <button class="export-option" onclick="exportCSV()">
+                        <span class="exp-icon exp-csv"><i class="fas fa-file-csv"></i></span>
+                        <span class="exp-info">
+                            <div class="exp-name">CSV Spreadsheet</div>
+                            <div class="exp-desc">Raw data for Excel</div>
+                        </span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <table id="historyTable">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Action</th>
-                <th>Description</th>
-            </tr>
-        </thead>
+        <!-- ── LOG TABLE ── -->
+        <div class="card">
+            <div class="card-title">
+                Activity Records
+                <span class="record-count" id="recordCount"></span>
+            </div>
 
-        <tbody id="historyTableBody">
-            {% for log in history_logs %}
-            <tr>
-                <td>{{ log.id }}</td>
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    {% for log in history_logs %}
+                    <tr
+                        data-action="{{ log.action | lower }}"
+                        data-search="{{ log.id }} {{ log.date }} {{ log.time }} {{ log.action }} {{ log.description }}"
+                    >
+                        <td style="color:#6b85a6;font-size:12px;">{{ log.id }}</td>
+                        <td style="color:#94a3b8;font-size:12px;">{{ log.date }}</td>
+                        <td style="color:#94a3b8;font-size:12px;">{{ log.time }}</td>
+                        <td>
+                            {% set a = log.action | lower %}
+                            <span class="action-badge
+                                {% if 'create' in a or 'add' in a or 'insert' in a %}badge-create
+                                {% elif 'update' in a or 'edit' in a or 'modify' in a %}badge-update
+                                {% elif 'delete' in a or 'remove' in a %}badge-delete
+                                {% else %}badge-other{% endif %}
+                            ">
+                                <i class="fas
+                                    {% if 'create' in a or 'add' in a %}fa-plus-circle
+                                    {% elif 'update' in a or 'edit' in a %}fa-pen
+                                    {% elif 'delete' in a or 'remove' in a %}fa-trash
+                                    {% else %}fa-circle{% endif %}
+                                " style="font-size:10px;"></i>
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td class="desc-cell" title="{{ log.description }}">{{ log.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-                {% set dt = log.created_at.split(" ") %}
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination"></div>
 
-                <td>{{ dt[0] }}</td>
-                <td>{{ dt[1] if dt|length > 1 else "" }}</td>
+        {% else %}
 
-                <td>{{ log.action }}</td>
-                <td>{{ log.description }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="empty-state">
+            <i class="fas fa-history"></i>
+            <h3>No History Yet</h3>
+            <p>Activity logs will appear here once actions are recorded.</p>
+        </div>
 
+        {% endif %}
+
+    </div><!-- /content -->
+
+    <div class="footer">© 2026 Sports Complex Booking System</div>
 </div>
 
-<!-- ✅ PAGINATION OUTSIDE CONTAINER -->
-<div class="pagination" id="pagination"></div>
-
-{% else %}
-
-<div class="empty-state">
-    <i class="fas fa-history"></i>
-    <h3>No History Yet</h3>
-    <p>History logs will appear here once activities are recorded.</p>
+<!-- Toast -->
+<div class="export-toast" id="exportToast">
+    <i class="fas fa-check-circle"></i>
+    <span id="exportToastMsg">Export successful!</span>
 </div>
 
-{% endif %}
-
-</div>
-
-    <div class="footer">
-        © 2026 Sports Complex Booking System
-    </div>
-
-</div>
 
 <script>
-let rowsPerPage = 6;
-let currentPage = 1;
+/* ══════════════════════════════════
+   PROFILE MENU
+══════════════════════════════════ */
+function toggleMenu() {
+    const m = document.getElementById('profileMenu');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+window.onclick = e => {
+    if (!e.target.closest('.user'))
+        document.getElementById('profileMenu').style.display = 'none';
+    if (!e.target.closest('#exportWrapper'))
+        closeExportMenu();
+};
 
-const table = document.getElementById("historyTableBody");
-const searchInput = document.getElementById("searchInput");
-const pagination = document.getElementById("pagination");
+/* ══════════════════════════════════
+   EXPORT DROPDOWN
+══════════════════════════════════ */
+function toggleExportMenu() {
+    const dd  = document.getElementById('exportDropdown');
+    const btn = document.getElementById('exportToggle');
+    const isOpen = dd.classList.contains('show');
+    dd.classList.toggle('show', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+}
+function closeExportMenu() {
+    document.getElementById('exportDropdown').classList.remove('show');
+    document.getElementById('exportToggle').classList.remove('open');
+}
 
-let allRows = Array.from(table.querySelectorAll("tr"));
-let filteredRows = [...allRows];
+/* ══════════════════════════════════
+   TOAST
+══════════════════════════════════ */
+function showToast(msg, isError = false) {
+    const toast = document.getElementById('exportToast');
+    document.getElementById('exportToastMsg').textContent = msg;
+    toast.style.borderLeftColor = isError ? '#f87171' : '#00e5ff';
+    toast.querySelector('i').style.color = isError ? '#f87171' : '#00e5ff';
+    toast.querySelector('i').className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
 
-// ======================
-// RENDER TABLE PAGE
-// ======================
+/* ══════════════════════════════════
+   PAGINATION + FILTERING
+══════════════════════════════════ */
+const ROWS_PER_PAGE = 10;
+let currentPage    = 1;
+let filteredRows   = [];
+
+const tbody      = document.getElementById('historyTableBody');
+const pagination = document.getElementById('pagination');
+const countEl    = document.getElementById('recordCount');
+
+// Grab all rows once
+const allRows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+function applyFilters() {
+    const q      = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+    const action = (document.getElementById('actionFilter').value || '').toLowerCase();
+
+    filteredRows = allRows.filter(row => {
+        const matchSearch = !q      || row.dataset.search.toLowerCase().includes(q);
+        const matchAction = !action || row.dataset.action.includes(action);
+        return matchSearch && matchAction;
+    });
+
+    currentPage = 1;
+    renderTable();
+}
+
 function renderTable() {
-    table.innerHTML = "";
+    if (!tbody) return;
+    tbody.innerHTML = '';
 
-    let start = (currentPage - 1) * rowsPerPage;
-    let end = start + rowsPerPage;
+    const start    = (currentPage - 1) * ROWS_PER_PAGE;
+    const pageRows = filteredRows.slice(start, start + ROWS_PER_PAGE);
+    pageRows.forEach(r => tbody.appendChild(r));
 
-    let pageRows = filteredRows.slice(start, end);
-
-    pageRows.forEach(row => table.appendChild(row));
+    if (countEl) {
+        countEl.textContent = filteredRows.length
+            ? `${filteredRows.length} record${filteredRows.length !== 1 ? 's' : ''}`
+            : 'No results';
+    }
 
     renderPagination();
 }
 
-// ======================
-// PAGINATION UI
-// ======================
 function renderPagination() {
-    pagination.innerHTML = "";
+    if (!pagination) return;
+    pagination.innerHTML = '';
 
-    let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    const total = Math.ceil(filteredRows.length / ROWS_PER_PAGE);
+    if (total <= 1) return;
 
-    if (totalPages <= 1) return;
+    const btn = (label, page, disabled = false, active = false) => {
+        const b = document.createElement('button');
+        b.innerHTML   = label;
+        b.disabled    = disabled;
+        if (active) b.classList.add('active');
+        b.onclick = () => changePage(page);
+        return b;
+    };
 
-    // PREV
-    pagination.innerHTML += `
-        <button onclick="changePage(${currentPage - 1})" 
-        ${currentPage === 1 ? "disabled" : ""}>
-        &lt;
-        </button>
-    `;
+    pagination.appendChild(btn('&laquo;', 1,               currentPage === 1));
+    pagination.appendChild(btn('&lsaquo;', currentPage - 1, currentPage === 1));
 
-    // PAGES
-    for (let i = 1; i <= totalPages; i++) {
-        pagination.innerHTML += `
-            <button class="${i === currentPage ? 'active' : ''}"
-                    onclick="changePage(${i})">
-                ${i}
-            </button>
-        `;
+    // window of pages
+    const window_size = 5;
+    let start = Math.max(1, currentPage - Math.floor(window_size / 2));
+    let end   = Math.min(total, start + window_size - 1);
+    if (end - start < window_size - 1) start = Math.max(1, end - window_size + 1);
+
+    if (start > 1) {
+        const inf = document.createElement('span');
+        inf.className = 'page-info'; inf.textContent = '…';
+        pagination.appendChild(inf);
     }
 
-    // NEXT
-    pagination.innerHTML += `
-        <button onclick="changePage(${currentPage + 1})"
-        ${currentPage === totalPages ? "disabled" : ""}>
-        &gt;
-        </button>
-    `;
+    for (let i = start; i <= end; i++) {
+        pagination.appendChild(btn(i, i, false, i === currentPage));
+    }
+
+    if (end < total) {
+        const inf = document.createElement('span');
+        inf.className = 'page-info'; inf.textContent = '…';
+        pagination.appendChild(inf);
+    }
+
+    pagination.appendChild(btn('&rsaquo;', currentPage + 1, currentPage === total));
+    pagination.appendChild(btn('&raquo;', total,             currentPage === total));
+
+    // page info
+    const info = document.createElement('span');
+    info.className = 'page-info';
+    info.textContent = `Page ${currentPage} of ${total}`;
+    pagination.appendChild(info);
 }
 
-// ======================
-// CHANGE PAGE
-// ======================
 function changePage(page) {
-    let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-
-    if (page < 1 || page > totalPages) return;
-
+    const total = Math.ceil(filteredRows.length / ROWS_PER_PAGE);
+    if (page < 1 || page > total) return;
     currentPage = page;
     renderTable();
 }
 
-// ======================
-// SEARCH (FIXED WITH PAGINATION)
-// ======================
-searchInput.addEventListener("keyup", function () {
-    let value = this.value.toLowerCase();
+// Init
+applyFilters();
 
-    filteredRows = allRows.filter(row =>
-        row.textContent.toLowerCase().includes(value)
-    );
 
-    currentPage = 1;
-    renderTable();
-});
+/* ══════════════════════════════════
+   EXPORT HELPERS
+══════════════════════════════════ */
+function getFilename(ext) {
+    const now = new Date().toISOString().slice(0, 10);
+    return `history_log_${now}.${ext}`;
+}
 
-// INIT
-renderTable();
+function getExportRows() {
+    // Use filteredRows so export respects active search/filter
+    return filteredRows.map(row => {
+        const cells = row.querySelectorAll('td');
+        return {
+            id:     cells[0]?.textContent.trim() || '',
+            date:   cells[1]?.textContent.trim() || '',
+            time:   cells[2]?.textContent.trim() || '',
+            action: cells[3]?.textContent.trim() || '',
+            desc:   cells[4]?.textContent.trim() || '',
+        };
+    });
+}
+
+/* ══════════════════════════════════
+   EXPORT — CSV
+══════════════════════════════════ */
+function exportCSV() {
+    closeExportMenu();
+    const rows = getExportRows();
+    if (!rows.length) { showToast('No data to export.', true); return; }
+
+    const headers = ['#', 'Date', 'Time', 'Action', 'Description'];
+    const lines   = [
+        headers,
+        ...rows.map(r => [r.id, r.date, r.time, r.action, r.desc])
+    ].map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','));
+
+    const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, getFilename('csv'));
+    showToast('CSV exported successfully!');
+}
+
+/* ══════════════════════════════════
+   EXPORT — PDF
+══════════════════════════════════ */
+function exportPDF() {
+    closeExportMenu();
+    const rows = getExportRows();
+    if (!rows.length) { showToast('No data to export.', true); return; }
+
+    const { jsPDF } = window.jspdf;
+    const doc   = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const now   = new Date().toLocaleString('en-PH');
+
+    // Header band
+    doc.setFillColor(10, 31, 46);
+    doc.rect(0, 0, pageW, 20, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(0, 229, 255);
+    doc.text('Sports Complex Booking System — History Log', 14, 9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(160, 180, 200);
+    doc.text(`Generated: ${now}   •   Total records: ${rows.length}`, 14, 16);
+
+    doc.autoTable({
+        startY: 24,
+        head: [['#', 'Date', 'Time', 'Action', 'Description']],
+        body: rows.map(r => [r.id, r.date, r.time, r.action, r.desc]),
+        styles:             { fontSize: 8, cellPadding: 3, textColor: [200, 215, 230], fillColor: [15, 17, 23] },
+        headStyles:         { fillColor: [10, 31, 46], textColor: [0, 229, 255], fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: [11, 19, 30] },
+        columnStyles: {
+            0: { cellWidth: 12 },
+            1: { cellWidth: 36 },
+            2: { cellWidth: 24 },
+            3: { cellWidth: 30 },
+            4: { cellWidth: 'auto' },
+        },
+        tableLineColor: [31, 42, 56],
+        tableLineWidth: 0.1,
+        margin: { left: 14, right: 14 },
+        didDrawPage: () => {
+            doc.setFontSize(7);
+            doc.setTextColor(107, 133, 166);
+            const pg = doc.internal.getCurrentPageInfo().pageNumber;
+            doc.text(`Sports Complex Booking System  •  Page ${pg}`, pageW / 2, pageH - 5, { align: 'center' });
+        }
+    });
+
+    doc.save(getFilename('pdf'));
+    showToast('PDF exported successfully!');
+}
 </script>
-
 </body>
 </html>

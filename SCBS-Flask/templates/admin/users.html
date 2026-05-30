@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 * {
@@ -38,10 +39,7 @@ body {
     color: #00e5ff;
 }
 
-.menu {
-    padding: 20px 0;
-    flex-grow: 1;
-}
+.menu { padding: 20px 0; flex-grow: 1; }
 
 .menu a {
     display: flex;
@@ -91,27 +89,27 @@ body {
 
 /* PROFILE MENU */
 #profileMenu {
-    display:none;
-    position:absolute;
-    right:0;
-    top:45px;
-    background:#0f1722;
-    border-radius:8px;
-    border:1px solid #1f2a38;
-    width:150px;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: #0f1722;
+    border-radius: 8px;
+    border: 1px solid #1f2a38;
+    width: 150px;
+    z-index: 10;
 }
 
 #profileMenu a {
-    display:block;
-    padding:10px;
-    color:#cfe8ff;
-    text-decoration:none;
+    display: block;
+    padding: 10px;
+    color: #cfe8ff;
+    text-decoration: none;
 }
 
 #profileMenu a:hover {
     background: rgba(0,229,255,0.1);
 }
-
 
 /* CONTENT */
 .content {
@@ -126,16 +124,32 @@ body {
     padding: 20px;
 }
 
-/* HEADER */
+/* TABLE HEADER */
 .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .table-header h4 {
     color: #00e5ff;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* SEARCH */
@@ -188,62 +202,61 @@ tbody tr:hover {
     background: rgba(0, 229, 255, 0.08);
 }
 
-/* ACTION BUTTON */
+/* BUTTONS */
 .action-btn {
     background: linear-gradient(90deg, #00cfff, #00e5ff);
     border: none;
     color: #001018;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+    white-space: nowrap;
 }
 
+.action-btn:hover { opacity: 0.85; }
 
-
-.action-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 35px;
-    background: #0f1722;
-    border: 1px solid #1f2a38;
-    border-radius: 8px;
-    width: 130px;
+/* BADGES */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.action-menu button {
-    width: 100%;
-    padding: 8px;
-    background: none;
-    border: none;
-    color: #cfe8ff;
-    text-align: left;
-    cursor: pointer;
-}
-
-.action-menu button:hover {
-    background: rgba(0,229,255,0.1);
-}
-
-.action-menu button.delete {
-    color: #ff6b6b;
-}
-
-/* EMPTY STATE */
-.empty-state {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    color: #6b85a6;
-}
-
-.empty-state i {
-    font-size: 40px;
+/* Role badges */
+.badge-admin {
+    background: rgba(0, 229, 255, 0.15);
     color: #00e5ff;
-    margin-bottom: 10px;
+    border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.badge-user {
+    background: rgba(159, 179, 200, 0.15);
+    color: #9fb3c8;
+    border: 1px solid rgba(159, 179, 200, 0.3);
+}
+
+/* Status badges */
+.badge-active {
+    background: rgba(0, 229, 150, 0.15);
+    color: #00e596;
+    border: 1px solid rgba(0, 229, 150, 0.3);
+}
+
+.badge-inactive {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.badge-banned {
+    background: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 /* FOOTER */
@@ -260,41 +273,69 @@ tbody tr:hover {
     .main { margin-left: 0; }
 }
 
-.profile-img {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    object-fit: cover;
+/* PAGINATION */
+.pagination {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
+.pagination button {
+    background: none;
+    border: 1px solid #1f2a38;
+    color: #cfe8ff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.pagination button:hover {
+    background: rgba(0,229,255,0.15);
+}
+
+.pagination button.active {
+    background: #00e5ff;
+    color: #001018;
+    font-weight: bold;
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* MODAL */
 .modal {
     display: none;
-    position: absolute; /* CHANGE from fixed → absolute */
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh; /* allow it to grow with page */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
     z-index: 999;
-
-    /* allow page scroll */
-    pointer-events: auto;
 }
 
 .modal-content {
     background: linear-gradient(145deg, #0f1722, #111827);
     border: 1px solid #1f2a38;
-
     width: 420px;
     max-width: 90%;
-
-    margin: 80px auto; /* spacing from top instead of % */
-
+    margin: 5% auto;
     padding: 25px;
     border-radius: 12px;
     color: #e6f1ff;
     box-shadow: 0 0 20px rgba(0,229,255,0.1);
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.25s ease;
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .modal-content h3 {
@@ -318,6 +359,8 @@ tbody tr:hover {
     border: 1px solid #1f2a38;
     background: #0a0f1a;
     color: #e6f1ff;
+    outline: none;
+    transition: 0.2s;
 }
 
 .modal-content input:focus,
@@ -336,25 +379,156 @@ tbody tr:hover {
     color: #001018;
     font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
 }
+
+.submit-btn:hover { opacity: 0.85; }
 
 .close {
     float: right;
     font-size: 18px;
     cursor: pointer;
+    color: #6b85a6;
+    transition: 0.2s;
 }
+
+.close:hover { color: #ff6b6b; }
 </style>
 </head>
 
-<!-- ADD THIS BEFORE </body> -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<body>
 
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>SCBS - Admin</h2>
+    </div>
+
+    <div class="menu">
+        <a href="{{ url_for('dashboard') }}"
+           class="{% if active_page == 'dashboard' %}active{% endif %}">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+
+        <a href="{{ url_for('reservations') }}"
+           class="{% if active_page == 'reservations' %}active{% endif %}">
+            <i class="fas fa-calendar-check"></i> Reservations
+        </a>
+
+        <div class="menu-title">Management</div>
+
+        <a href="{{ url_for('categories') }}"
+           class="{% if active_page == 'categories' %}active{% endif %}">
+            <i class="fas fa-layer-group"></i> Categories
+        </a>
+
+        <a href="{{ url_for('facilities') }}"
+           class="{% if active_page == 'facilities' %}active{% endif %}">
+            <i class="fas fa-building"></i> Facilities
+        </a>
+
+        <a href="{{ url_for('users') }}"
+           class="{% if active_page == 'users' %}active{% endif %}">
+            <i class="fas fa-users"></i> Users
+        </a>
+
+        <a href="{{ url_for('inquiries') }}"
+           class="{% if active_page == 'inquiries' %}active{% endif %}">
+            <i class="fas fa-envelope"></i> Inquiries
+        </a>
+
+        <div class="menu-title">Logs</div>
+        <a href="{{ url_for('sales') }}"
+           class="{% if active_page == 'sales' %}active{% endif %}">
+            <i class="fas fa-chart-line"></i> Sales
+        </a>
+        <a href="{{ url_for('history_log') }}"
+           class="{% if active_page == 'history_log' %}active{% endif %}">
+            <i class="fas fa-history"></i> History Log
+        </a>
+
+        <div class="menu-title">Account</div>
+        <a href="{{ url_for('logout') }}"
+           style="color:#ff6b6b;"
+           onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <div class="topbar">
+        <h3>Users</h3>
+        <div class="user" style="position: relative;">
+            <img src="https://i.pravatar.cc/40"
+                 style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
+                 onclick="toggleMenu()">
+            <div id="profileMenu">
+                <a href="#">Profile</a>
+                <a href="#">Settings</a>
+                <a href="#" style="color:#ff6b6b;">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="table-container">
+
+            <div class="table-header">
+
+                <!-- LEFT: title + add button -->
+                <div class="header-left">
+                    <button class="action-btn" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i> Add User
+                    </button>
+                </div>
+
+                <!-- RIGHT: search -->
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search users...">
+                    </div>
+                </div>
+
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>PROFILE</th>
+                        <th>NAME</th>
+                        <th>EMAIL</th>
+                        <th>ADDRESS</th>
+                        <th>PHONE</th>
+                        <th>ROLE</th>
+                        <th>STATUS</th>
+                        <th style="text-align:center;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+
+        </div>
+
+        <!-- PAGINATION OUTSIDE CONTAINER -->
+        <div class="pagination" id="pagination"></div>
+
+    </div>
+
+    <div class="footer">
+        © 2026 Sports Complex Booking System
+    </div>
+
+</div>
 
 <!-- USER MODAL -->
 <div id="userModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeUserModal()">&times;</span>
-
         <h3 id="modalTitle">Add User</h3>
 
         <input type="hidden" id="user_id">
@@ -385,280 +559,236 @@ tbody tr:hover {
         </select>
 
         <label>Profile Image</label>
-        <!-- ✅ FIXED ID (must match JS) -->
         <input type="file" id="user_profile_image" accept="image/*">
-
-        <!-- ✅ Preview Image -->
-        <img id="previewImage" 
-             style="width:80px; height:80px; border-radius:50%; display:none; margin-bottom:10px; object-fit:cover;">
+        <img id="previewImage"
+             style="width:70px; height:70px; border-radius:50%; display:none;
+                    margin-bottom:12px; object-fit:cover; border:2px solid #1f2a38;">
 
         <button class="submit-btn" onclick="saveUser()">Save User</button>
     </div>
 </div>
-<body>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-    <div class="sidebar-header">
-        <h2>SCBS - Admin</h2>
-    </div>
-
-    <div class="menu">
-
-        <a href="{{ url_for('dashboard') }}"
-        class="{% if active_page == 'dashboard' %}active{% endif %}">
-            <i class="fas fa-home"></i> Dashboard
-        </a>
-
-        <a href="{{ url_for('reservations') }}"
-        class="{% if active_page == 'reservations' %}active{% endif %}">
-            <i class="fas fa-calendar-check"></i> Reservations
-        </a>
-
-        <div class="menu-title">Management</div>
-
-        <a href="{{ url_for('categories') }}"
-        class="{% if active_page == 'categories' %}active{% endif %}">
-            <i class="fas fa-layer-group"></i> Categories
-        </a>
-
-        <a href="{{ url_for('facilities') }}"
-        class="{% if active_page == 'facilities' %}active{% endif %}">
-            <i class="fas fa-building"></i> Facilities
-        </a>
-
-        <a href="{{ url_for('users') }}"
-        class="{% if active_page == 'users' %}active{% endif %}">
-            <i class="fas fa-users"></i> Users
-        </a>
-
-        <a href="{{ url_for('inquiries') }}"
-        class="{% if active_page == 'inquiries' %}active{% endif %}">
-            <i class="fas fa-envelope"></i> Inquiries
-        </a>
-
-        <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
-            <i class="fas fa-chart-line"></i> Sales
-        </a>
-        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
-            <i class="fas fa-history"></i> History Log
-        </a>
-        <div class="menu-title">Account</div>
-
-        <a href="{{ url_for('logout') }}"
-           style="color:#ff6b6b;"
-           onclick="return confirm('Are you sure you want to logout?')">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-
-    </div>
-
-</div>
-<!-- MAIN -->
-<div class="main">
-
-    <div class="topbar">
-        <h3>Users</h3>
-
-        <div class="user" style="position: relative;">
-            <img src="https://i.pravatar.cc/40" 
-                style="width:35px; height:35px; border-radius:50%; cursor:pointer;" 
-                onclick="toggleMenu()">
-
-            <div id="profileMenu">
-                <a href="#">Profile</a>
-                <a href="#">Settings</a>
-                <a href="#" style="color:#ff6b6b;">Logout</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="content">
-
-        <div class="table-container">
-
-            <div class="table-header" style="display:flex; justify-content:space-between; align-items:center;">
-
-                <!-- LEFT -->
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="action-btn" onclick="addUser()">
-                        + Add User
-                    </button>
-                </div>
-
-                <!-- RIGHT -->
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search users...">
-                </div>
-
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Profile</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody id="userTableBody">
-                    <!-- DATA WILL LOAD HERE -->
-                </tbody>
-            </table>
-
-        </div>
-
-    </div>
-
-    <div class="footer">
-        © 2026 Sports Complex Booking System
-    </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-let usersData = [];
+// ============================================================
+// STATE
+// ============================================================
+let allUsers     = [];
+let filteredData = [];
+let currentPage  = 1;
+const rowsPerPage = 6;
 
-// ======================
-// LOAD USERS
-// ======================
+// ============================================================
+// LOAD
+// ============================================================
 function loadUsers() {
     fetch('/get_users')
-    .then(res => res.json())
-    .then(data => {
-        usersData = data;
-        renderTable(data);
-    });
+        .then(res => res.json())
+        .then(data => {
+            allUsers     = data;
+            filteredData = [...data];
+            currentPage  = 1;
+            renderTable();
+        });
 }
 
-
-// ======================
+// ============================================================
 // RENDER TABLE
-// ======================
-function renderTable(data) {
+// ============================================================
+function renderTable() {
     const tbody = document.getElementById("userTableBody");
     tbody.innerHTML = "";
 
-    if (data.length === 0) {
+    const start    = (currentPage - 1) * rowsPerPage;
+    const pageData = filteredData.slice(start, start + rowsPerPage);
+
+    if (pageData.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align:center; color:#6b85a6;">
-                    No users found
+                <td colspan="9" style="text-align:center; color:#6b85a6; padding:30px;">
+                    No users found.
                 </td>
-            </tr>
-        `;
+            </tr>`;
+        renderPagination();
         return;
     }
 
-    data.forEach(user => {
+    pageData.forEach(user => {
+        const profileImg = user.profile_image || "/static/default.png";
 
-        const profileImg = user.profile_image 
-            ? user.profile_image 
-            : "/static/default.png";
+        // Role badge
+        const roleBadge = user.role === "admin"
+            ? `<span class="badge badge-admin">Admin</span>`
+            : `<span class="badge badge-user">User</span>`;
+
+        // Status badge
+        const statusMap = {
+            active:   "badge badge-active",
+            inactive: "badge badge-inactive",
+            banned:   "badge badge-banned"
+        };
+        const statusClass = statusMap[(user.status || "").toLowerCase()] || "badge";
+        const statusLabel = user.status
+            ? user.status.charAt(0).toUpperCase() + user.status.slice(1)
+            : "—";
 
         tbody.innerHTML += `
             <tr>
                 <td>${user.id}</td>
-
-                <!-- PROFILE -->
                 <td>
-                    <img src="${profileImg}" 
-                         style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
+                    <img src="${profileImg}"
+                         style="width:36px; height:36px; border-radius:50%;
+                                object-fit:cover; border:1px solid #1f2a38;">
                 </td>
-
                 <td>${user.name}</td>
                 <td>${user.email}</td>
-                <td>${user.address ?? '-'}</td>
-                <td>${user.phone ?? '-'}</td>
-                <td>${user.role ?? '-'}</td>
-                <td>${user.status ?? '-'}</td>
-
-                <!-- ACTION -->
+                <td>${user.address || '—'}</td>
+                <td>${user.phone || '—'}</td>
+                <td>${roleBadge}</td>
+                <td><span class="${statusClass}">${statusLabel}</span></td>
                 <td style="text-align:center; white-space:nowrap;">
-
+                    <button class="action-btn" onclick="editUser(${user.id})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
                     <button class="action-btn"
-                            onclick="editUser(${user.id})">
-                        Edit
-                    </button>
-
-                    <button class="action-btn" style="background:#ff6b6b; color:#fff;"
+                            style="background:#ff6b6b; color:#fff; margin-left:4px;"
                             onclick="deleteUser(${user.id})">
-                        Delete
+                        <i class="fas fa-trash"></i> Delete
                     </button>
-
                 </td>
-            </tr>
-        `;
+            </tr>`;
     });
+
+    renderPagination();
 }
 
+// ============================================================
+// PAGINATION
+// ============================================================
+function renderPagination() {
+    const container  = document.getElementById("pagination");
+    container.innerHTML = "";
 
-// ======================
-// OPEN ADD MODAL
-// ======================
-function addUser() {
-    document.getElementById("modalTitle").innerText = "Add User";
-    document.getElementById("user_id").value = "";
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    if (totalPages <= 1) return;
 
-    document.getElementById("user_name").value = "";
-    document.getElementById("user_email").value = "";
-    document.getElementById("user_address").value = "";
-    document.getElementById("user_phone").value = "";
-    document.getElementById("user_role").value = "user";
-    document.getElementById("user_status").value = "active";
+    // PREV
+    const prev = document.createElement("button");
+    prev.textContent = "<";
+    prev.disabled    = currentPage === 1;
+    prev.onclick     = () => { currentPage--; renderTable(); };
+    container.appendChild(prev);
 
+    // PAGE NUMBERS
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add("active");
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        container.appendChild(btn);
+    }
+
+    // NEXT
+    const next = document.createElement("button");
+    next.textContent = ">";
+    next.disabled    = currentPage === totalPages;
+    next.onclick     = () => { currentPage++; renderTable(); };
+    container.appendChild(next);
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+document.getElementById("searchInput").addEventListener("input", function () {
+    const kw = this.value.toLowerCase().trim();
+
+    filteredData = allUsers.filter(user =>
+        (user.name    || "").toLowerCase().includes(kw) ||
+        (user.email   || "").toLowerCase().includes(kw) ||
+        (user.phone   || "").toLowerCase().includes(kw) ||
+        (user.role    || "").toLowerCase().includes(kw) ||
+        (user.status  || "").toLowerCase().includes(kw) ||
+        (user.address || "").toLowerCase().includes(kw)
+    );
+
+    currentPage = 1;
+    renderTable();
+});
+
+// ============================================================
+// PROFILE MENU
+// ============================================================
+function toggleMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+window.addEventListener("click", function (e) {
+    if (!e.target.closest(".user")) {
+        document.getElementById("profileMenu").style.display = "none";
+    }
+});
+
+// ============================================================
+// MODAL
+// ============================================================
+function openAddModal() {
+    document.getElementById("modalTitle").innerText      = "Add User";
+    document.getElementById("user_id").value             = "";
+    document.getElementById("user_name").value           = "";
+    document.getElementById("user_email").value          = "";
+    document.getElementById("user_address").value        = "";
+    document.getElementById("user_phone").value          = "";
+    document.getElementById("user_role").value           = "user";
+    document.getElementById("user_status").value         = "active";
+    document.getElementById("user_profile_image").value = "";
     document.getElementById("previewImage").style.display = "none";
-
-    document.getElementById("userModal").style.display = "block";
+    document.getElementById("userModal").style.display   = "block";
 }
 
+function closeUserModal() {
+    document.getElementById("userModal").style.display = "none";
+}
 
-// ======================
-// OPEN EDIT MODAL
-// ======================
+// Close on backdrop click
+window.addEventListener("click", function (e) {
+    const modal = document.getElementById("userModal");
+    if (e.target === modal) closeUserModal();
+});
+
+// ============================================================
+// EDIT MODAL
+// ============================================================
 function editUser(id) {
     fetch(`/get_user/${id}`)
-    .then(res => res.json())
-    .then(user => {
+        .then(res => res.json())
+        .then(user => {
+            document.getElementById("modalTitle").innerText   = "Edit User";
+            document.getElementById("user_id").value         = user.id;
+            document.getElementById("user_name").value       = user.name;
+            document.getElementById("user_email").value      = user.email;
+            document.getElementById("user_address").value    = user.address || "";
+            document.getElementById("user_phone").value      = user.phone   || "";
+            document.getElementById("user_role").value       = user.role    || "user";
+            document.getElementById("user_status").value     = user.status  || "active";
+            document.getElementById("user_profile_image").value = "";
 
-        document.getElementById("modalTitle").innerText = "Edit User";
-        document.getElementById("user_id").value = user.id;
+            const preview = document.getElementById("previewImage");
+            if (user.profile_image) {
+                preview.src = user.profile_image;
+                preview.style.display = "block";
+            } else {
+                preview.style.display = "none";
+            }
 
-        document.getElementById("user_name").value = user.name;
-        document.getElementById("user_email").value = user.email;
-        document.getElementById("user_address").value = user.address || "";
-        document.getElementById("user_phone").value = user.phone || "";
-        document.getElementById("user_role").value = user.role || "user";
-        document.getElementById("user_status").value = user.status || "active";
-
-        // preview image
-        if (user.profile_image) {
-            document.getElementById("previewImage").src = user.profile_image;
-            document.getElementById("previewImage").style.display = "block";
-        }
-
-        document.getElementById("userModal").style.display = "block";
-    });
+            document.getElementById("userModal").style.display = "block";
+        });
 }
 
-
-// ======================
+// ============================================================
 // IMAGE PREVIEW
-// ======================
-document.getElementById("user_profile_image").addEventListener("change", function(e) {
+// ============================================================
+document.getElementById("user_profile_image").addEventListener("change", function (e) {
     const file = e.target.files[0];
-
     if (file) {
         const preview = document.getElementById("previewImage");
         preview.src = URL.createObjectURL(file);
@@ -666,23 +796,20 @@ document.getElementById("user_profile_image").addEventListener("change", functio
     }
 });
 
-
-// ======================
+// ============================================================
 // SAVE USER
-// ======================
+// ============================================================
 function saveUser() {
-    const id = document.getElementById("user_id").value;
-
+    const id       = document.getElementById("user_id").value;
     const formData = new FormData();
 
-    formData.append("name", document.getElementById("user_name").value);
-    formData.append("email", document.getElementById("user_email").value);
+    formData.append("name",    document.getElementById("user_name").value);
+    formData.append("email",   document.getElementById("user_email").value);
     formData.append("address", document.getElementById("user_address").value);
-    formData.append("phone", document.getElementById("user_phone").value);
-    formData.append("role", document.getElementById("user_role").value);
-    formData.append("status", document.getElementById("user_status").value);
+    formData.append("phone",   document.getElementById("user_phone").value);
+    formData.append("role",    document.getElementById("user_role").value);
+    formData.append("status",  document.getElementById("user_status").value);
 
-    // ✅ GET ACTUAL FILE (NOT preview src)
     const fileInput = document.getElementById("user_profile_image");
     if (fileInput.files.length > 0) {
         formData.append("profile_image", fileInput.files[0]);
@@ -690,76 +817,58 @@ function saveUser() {
 
     const url = id ? `/update_user/${id}` : `/create_user`;
 
-    fetch(url, {
-        method: "POST",
-        body: formData   // ❌ NO headers needed
-    })
-    .then(res => res.json())
-    .then(() => {
-        closeUserModal();
-        loadUsers();
-    })
-    .catch(err => console.error("Error:", err));
+    fetch(url, { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+            Swal.fire({
+                title: "Success!",
+                text: data.message || "User saved.",
+                icon: "success",
+                timer: 1500,
+                showConfirmButton: false
+            });
+            closeUserModal();
+            loadUsers();
+        })
+        .catch(err => {
+            Swal.fire("Error", "Something went wrong!", "error");
+            console.error(err);
+        });
 }
 
-// ======================
-// CLOSE MODAL
-// ======================
-function closeUserModal() {
-    document.getElementById("userModal").style.display = "none";
-}
-
-// ======================
-// DELETE USER (SWEETALERT)
-// ======================
+// ============================================================
+// DELETE
+// ============================================================
 function deleteUser(id) {
     Swal.fire({
-        title: 'Are you sure?',
-        text: "This user will be deleted!",
-        icon: 'warning',
+        title: "Delete User?",
+        text: "This action cannot be undone!",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#00e5ff',
-        cancelButtonColor: '#ff6b6b',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
+        confirmButtonColor: "#ff6b6b",
+        cancelButtonColor: "#6b85a6",
+        confirmButtonText: "Yes, delete it"
+    }).then(result => {
+        if (!result.isConfirmed) return;
 
-            fetch(`/delete_user/${id}`, {
-                method: 'POST'
-            })
+        fetch(`/delete_user/${id}`, { method: "POST" })
             .then(res => res.json())
-            .then(() => {
-                Swal.fire('Deleted!', 'User has been deleted.', 'success');
+            .then(data => {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: data.message || "User removed.",
+                    icon: "success",
+                    timer: 1200,
+                    showConfirmButton: false
+                });
                 loadUsers();
             });
-        }
     });
 }
 
-
-// ======================
-// SEARCH (ENHANCED)
-// ======================
-document.getElementById("searchInput").addEventListener("keyup", function () {
-    const value = this.value.toLowerCase().trim();
-
-    const filtered = usersData.filter(user => {
-        return (
-            (user.name || "").toLowerCase().includes(value) ||
-            (user.email || "").toLowerCase().includes(value) ||
-            (user.phone || "").toLowerCase().includes(value) ||
-            (user.role || "").toLowerCase().includes(value) ||
-            (user.status || "").toLowerCase().includes(value) ||
-            (user.address || "").toLowerCase().includes(value)
-        );
-    });
-
-    renderTable(filtered);
-});
-
-// ======================
-// LOAD ON START
-// ======================
+// ============================================================
+// INIT
+// ============================================================
 document.addEventListener("DOMContentLoaded", loadUsers);
 </script>
 

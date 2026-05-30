@@ -920,6 +920,23 @@ def sales():
     return render_with_active('admin/sales.html', 'sales')
 
 
+@app.route("/reply_inquiry/<int:id>", methods=["POST"])
+def reply_inquiry(id):
+    data    = request.get_json()
+    inquiry = get_inquiry_by_id(id)   # your DB helper
+    try:
+        msg = Message(
+            subject    = data["subject"],
+            recipients = [inquiry["email"]],
+            body       = data["message"]
+        )
+        mail.send(msg)
+        update_inquiry_status(id, "replied")   # mark as replied in DB
+        log_action("update", "inquiry", id, f"Replied to {inquiry['email']}")
+        return jsonify({"success": True, "message": "Reply sent."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
 # ======================
 # LOGOUT
 # ======================

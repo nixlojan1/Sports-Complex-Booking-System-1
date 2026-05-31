@@ -16,6 +16,7 @@ from chatbot import chatbot
 from email_notifications import EmailNotification
 from process_forgot_password import forgot_password, reset_password, create_reset_tokens_table
 from fetch_sales import fetch_sales
+from reply_inquiry import inquiry_actions
 
 # ======================
 # BASE DIRECTORY
@@ -36,6 +37,7 @@ app.register_blueprint(fetch_reservations)
 app.register_blueprint(create_reservation)
 app.register_blueprint(chatbot)
 app.register_blueprint(fetch_sales)
+app.register_blueprint(inquiry_actions)
 
 # ======================
 # FORGOT PASSWORD ROUTES
@@ -686,29 +688,15 @@ def users():
 # ======================
 @app.route('/inquiries')
 def inquiries():
-    cursor.execute("SELECT * FROM inquiries")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM inquiries ORDER BY created_at DESC")
     data = cursor.fetchall()
+    conn.close()
     return render_template('admin/inquiries.html', inquiries=data, active_page='inquiries')
 
-@app.route('/delete_inquiry/<int:id>')
-def delete_inquiry(id):
-    cursor.execute("DELETE FROM inquiries WHERE id = ?", (id,))
-    conn.commit()
-    return redirect(url_for('inquiries'))
 
-@app.route('/update_inquiry/<int:id>', methods=['POST'])
-def update_inquiry(id):
-    data = request.get_json()
-    cursor.execute("""
-        UPDATE inquiries SET name=?, email=?, message=? WHERE id=?
-    """, (data['name'], data['email'], data['message'], id))
-    conn.commit()
-    return jsonify({"status": "success"})
-
-
-# ======================
-# HISTORY LOG
-# ======================
 # ======================
 # HISTORY LOG
 # ======================
@@ -918,24 +906,6 @@ def extend_reservation():
 @app.route('/sales')
 def sales():
     return render_with_active('admin/sales.html', 'sales')
-
-
-@app.route("/reply_inquiry/<int:id>", methods=["POST"])
-def reply_inquiry(id):
-    data    = request.get_json()
-    inquiry = get_inquiry_by_id(id)   # your DB helper
-    try:
-        msg = Message(
-            subject    = data["subject"],
-            recipients = [inquiry["email"]],
-            body       = data["message"]
-        )
-        mail.send(msg)
-        update_inquiry_status(id, "replied")   # mark as replied in DB
-        log_action("update", "inquiry", id, f"Replied to {inquiry['email']}")
-        return jsonify({"success": True, "message": "Reply sent."})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
 
 # ======================
 # LOGOUT

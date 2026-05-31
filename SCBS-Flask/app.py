@@ -559,34 +559,53 @@ def change_password():
 @app.route('/admin', methods=['GET', 'POST'])
 @app.route('/auth/admin-login', methods=['GET', 'POST'])
 def admin_login():
-    # If POST (login form submitted)
     if request.method == 'POST':
-        email    = request.form.get('email')
-        password = request.form.get('password')
+        email         = request.form.get('email')
+        password      = request.form.get('password')
+        selected_role = request.form.get('role', 'admin')   # 'admin' or 'staff'
+        is_ajax       = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
         c = sqlite3.connect(db_path)
         c.row_factory = sqlite3.Row
         cur = c.cursor()
-        cur.execute("SELECT * FROM users WHERE email = ? AND role IN ('admin', 'staff')", (email,))
+        cur.execute(
+            "SELECT * FROM users WHERE email = ? AND role IN ('admin', 'staff')",
+            (email,)
+        )
         admin = cur.fetchone()
         c.close()
 
-        if admin and check_password_hash(admin['password'], password):
-            session['admin']      = admin['email']
-            session['admin_role'] = admin['role']
-            session['admin_name'] = admin['name']
-            return redirect(url_for('dashboard'))
+        # Wrong email or wrong password
+        if not admin or not check_password_hash(admin['password'], password):
+            if is_ajax:
+                return jsonify({'error': 'Invalid credentials.'})
+            return render_template('auth/admin-login.html', error='Invalid credentials.')
 
-        return render_template('auth/admin-login.html', error="Invalid credentials")
+        # Account exists but the selected tab doesn't match the account's actual role
+        if admin['role'] != selected_role:
+            if is_ajax:
+                return jsonify({'role_mismatch': True})
+            return render_template(
+                'auth/admin-login.html',
+                error=f"This account is not registered as a {selected_role.capitalize()}."
+            )
 
-    # If already logged in as admin/staff → go to dashboard
+        # Success — set session and redirect
+        session['admin']      = admin['email']
+        session['admin_role'] = admin['role']
+        session['admin_name'] = admin['name']
+
+        if is_ajax:
+            return jsonify({'redirect': url_for('dashboard')})
+        return redirect(url_for('dashboard'))
+
+    # Already logged in
     if 'admin' in session:
         return redirect(url_for('dashboard'))
 
-    # Otherwise show the login page
     return render_template('auth/admin-login.html')
 
-
+    
 # ======================
 # ADMIN — DASHBOARD
 # ======================

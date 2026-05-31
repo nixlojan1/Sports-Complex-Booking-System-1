@@ -4,212 +4,359 @@
 <meta charset="UTF-8">
 <title>Reservations – Sports Complex Admin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",Arial,sans-serif; }
+:root {
+    --bg-base:    #080c10;
+    --bg-surface: #0d1219;
+    --bg-card:    #111820;
+    --bg-raised:  #161e28;
+    --border:     rgba(255,255,255,0.07);
+    --border-hi:  rgba(0,224,196,0.35);
+    --accent:     #00e0c4;
+    --accent-dim: rgba(0,224,196,0.12);
+    --accent2:    #3b82f6;
+    --text-1:     #e8f0f8;
+    --text-2:     #7a92ab;
+    --text-3:     #4a5f72;
+    --danger:     #f87171;
+    --warning:    #fbbf24;
+    --success:    #34d399;
+    --radius:     10px;
+    --radius-lg:  14px;
+    --sidebar-w:  240px;
+    --font-body:  'DM Sans', sans-serif;
+    --font-mono:  'Space Mono', monospace;
+}
 
-body { display:flex; background:#0f1117; color:#e6f1ff; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-base);
+    color: var(--text-1);
+    display: flex;
+    min-height: 100vh;
+}
 
 /* ── SIDEBAR ── */
 .sidebar {
-    width:230px; height:100vh;
-    background:linear-gradient(180deg,#0f1117,#0a1f2e,#0c2d3f);
-    position:fixed; display:flex; flex-direction:column;
-    border-right:1px solid #1f2a38;
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
 }
-.sidebar-header { padding:15px; border-bottom:1px solid #1f2a38; color:#00e5ff; }
-.menu { padding:20px 0; }
-.menu a {
-    display:flex; align-items:center; gap:12px; padding:10px 20px;
-    color:#9fb3c8; text-decoration:none; font-size:14px; transition:0.3s;
+.sidebar-logo {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--border);
 }
-.menu a:hover, .menu a.active {
-    background:rgba(0,229,255,0.15); color:#00e5ff; border-left:3px solid #00e5ff;
+.logo-badge { display: inline-flex; align-items: center; gap: 10px; }
+.logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
 }
-.menu-title { padding:15px 20px 5px; font-size:11px; color:#6b85a6; text-transform:uppercase; }
+.logo-icon svg { width: 18px; height: 18px; fill: #080c10; }
+.logo-text { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-1); line-height: 1.2; }
+.logo-sub  { font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+
+.nav { flex: 1; padding: 14px 0; }
+.nav-label { padding: 14px 20px 6px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
+.nav a {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 20px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 13.5px; font-weight: 400;
+    border-left: 2px solid transparent;
+    transition: all 0.18s;
+}
+.nav a i { width: 16px; text-align: center; font-size: 13px; }
+.nav a:hover { color: var(--text-1); background: rgba(255,255,255,0.04); }
+.nav a.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); font-weight: 500; }
+.nav a.danger { color: var(--danger); }
+.nav a.danger:hover { background: rgba(248,113,113,0.08); }
+
+.sidebar-footer {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+}
+.sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+.sidebar-user-name { font-size: 13px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-user-role { font-size: 11px; color: var(--text-3); }
 
 /* ── MAIN ── */
-.main { margin-left:230px; width:100%; }
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
+/* ── TOPBAR ── */
 .topbar {
-    background:#0f1117; padding:12px 25px;
-    display:flex; justify-content:space-between; align-items:center;
-    border-bottom:1px solid #1f2a38;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
 }
-.topbar h3 { font-size:18px; color:#00e5ff; font-weight:600; }
-
-#profileMenu {
-    display:none; position:absolute; right:0; top:45px;
-    background:#0f1722; border-radius:8px; border:1px solid #1f2a38; width:150px;
-}
-#profileMenu a { display:block; padding:10px; color:#cfe8ff; text-decoration:none; }
-#profileMenu a:hover { background:rgba(0,229,255,0.1); }
+.topbar-title { font-size: 15px; font-weight: 500; color: var(--text-1); display: flex; align-items: center; gap: 10px; }
+.topbar-title .breadcrumb { font-size: 13px; color: var(--text-3); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
 
 /* ── CONTENT ── */
-.content { padding:25px; }
+.content { padding: 28px; flex: 1; }
 
-/* ── TABLE CONTAINER ── */
-.table-container {
-    background:linear-gradient(145deg,#0f1117,#111827);
-    border:1px solid #1f2a38; border-radius:12px; padding:20px;
+/* ── STATS ── */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: border-color 0.2s;
 }
-.table-header {
-    display:flex; justify-content:space-between; align-items:center;
-    margin-bottom:15px; flex-wrap:wrap; gap:10px;
+.stat-card:hover { border-color: rgba(255,255,255,0.12); }
+.stat-icon { width: 40px; height: 40px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.stat-icon.teal  { background: rgba(0,224,196,0.12);  color: var(--accent); }
+.stat-icon.blue  { background: rgba(59,130,246,0.12); color: var(--accent2); }
+.stat-icon.amber { background: rgba(251,191,36,0.12); color: var(--warning); }
+.stat-icon.red   { background: rgba(248,113,113,0.12);color: var(--danger); }
+.stat-icon.green { background: rgba(52,211,153,0.12); color: var(--success); }
+.stat-val { font-size: 22px; font-weight: 600; line-height: 1; color: var(--text-1); font-family: var(--font-mono); }
+.stat-lbl { font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+/* ── TABLE WRAP ── */
+.table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.table-toolbar {
+    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap;
 }
-.search-box input {
-    padding:8px 12px; border-radius:6px; border:1px solid #1f2a38;
-    background:#0a0f1a; color:#e6f1ff; outline:none; transition:0.3s;
-    font-size:13px;
+.toolbar-left  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toolbar-right { display: flex; align-items: center; gap: 10px; }
+
+.search-wrap { position: relative; display: flex; align-items: center; }
+.search-wrap i { position: absolute; left: 11px; color: var(--text-3); font-size: 13px; pointer-events: none; }
+.search-wrap input {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-1); font-family: var(--font-body); font-size: 13px;
+    padding: 8px 12px 8px 32px; outline: none; width: 220px; transition: border-color 0.2s, box-shadow 0.2s;
 }
-.search-box input:focus { border-color:#00e5ff; box-shadow:0 0 8px rgba(0,229,255,0.2); }
-.search-box input::placeholder { color:#6b85a6; }
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,224,196,0.1); }
+.search-wrap input::placeholder { color: var(--text-3); }
+
+.filter-select {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-2); font-family: var(--font-body); font-size: 13px;
+    padding: 8px 10px; outline: none; cursor: pointer; transition: border-color 0.2s;
+}
+.filter-select:focus { border-color: var(--accent); }
 
 /* ── TABLE ── */
-table { width:100%; border-collapse:collapse; }
-thead { background:#0a1f2e; }
-th { color:#00e5ff; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; }
-th, td { padding:11px 10px; font-size:13px; text-align:left; }
-tbody tr { border-top:1px solid #1f2a38; transition:0.2s; }
-tbody tr:hover { background:rgba(0,229,255,0.04); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--bg-raised); }
+th { padding: 11px 16px; font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; text-align: left; white-space: nowrap; }
+td { padding: 13px 16px; font-size: 13.5px; color: var(--text-1); border-top: 1px solid var(--border); vertical-align: middle; }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: rgba(255,255,255,0.025); }
 
-/* ── STATUS BADGE ── */
-.status-badge {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700;
+/* ── STATUS BADGES ── */
+.badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 100px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.03em; white-space: nowrap;
 }
-.s-Pending   { background:#451a03; color:#fbbf24; }
-.s-Approved  { background:#052e16; color:#34d399; }
-.s-Rejected  { background:#450a0a; color:#f87171; }
-.s-Cancelled { background:#1c1c1e; color:#9ca3af; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
-/* ── BUTTONS ── */
-.btn {
-    padding:5px 12px; border:none; border-radius:6px;
-    cursor:pointer; font-size:12px; font-weight:600;
-    transition: opacity 0.2s;
+.badge-pending   { background: rgba(251,191,36,0.1);   color: var(--warning); border: 1px solid rgba(251,191,36,0.2); }
+.badge-pending::before   { background: var(--warning); }
+.badge-approved  { background: rgba(52,211,153,0.1);   color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+.badge-approved::before  { background: var(--success); }
+.badge-rejected  { background: rgba(248,113,113,0.1);  color: var(--danger);  border: 1px solid rgba(248,113,113,0.2); }
+.badge-rejected::before  { background: var(--danger); }
+.badge-cancelled { background: rgba(255,255,255,0.06); color: var(--text-2);  border: 1px solid var(--border); }
+.badge-cancelled::before { background: var(--text-3); }
+
+/* ── ACTION BUTTONS ── */
+.btn-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--bg-raised); color: var(--text-2); cursor: pointer;
+    font-size: 13px; transition: all 0.18s;
 }
-.btn:hover { opacity:0.82; }
-.btn-view   { background:#0e7490; color:#fff; }
-.btn-update { background:#1d4ed8; color:#fff; }
-.btn-delete { background:#b91c1c; color:#fff; }
+.btn-icon:hover           { border-color: rgba(255,255,255,0.15); color: var(--text-1); background: var(--bg-card); }
+.btn-icon.view-btn:hover  { border-color: rgba(0,224,196,0.4);   color: var(--accent); background: rgba(0,224,196,0.08); }
+.btn-icon.edit-btn:hover  { border-color: rgba(59,130,246,0.4);  color: #60a5fa;       background: rgba(59,130,246,0.08); }
+.btn-icon.delete:hover    { border-color: rgba(248,113,113,0.4); color: var(--danger); background: rgba(248,113,113,0.08); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-3); font-size: 13px; }
+.empty-state i { font-size: 28px; margin-bottom: 10px; display: block; }
 
 /* ── FOOTER ── */
-.footer { text-align:center; padding:12px; font-size:12px; color:#6b85a6; }
+.footer { text-align: center; padding: 14px; font-size: 12px; color: var(--text-3); border-top: 1px solid var(--border); }
 
-@media(max-width:600px){ .sidebar{display:none;} .main{margin-left:0;} }
+@media(max-width: 780px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width: 500px) { .stats-row { grid-template-columns: 1fr; } }
 </style>
 </head>
-
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-header"><h2>SCBS - Admin</h2></div>
-    <div class="menu">
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-badge">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div>
+                <div class="logo-text">SCBS</div>
+                <div class="logo-sub">Admin Panel</div>
+            </div>
+        </div>
+    </div>
+    <nav class="nav">
         <a href="{{ url_for('dashboard') }}"    class="{% if active_page=='dashboard'    %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
         <a href="{{ url_for('reservations') }}" class="{% if active_page=='reservations' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Reservations</a>
-        <div class="menu-title">Management</div>
+        <div class="nav-label">Management</div>
         <a href="{{ url_for('categories') }}"   class="{% if active_page=='categories'   %}active{% endif %}"><i class="fas fa-layer-group"></i> Categories</a>
         <a href="{{ url_for('facilities') }}"   class="{% if active_page=='facilities'   %}active{% endif %}"><i class="fas fa-building"></i> Facilities</a>
-        <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Users</a>
+        {% if admin_role == 'admin' %}
+        <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Customers</a>
+        {% endif %}
         <a href="{{ url_for('inquiries') }}"    class="{% if active_page=='inquiries'    %}active{% endif %}"><i class="fas fa-envelope"></i> Inquiries</a>
-        <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}" class="{% if active_page=='sales' %}active{% endif %}">
-            <i class="fas fa-chart-line"></i> Sales
-        </a>
-        <a href="{{ url_for('history_log') }}" class="{% if active_page == 'history_log' %}active{% endif %}">
-            <i class="fas fa-history"></i> History Log
-        </a>
-        <div class="menu-title">Account</div>
-        <a href="{{ url_for('logout') }}" style="color:#ff6b6b;"
+        {% if admin_role == 'admin' %}
+        <div class="nav-label">Logs</div>
+        <a href="{{ url_for('sales') }}"        class="{% if active_page=='sales'        %}active{% endif %}"><i class="fas fa-chart-line"></i> Sales</a>
+        <a href="{{ url_for('history_log') }}"  class="{% if active_page=='history_log'  %}active{% endif %}"><i class="fas fa-history"></i> History Log</a>
+        {% endif %}
+        <div class="nav-label">Account</div>
+        <a href="{{ url_for('logout') }}" class="danger"
            onclick="return confirm('Are you sure you want to logout?')">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
+    </nav>
+    <div class="sidebar-footer">
+        <img src="https://i.pravatar.cc/64?u=admin" class="sidebar-avatar" alt="Admin">
+        <div>
+            <div class="sidebar-user-name">{{ admin_name }}</div>
+            <div class="sidebar-user-role">
+                <span class="role-pill {{ admin_role }}">
+                    <i class="fas fa-{% if admin_role == 'admin' %}user-shield{% else %}user-tie{% endif %}" style="font-size:9px;"></i>
+                    {{ admin_role|capitalize }}
+                </span>
+            </div>
+        </div>
     </div>
-</div>
+</aside>
 
 <!-- MAIN -->
 <div class="main">
 
-    <div class="topbar">
-        <h3>Reservations</h3>
-        <div class="user" style="position:relative;">
-            <img src="https://i.pravatar.cc/40"
-                 style="width:35px;height:35px;border-radius:50%;cursor:pointer;"
-                 onclick="toggleMenu()">
-            <div id="profileMenu">
-                <a href="#">Profile</a>
-                <a href="{{ url_for('logout') }}" style="color:#ff6b6b;">Logout</a>
-            </div>
+    <header class="topbar">
+        <div class="topbar-title">
+            <span class="breadcrumb">Bookings /</span> Reservations
         </div>
-    </div>
+        <div class="topbar-right">
+            <!-- placeholder for future actions -->
+        </div>
+    </header>
 
     <div class="content">
-        <div class="table-container">
 
-            <div class="table-header">
-                <select id="statusFilter"
-                        style="padding:8px 12px;border-radius:6px;border:1px solid #1f2a38;
-                               background:#0a0f1a;color:#e6f1ff;font-size:13px;cursor:pointer;">
-                    <option value="all">All Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search reservations…">
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon teal"><i class="fas fa-calendar-check"></i></div>
+                <div>
+                    <div class="stat-val" id="statTotal">—</div>
+                    <div class="stat-lbl">Total Reservations</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+                <div>
+                    <div class="stat-val" id="statPending">—</div>
+                    <div class="stat-lbl">Pending</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-circle-check"></i></div>
+                <div>
+                    <div class="stat-val" id="statApproved">—</div>
+                    <div class="stat-lbl">Approved</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="fas fa-ban"></i></div>
+                <div>
+                    <div class="stat-val" id="statRejected">—</div>
+                    <div class="stat-lbl">Rejected / Cancelled</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+            <div class="table-toolbar">
+                <div class="toolbar-left">
+                    <select class="filter-select" id="statusFilter" onchange="loadReservations()">
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="toolbar-right">
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search reservations…">
+                    </div>
                 </div>
             </div>
 
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>#</th>
                         <th>Customer</th>
                         <th>Facility</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Amount</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th style="text-align:center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="reservationTable"></tbody>
             </table>
-
         </div>
+
     </div>
 
-    <div class="footer">© 2026 Sports Complex Booking System</div>
+    <footer class="footer">© 2026 Sports Complex Booking System</footer>
 </div>
 
 
 <script>
-/* ── PROFILE MENU ── */
-function toggleMenu() {
-    const m = document.getElementById("profileMenu");
-    m.style.display = m.style.display === "block" ? "none" : "block";
-}
-window.onclick = e => {
-    if (!e.target.closest('.user'))
-        document.getElementById("profileMenu").style.display = "none";
-};
-
-/* ── INIT ── */
-document.addEventListener("DOMContentLoaded", () => {
-    loadReservations();
-    document.getElementById("statusFilter").addEventListener("change", loadReservations);
-    document.getElementById("searchInput").addEventListener("keyup",   loadReservations);
-});
-
-/* ── STATUS HELPERS ── */
-function statusClass(s) {
-    return { Pending:'s-Pending', Approved:'s-Approved',
-             Rejected:'s-Rejected', Cancelled:'s-Cancelled' }[s] || 's-Pending';
+/* ── HELPERS ── */
+function statusBadge(s) {
+    const map = {
+        Pending:   'badge-pending',
+        Approved:  'badge-approved',
+        Rejected:  'badge-rejected',
+        Cancelled: 'badge-cancelled',
+    };
+    return `<span class="badge ${map[s] || 'badge-pending'}">${s}</span>`;
 }
 
 const STATUS_COLORS = {
@@ -219,73 +366,94 @@ const STATUS_COLORS = {
     Pending:   { bg:'#451a03', color:'#fbbf24', dot:'#f59e0b' },
 };
 
+/* ── STATS ── */
+function updateStats(data) {
+    document.getElementById('statTotal').textContent    = data.length;
+    document.getElementById('statPending').textContent  = data.filter(r => r.status === 'Pending').length;
+    document.getElementById('statApproved').textContent = data.filter(r => r.status === 'Approved').length;
+    document.getElementById('statRejected').textContent = data.filter(r => r.status === 'Rejected' || r.status === 'Cancelled').length;
+}
+
 /* ── LOAD TABLE ── */
 function loadReservations() {
-    const filter = document.getElementById("statusFilter").value;
-    const search = document.getElementById("searchInput").value.toLowerCase();
-    const tbody  = document.getElementById("reservationTable");
+    const filter = document.getElementById('statusFilter').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const tbody  = document.getElementById('reservationTable');
 
-    fetch("/get_reservations")
+    fetch('/get_reservations')
     .then(r => r.json())
     .then(data => {
+        updateStats(data);
 
         const filtered = data.filter(r => {
-            const matchStatus = filter === "all" || r.status === filter;
-            const matchSearch = Object.values(r).join(" ").toLowerCase().includes(search);
+            const matchStatus = filter === 'all' || r.status === filter;
+            const matchSearch = Object.values(r).join(' ').toLowerCase().includes(search);
             return matchStatus && matchSearch;
         });
 
         if (!filtered.length) {
             tbody.innerHTML = `
-                <tr><td colspan="8"
-                    style="text-align:center;padding:50px;color:#6b85a6;font-size:13px;">
-                    No reservations found.
+                <tr><td colspan="8">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-xmark"></i>
+                        No reservations found.
+                    </div>
                 </td></tr>`;
             return;
         }
 
-        tbody.innerHTML = filtered.map(r => `
+        tbody.innerHTML = filtered.map((r, i) => `
             <tr>
-                <td style="color:#6b85a6;font-size:12px;">#${r.id}</td>
+                <td><span style="color:var(--text-3);font-family:var(--font-mono);font-size:12px;">${String(i+1).padStart(2,'0')}</span></td>
 
                 <td>
-                    <div style="font-weight:600;color:#e2e8f0;">${r.user_name || 'N/A'}</div>
-                    <div style="font-size:11px;color:#6b85a6;">${r.user_email || ''}</div>
+                    <div style="font-weight:500;color:var(--text-1);">${r.user_name || 'N/A'}</div>
+                    <div style="font-size:12px;color:var(--text-3);">${r.user_email || ''}</div>
                 </td>
 
-                <td style="color:#cbd5e1;">${r.facility_name || '—'}</td>
-                <td style="color:#94a3b8;font-size:12px;">${r.booking_date}</td>
-                <td style="font-size:12px;color:#94a3b8;">${r.start_time} – ${r.end_time}</td>
-                <td style="font-weight:600;color:#e2e8f0;">₱${parseFloat(r.total_amount||0).toFixed(2)}</td>
+                <td style="color:var(--text-2);">${r.facility_name || '—'}</td>
 
-                <td>
-                    <span class="status-badge ${statusClass(r.status)}">
-                        ${r.status}
-                    </span>
+                <td style="color:var(--text-2);font-size:13px;font-family:var(--font-mono);">${r.booking_date}</td>
+
+                <td style="font-size:12px;color:var(--text-3);font-family:var(--font-mono);">${r.start_time} – ${r.end_time}</td>
+
+                <td style="font-weight:600;color:var(--text-1);font-family:var(--font-mono);">
+                    ₱${parseFloat(r.total_amount || 0).toFixed(2)}
                 </td>
 
-                <td>
-                    <button class="btn btn-view"
-                            onclick='viewReservation(${JSON.stringify(r)})'>View</button>
-                    <button class="btn btn-update"
-                            onclick="updateStatus(${r.id}, '${r.status}', '${(r.user_name||'').replace(/'/g,"\\'")}')">Update</button>
-                    <button class="btn btn-delete"
-                            onclick="deleteReservation(${r.id})">Delete</button>
+                <td>${statusBadge(r.status)}</td>
+
+                <td style="text-align:center;">
+                    <div style="display:inline-flex;gap:6px;">
+                        <button class="btn-icon view-btn" title="View"
+                                onclick='viewReservation(${JSON.stringify(r)})'>
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon edit-btn" title="Update Status"
+                                onclick="updateStatus(${r.id}, '${r.status}', '${(r.user_name||'').replace(/'/g,"\\'")}')">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="btn-icon delete" title="Delete"
+                                onclick="deleteReservation(${r.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>`).join('');
     })
     .catch(() => {
-        tbody.innerHTML = `
-            <tr><td colspan="8"
-                style="text-align:center;padding:30px;color:#f87171;font-size:13px;">
-                Failed to load reservations. Please refresh the page.
+        document.getElementById('reservationTable').innerHTML = `
+            <tr><td colspan="8">
+                <div class="empty-state" style="color:var(--danger);">
+                    <i class="fas fa-circle-exclamation"></i>
+                    Failed to load reservations. Please refresh.
+                </div>
             </td></tr>`;
     });
 }
 
 /* ── VIEW MODAL ── */
 function viewReservation(r) {
-
     const facilityImg = r.facility_image
         ? `/static/uploads/facilities/${r.facility_image}`
         : `/static/uploads/facilities/default.png`;
@@ -296,58 +464,56 @@ function viewReservation(r) {
 
     const sc = STATUS_COLORS[r.status] || STATUS_COLORS.Pending;
 
-    /* reusable info card */
     const card = (title, rows) => `
-        <div style="background:#0a1622;border:1px solid #1f2a38;border-radius:12px;padding:16px;">
-            <p style="font-size:11px;font-weight:700;color:#00e5ff;text-transform:uppercase;
-                      letter-spacing:0.6px;margin-bottom:12px;padding-bottom:8px;
-                      border-bottom:1px solid #1f2a38;">
+        <div style="background:#0a1622;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;">
+            <p style="font-size:10px;font-weight:700;color:#00e0c4;text-transform:uppercase;
+                      letter-spacing:0.8px;margin-bottom:12px;padding-bottom:8px;
+                      border-bottom:1px solid rgba(255,255,255,0.06);">
                 ${title}
             </p>
             ${rows.map(([label, value]) => `
                 <div style="display:flex;justify-content:space-between;align-items:center;
-                            padding:6px 0;border-bottom:1px solid #0f1722;">
-                    <span style="font-size:12px;color:#6b85a6;">${label}</span>
-                    <span style="font-size:13px;font-weight:600;color:#e2e8f0;text-align:right;max-width:60%;">${value}</span>
+                            padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <span style="font-size:12px;color:#4a5f72;">${label}</span>
+                    <span style="font-size:13px;font-weight:500;color:#e8f0f8;text-align:right;max-width:60%;">${value}</span>
                 </div>`).join('')}
         </div>`;
 
     Swal.fire({
         title: '',
         width: 820,
-        background: '#0f1117',
-        color: '#e2e8f0',
+        background: '#111820',
+        color: '#e8f0f8',
         showConfirmButton: false,
         showCloseButton: true,
+        customClass: { popup: 'swal-popup-styled' },
 
         html: `
-        <div style="font-family:'Segoe UI',Arial,sans-serif;text-align:left;">
+        <div style="font-family:'DM Sans',sans-serif;text-align:left;">
 
             <!-- HERO -->
-            <div style="position:relative;margin:-20px -20px 20px;
-                        border-radius:12px 12px 0 0;overflow:hidden;">
+            <div style="position:relative;margin:-20px -20px 20px;border-radius:12px 12px 0 0;overflow:hidden;">
                 <img src="${facilityImg}"
                      onerror="this.src='/static/uploads/facilities/default.png'"
-                     style="width:100%;height:190px;object-fit:cover;display:block;">
+                     style="width:100%;height:180px;object-fit:cover;display:block;">
                 <div style="position:absolute;inset:0;
-                            background:linear-gradient(to top,rgba(10,14,20,0.95) 0%,
-                                                              rgba(10,14,20,0.3) 60%,
-                                                              transparent 100%);">
+                            background:linear-gradient(to top,rgba(8,12,16,0.97) 0%,
+                                                              rgba(8,12,16,0.3)  60%,transparent 100%);">
                 </div>
                 <div style="position:absolute;bottom:0;left:0;right:0;
                             padding:16px 20px;display:flex;
                             justify-content:space-between;align-items:flex-end;">
                     <div>
-                        <p style="font-size:10px;color:#94a3b8;margin-bottom:3px;
+                        <p style="font-size:10px;color:#7a92ab;margin-bottom:3px;
                                   text-transform:uppercase;letter-spacing:1px;">Facility</p>
-                        <h2 style="font-size:19px;font-weight:700;color:#fff;margin:0;">
+                        <h2 style="font-size:18px;font-weight:600;color:#fff;margin:0;">
                             ${r.facility_name || 'N/A'}
                         </h2>
                     </div>
                     <span style="background:${sc.bg};color:${sc.color};
-                                 padding:5px 14px;border-radius:999px;font-size:12px;
-                                 font-weight:700;border:1px solid ${sc.dot};white-space:nowrap;">
-                        <span style="display:inline-block;width:7px;height:7px;
+                                 padding:4px 12px;border-radius:100px;font-size:11px;
+                                 font-weight:600;border:1px solid ${sc.dot};white-space:nowrap;">
+                        <span style="display:inline-block;width:6px;height:6px;
                                      border-radius:50%;background:${sc.dot};
                                      margin-right:5px;vertical-align:middle;"></span>
                         ${r.status}
@@ -357,13 +523,13 @@ function viewReservation(r) {
 
             <!-- REF BAR -->
             <div style="display:flex;justify-content:space-between;align-items:center;
-                        background:#0a1622;border:1px solid #1f2a38;border-radius:8px;
-                        padding:10px 16px;margin-bottom:16px;">
-                <span style="font-size:12px;color:#6b85a6;">
-                    Booking <strong style="color:#00e5ff;">#${r.id}</strong>
+                        background:#0a1622;border:1px solid rgba(255,255,255,0.07);
+                        border-radius:8px;padding:10px 16px;margin-bottom:16px;">
+                <span style="font-size:12px;color:#4a5f72;">
+                    Booking <strong style="color:#00e0c4;font-family:'Space Mono',monospace;">#${r.id}</strong>
                 </span>
-                <span style="font-size:12px;color:#6b85a6;">
-                    Submitted: <strong style="color:#94a3b8;">
+                <span style="font-size:12px;color:#4a5f72;">
+                    Submitted: <strong style="color:#7a92ab;">
                         ${r.date_created ? r.date_created.split('T')[0] : 'N/A'}
                     </strong>
                 </span>
@@ -371,46 +537,44 @@ function viewReservation(r) {
 
             <!-- INFO GRID -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-
                 ${card('Customer Info', [
                     ['Name',  r.user_name  || 'N/A'],
                     ['Email', r.user_email || 'N/A'],
                     ['Phone', r.user_phone || 'N/A'],
                 ])}
-
                 ${card('Booking Details', [
                     ['Date',    r.booking_date],
                     ['Time',    `${r.start_time} – ${r.end_time}`],
                     ['Purpose', r.purpose || 'N/A'],
                 ])}
-
                 ${card('Payment Summary', [
                     ['Total Amount', `₱${parseFloat(r.total_amount||0).toFixed(2)}`],
                     ['Deposit Paid', `₱${parseFloat(r.deposit_amount||0).toFixed(2)}`],
                     ['Balance Due',  `₱${(parseFloat(r.total_amount||0) - parseFloat(r.deposit_amount||0)).toFixed(2)}`],
                 ])}
-
                 ${card('GCash Payment', [
                     ['Method',    r.payment_method || 'GCash'],
                     ['Reference', r.gcash_reference || 'N/A'],
                     ['Screenshot', `<button onclick="toggleScreenshot()"
                         id="toggleBtn"
-                        style="background:#0e2233;color:#00e5ff;border:1px solid #1f2a38;
-                               padding:3px 10px;border-radius:6px;cursor:pointer;font-size:11px;">
+                        style="background:rgba(0,224,196,0.1);color:#00e0c4;
+                               border:1px solid rgba(0,224,196,0.25);
+                               padding:3px 10px;border-radius:6px;cursor:pointer;font-size:11px;
+                               font-family:'DM Sans',sans-serif;">
                         View
                     </button>`],
                 ])}
-
             </div>
 
             <!-- SCREENSHOT -->
             <div id="screenshotBox"
-                 style="display:none;margin-bottom:14px;border:1px solid #1f2a38;border-radius:12px;overflow:hidden;">
+                 style="display:none;margin-bottom:14px;border:1px solid rgba(255,255,255,0.07);
+                        border-radius:12px;overflow:hidden;">
                 ${paymentImg
                     ? `<img src="${paymentImg}"
-                            onerror="this.parentElement.innerHTML='<p style=\\'text-align:center;padding:20px;color:#6b85a6;\\'>Screenshot not found.</p>'"
+                            onerror="this.parentElement.innerHTML='<p style=\\'text-align:center;padding:20px;color:#4a5f72;\\'>Screenshot not found.</p>'"
                             style="width:100%;max-height:280px;object-fit:contain;display:block;background:#0a0f1a;">`
-                    : `<p style="text-align:center;padding:24px;color:#6b85a6;font-size:13px;">
+                    : `<p style="text-align:center;padding:24px;color:#4a5f72;font-size:13px;">
                            No payment screenshot uploaded.
                        </p>`
                 }
@@ -421,15 +585,19 @@ function viewReservation(r) {
                 <button onclick="Swal.close(); updateStatus(${r.id}, '${r.status}',
                                  '${(r.user_name||'').replace(/'/g,"\\'")}');"
                         style="flex:1;padding:11px;border:none;border-radius:10px;
-                               background:#1d4ed8;color:#fff;font-weight:700;
-                               cursor:pointer;font-size:13px;letter-spacing:0.3px;">
-                    Update Status
+                               background:rgba(0,224,196,0.12);color:#00e0c4;
+                               border:1px solid rgba(0,224,196,0.25);
+                               font-weight:600;cursor:pointer;font-size:13px;
+                               font-family:'DM Sans',sans-serif;transition:all 0.18s;">
+                    <i class="fas fa-pen" style="margin-right:6px;font-size:11px;"></i>Update Status
                 </button>
                 <button onclick="Swal.close(); deleteReservation(${r.id});"
                         style="padding:11px 20px;border:none;border-radius:10px;
-                               background:#7f1d1d;color:#fca5a5;font-weight:700;
-                               cursor:pointer;font-size:13px;">
-                    Delete
+                               background:rgba(248,113,113,0.08);color:#f87171;
+                               border:1px solid rgba(248,113,113,0.2);
+                               font-weight:600;cursor:pointer;font-size:13px;
+                               font-family:'DM Sans',sans-serif;transition:all 0.18s;">
+                    <i class="fas fa-trash" style="margin-right:6px;font-size:11px;"></i>Delete
                 </button>
             </div>
 
@@ -448,11 +616,10 @@ function toggleScreenshot() {
 
 /* ── UPDATE STATUS ── */
 function updateStatus(id, currentStatus, userName) {
-
     Swal.fire({
         title: 'Update Status',
-        background: '#0f1117',
-        color: '#e2e8f0',
+        background: '#111820',
+        color: '#e8f0f8',
         input: 'select',
         inputOptions: {
             Pending:   'Pending',
@@ -462,41 +629,37 @@ function updateStatus(id, currentStatus, userName) {
         },
         inputValue: currentStatus,
         inputAttributes: {
-            style: 'background:#0a1622;color:#e2e8f0;border:1px solid #1f2a38;' +
-                   'border-radius:8px;padding:10px;font-size:14px;'
+            style: 'background:#161e28;color:#e8f0f8;border:1px solid rgba(255,255,255,0.07);' +
+                   'border-radius:8px;padding:10px;font-size:14px;font-family:\'DM Sans\',sans-serif;'
         },
-        html: `<p style="color:#94a3b8;font-size:13px;margin-bottom:10px;">
-                   Customer: <strong style="color:#e2e8f0;">${userName}</strong><br>
-                   <span style="font-size:12px;">
-                       An email notification will be sent to the customer automatically.
-                   </span>
+        html: `<p style="color:#7a92ab;font-size:13px;margin-bottom:10px;font-family:'DM Sans',sans-serif;">
+                   Customer: <strong style="color:#e8f0f8;">${userName}</strong><br>
+                   <span style="font-size:12px;">An email notification will be sent automatically.</span>
                </p>`,
         showCancelButton: true,
         confirmButtonText: 'Update',
         cancelButtonText:  'Cancel',
-        confirmButtonColor: '#1d4ed8',
-        cancelButtonColor:  '#374151',
+        confirmButtonColor: '#00e0c4',
+        cancelButtonColor:  '#161e28',
     }).then(first => {
-
         if (!first.isConfirmed) return;
         const newStatus = first.value;
 
         Swal.fire({
             title: 'Confirm Update',
-            html: `Change status to <strong style="color:#00e5ff;">${newStatus}</strong>?<br>
-                   <span style="font-size:12px;color:#94a3b8;">
+            html: `Change status to <strong style="color:#00e0c4;">${newStatus}</strong>?<br>
+                   <span style="font-size:12px;color:#7a92ab;font-family:'DM Sans',sans-serif;">
                        The customer will be notified by email.
                    </span>`,
             icon: 'question',
-            background: '#0f1117',
-            color: '#e2e8f0',
+            background: '#111820',
+            color: '#e8f0f8',
             showCancelButton: true,
             confirmButtonText: 'Yes, Update',
             cancelButtonText:  'Cancel',
-            confirmButtonColor: '#059669',
-            cancelButtonColor:  '#374151',
+            confirmButtonColor: '#00e0c4',
+            cancelButtonColor:  '#161e28',
         }).then(second => {
-
             if (!second.isConfirmed) return;
 
             const formData = new FormData();
@@ -509,18 +672,18 @@ function updateStatus(id, currentStatus, userName) {
                     icon: 'success',
                     title: 'Status Updated',
                     html: `Status changed to <strong>${newStatus}</strong>.<br>
-                           <span style="font-size:12px;color:#6b7280;">
+                           <span style="font-size:12px;color:#4a5f72;font-family:'DM Sans',sans-serif;">
                                Email notification sent to the customer.
                            </span>`,
-                    background: '#0f1117',
-                    color: '#e2e8f0',
-                    confirmButtonColor: '#059669',
+                    background: '#111820',
+                    color: '#e8f0f8',
+                    confirmButtonColor: '#00e0c4',
                     timer: 3000,
                     timerProgressBar: true,
                 });
                 loadReservations();
             })
-            .catch(() => Swal.fire('Error', 'Failed to update status.', 'error'));
+            .catch(() => Swal.fire({ icon:'error', title:'Error', text:'Failed to update status.', background:'#111820', color:'#e8f0f8' }));
         });
     });
 }
@@ -531,11 +694,11 @@ function deleteReservation(id) {
         title: 'Delete Reservation?',
         text: 'This action cannot be undone.',
         icon: 'warning',
-        background: '#0f1117',
-        color: '#e2e8f0',
+        background: '#111820',
+        color: '#e8f0f8',
         showCancelButton: true,
-        confirmButtonColor: '#b91c1c',
-        cancelButtonColor:  '#374151',
+        confirmButtonColor: '#f87171',
+        cancelButtonColor:  '#161e28',
         confirmButtonText: 'Yes, Delete',
         cancelButtonText:  'Cancel',
     }).then(res => {
@@ -546,9 +709,9 @@ function deleteReservation(id) {
                 icon: 'success',
                 title: 'Deleted',
                 text: 'Reservation removed successfully.',
-                background: '#0f1117',
-                color: '#e2e8f0',
-                confirmButtonColor: '#059669',
+                background: '#111820',
+                color: '#e8f0f8',
+                confirmButtonColor: '#00e0c4',
                 timer: 2500,
                 timerProgressBar: true,
             });
@@ -556,6 +719,13 @@ function deleteReservation(id) {
         });
     });
 }
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+    loadReservations();
+    document.getElementById('statusFilter').addEventListener('change', loadReservations);
+    document.getElementById('searchInput').addEventListener('keyup',   loadReservations);
+});
 </script>
 </body>
 </html>

@@ -2,617 +2,440 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sports Complex Booking System</title>
+<title>Sports Complex — Inquiries</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
+:root {
+    --bg-base:    #080c10;
+    --bg-surface: #0d1219;
+    --bg-card:    #111820;
+    --bg-raised:  #161e28;
+    --border:     rgba(255,255,255,0.07);
+    --border-hi:  rgba(0,224,196,0.35);
+    --accent:     #00e0c4;
+    --accent-dim: rgba(0,224,196,0.12);
+    --accent2:    #3b82f6;
+    --text-1:     #e8f0f8;
+    --text-2:     #7a92ab;
+    --text-3:     #4a5f72;
+    --danger:     #f87171;
+    --warning:    #fbbf24;
+    --success:    #34d399;
+    --radius:     10px;
+    --radius-lg:  14px;
+    --sidebar-w:  240px;
+    --font-body:  'DM Sans', sans-serif;
+    --font-mono:  'Space Mono', monospace;
 }
 
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
 body {
+    font-family: var(--font-body);
+    background: var(--bg-base);
+    color: var(--text-1);
     display: flex;
-    background: #0f1117;
-    color: #e6f1ff;
+    min-height: 100vh;
 }
 
 /* SIDEBAR */
 .sidebar {
-    width: 230px;
-    height: 100vh;
-    background: linear-gradient(180deg, #0f1117, #0a1f2e, #0c2d3f);
-    position: fixed;
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #1f2a38;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
 }
-
-.sidebar-header {
-    padding: 15px;
-    border-bottom: 1px solid #1f2a38;
-    color: #00e5ff;
+.sidebar-logo {
+    padding: 22px 20px 18px;
+    border-bottom: 1px solid var(--border);
 }
+.logo-badge { display: inline-flex; align-items: center; gap: 10px; }
+.logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+}
+.logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #080c10; stroke-width: 2; }
+.logo-text { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-1); line-height: 1.2; }
+.logo-sub  { font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
 
-.menu { padding: 20px 0; flex-grow: 1; }
-
-.menu a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    color: #9fb3c8;
+.nav { flex: 1; padding: 14px 0; }
+.nav-label { padding: 14px 20px 6px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); font-weight: 500; }
+.nav a {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 20px;
+    color: var(--text-2);
     text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
+    font-size: 13.5px; font-weight: 400;
+    border-left: 2px solid transparent;
+    transition: all 0.18s;
 }
+.nav a i { width: 16px; text-align: center; font-size: 13px; }
+.nav a:hover { color: var(--text-1); background: rgba(255,255,255,0.04); }
+.nav a.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); font-weight: 500; }
+.nav a.danger { color: var(--danger); }
+.nav a.danger:hover { background: rgba(248,113,113,0.08); }
 
-.menu a:hover,
-.menu a.active {
-    background: rgba(0, 229, 255, 0.15);
-    color: #00e5ff;
-    border-left: 3px solid #00e5ff;
+.sidebar-footer {
+    padding: 16px 20px; border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
 }
-
-.menu-title {
-    padding: 15px 20px 5px;
-    font-size: 11px;
-    color: #6b85a6;
-    text-transform: uppercase;
-}
+.sidebar-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+.sidebar-user-name { font-size: 13px; font-weight: 500; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-user-role { font-size: 11px; color: var(--text-3); }
 
 /* MAIN */
-.main {
-    margin-left: 230px;
-    width: 100%;
-}
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* TOPBAR */
 .topbar {
-    background: #0f1117;
-    padding: 12px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #1f2a38;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
 }
-
-.topbar h3 {
-    font-size: 18px;
-    color: #00e5ff;
-}
-
-/* PROFILE MENU */
-#profileMenu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 45px;
-    background: #0f1722;
-    border-radius: 8px;
-    border: 1px solid #1f2a38;
-    width: 150px;
-    z-index: 10;
-}
-
-#profileMenu a {
-    display: block;
-    padding: 10px;
-    color: #cfe8ff;
-    text-decoration: none;
-}
-
-#profileMenu a:hover { background: rgba(0,229,255,0.1); }
+.topbar-title { font-size: 15px; font-weight: 500; color: var(--text-1); display: flex; align-items: center; gap: 10px; }
+.topbar-title .breadcrumb { font-size: 13px; color: var(--text-3); }
 
 /* CONTENT */
-.content { padding: 25px; }
+.content { padding: 28px; flex: 1; }
 
-/* TABLE CONTAINER */
-.table-container {
-    background: linear-gradient(145deg, #0f1117, #111827);
-    border: 1px solid #1f2a38;
-    border-radius: 12px;
-    padding: 20px;
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: border-color 0.2s;
 }
+.stat-card:hover { border-color: rgba(255,255,255,0.12); }
+.stat-icon { width: 40px; height: 40px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+.stat-icon.teal  { background: rgba(0,224,196,0.12);  color: var(--accent); }
+.stat-icon.amber { background: rgba(251,191,36,0.12); color: var(--warning); }
+.stat-icon.blue  { background: rgba(59,130,246,0.12); color: var(--accent2); }
+.stat-icon.green { background: rgba(52,211,153,0.12); color: var(--success); }
+.stat-val { font-size: 22px; font-weight: 600; line-height: 1; color: var(--text-1); font-family: var(--font-mono); }
+.stat-lbl { font-size: 12px; color: var(--text-3); margin-top: 4px; }
 
-/* TABLE HEADER */
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
+/* TABLE WRAP */
+.table-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.table-toolbar {
+    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap;
 }
+.toolbar-left  { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-.table-header h4 { color: #00e5ff; }
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+.search-wrap { position: relative; display: flex; align-items: center; }
+.search-wrap i { position: absolute; left: 11px; color: var(--text-3); font-size: 13px; pointer-events: none; }
+.search-wrap input {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-1); font-family: var(--font-body); font-size: 13px;
+    padding: 8px 12px 8px 32px; outline: none; width: 220px; transition: border-color 0.2s, box-shadow 0.2s;
 }
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,224,196,0.1); }
+.search-wrap input::placeholder { color: var(--text-3); }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-/* FILTER SELECT */
 .filter-select {
-    padding: 8px 12px;
-    border-radius: 6px;
-    background: #0a0f1a;
-    color: #e6f1ff;
-    border: 1px solid #1f2a38;
-    outline: none;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.3s;
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-2); font-family: var(--font-body); font-size: 13px;
+    padding: 8px 10px; outline: none; cursor: pointer; transition: border-color 0.2s;
 }
+.filter-select:focus { border-color: var(--accent); }
 
-.filter-select:focus {
-    border-color: #00e5ff;
-    box-shadow: 0 0 8px rgba(0,229,255,0.3);
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--bg-raised); }
+th { padding: 11px 16px; font-size: 11px; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.07em; text-align: left; white-space: nowrap; }
+td { padding: 13px 16px; font-size: 13.5px; color: var(--text-1); border-top: 1px solid var(--border); vertical-align: middle; }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: rgba(255,255,255,0.025); }
+tbody tr.unread-row { border-left: 2px solid var(--warning); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em; white-space: nowrap; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.badge-unread  { background: rgba(251,191,36,0.1);  color: var(--warning); border: 1px solid rgba(251,191,36,0.2); }
+.badge-unread::before  { background: var(--warning); }
+.badge-read    { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+.badge-read::before    { background: #60a5fa; }
+.badge-replied { background: rgba(52,211,153,0.1);  color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+.badge-replied::before { background: var(--success); }
+
+/* Action buttons */
+.btn-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--bg-raised); color: var(--text-2); cursor: pointer;
+    font-size: 13px; transition: all 0.18s;
 }
+.btn-icon:hover        { border-color: rgba(255,255,255,0.15); color: var(--text-1); background: var(--bg-card); }
+.btn-icon.delete:hover { border-color: rgba(248,113,113,0.4); color: var(--danger); background: rgba(248,113,113,0.08); }
+.btn-icon.reply:hover  { border-color: rgba(52,211,153,0.4);  color: var(--success); background: rgba(52,211,153,0.08); }
+.btn-icon.view-btn:hover { border-color: rgba(0,224,196,0.4); color: var(--accent); background: rgba(0,224,196,0.08); }
 
-/* SEARCH */
-.search-box input {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #1f2a38;
-    background: #0a0f1a;
-    color: #e6f1ff;
-    outline: none;
-    transition: 0.3s;
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: center; gap: 4px; padding: 14px; border-top: 1px solid var(--border); }
+.pag-btn {
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    border-radius: 7px; border: 1px solid var(--border); background: none; color: var(--text-2);
+    font-size: 12px; cursor: pointer; transition: all 0.18s; font-family: var(--font-body);
 }
+.pag-btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: var(--text-1); }
+.pag-btn.active { background: var(--accent); color: #080c10; border-color: var(--accent); font-weight: 600; }
+.pag-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-.search-box input:focus {
-    border-color: #00e5ff;
-    box-shadow: 0 0 8px rgba(0,229,255,0.3);
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-3); font-size: 13px; }
+.empty-state i { font-size: 28px; margin-bottom: 10px; display: block; }
+
+/* MODAL BACKDROP */
+.modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    z-index: 200; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto;
 }
+.modal-backdrop.open { display: flex; }
 
-.search-box input::placeholder { color: #6b85a6; }
-
-/* TABLE */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead { background: #0a1f2e; }
-
-th {
-    color: #00e5ff;
-    font-weight: 500;
-}
-
-th, td {
-    padding: 10px;
-    font-size: 13px;
-    text-align: left;
-}
-
-tbody tr {
-    border-top: 1px solid #1f2a38;
-    transition: 0.2s;
-}
-
-tbody tr:hover { background: rgba(0, 229, 255, 0.08); }
-
-/* UNREAD ROW HIGHLIGHT */
-tbody tr.unread-row {
-    border-left: 3px solid #ffcc00;
-}
-
-/* BUTTONS */
-.action-btn {
-    background: linear-gradient(90deg, #00cfff, #00e5ff);
-    border: none;
-    color: #001018;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: 0.2s;
-    white-space: nowrap;
-}
-
-.action-btn:hover { opacity: 0.85; }
-
-/* BADGES */
-.badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.badge-read {
-    background: rgba(0, 229, 255, 0.15);
-    color: #00e5ff;
-    border: 1px solid rgba(0, 229, 255, 0.3);
-}
-
-.badge-unread {
-    background: rgba(255, 204, 0, 0.15);
-    color: #ffcc00;
-    border: 1px solid rgba(255, 204, 0, 0.3);
-}
-
-.badge-replied {
-    background: rgba(0, 229, 150, 0.15);
-    color: #00e596;
-    border: 1px solid rgba(0, 229, 150, 0.3);
-}
-
-/* FOOTER */
-.footer {
-    text-align: center;
-    padding: 12px;
-    font-size: 12px;
-    color: #6b85a6;
-}
-
-/* RESPONSIVE */
-@media(max-width: 600px){
-    .sidebar { display: none; }
-    .main { margin-left: 0; }
-}
-
-/* PAGINATION */
-.pagination {
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.pagination button {
-    background: none;
-    border: 1px solid #1f2a38;
-    color: #cfe8ff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.pagination button:hover { background: rgba(0,229,255,0.15); }
-
-.pagination button.active {
-    background: #00e5ff;
-    color: #001018;
-    font-weight: bold;
-}
-
-.pagination button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* MODAL */
 .modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.65);
-    z-index: 999;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    width: 520px; max-width: 100%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    animation: slideDown 0.22s ease; overflow: hidden; margin: auto;
 }
+@keyframes slideDown {
+    from { opacity:0; transform: translateY(-14px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+.modal-header {
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-size: 15px; font-weight: 600; color: var(--text-1); display: flex; align-items: center; gap: 8px; }
+.modal-header h3 i { color: var(--accent); }
+.modal-close {
+    width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+    background: none; color: var(--text-3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.18s;
+}
+.modal-close:hover { color: var(--danger); border-color: rgba(248,113,113,0.4); }
+.modal-body { padding: 20px 22px; }
 
-.modal-content {
-    background: linear-gradient(145deg, #0f1722, #111827);
-    border: 1px solid #1f2a38;
-    width: 520px;
-    max-width: 92%;
-    margin: 5% auto;
-    padding: 28px;
-    border-radius: 12px;
-    color: #e6f1ff;
-    box-shadow: 0 0 24px rgba(0,229,255,0.1);
-    animation: fadeIn 0.25s ease;
-    max-height: 88vh;
-    overflow-y: auto;
-}
+/* VIEW MODAL specifics */
+.info-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+.info-row:last-of-type { border-bottom: none; }
+.info-row-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 13px; flex-shrink: 0; }
+.info-label { font-size: 11px; color: var(--text-3); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
+.info-value { font-size: 13.5px; color: var(--text-1); }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.modal-content h3 {
-    margin-bottom: 18px;
-    color: #00e5ff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.modal-content label {
-    font-size: 13px;
-    color: #9fb3c8;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.modal-content input,
-.modal-content textarea,
-.modal-content select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 14px;
-    border-radius: 6px;
-    border: 1px solid #1f2a38;
-    background: #0a0f1a;
-    color: #e6f1ff;
-    outline: none;
-    transition: 0.2s;
-    font-size: 13px;
-}
-
-.modal-content input:focus,
-.modal-content textarea:focus,
-.modal-content select:focus {
-    border-color: #00e5ff;
-    box-shadow: 0 0 6px rgba(0,229,255,0.3);
-}
-
-/* VIEW modal info rows */
-.info-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 13px;
-}
-
-.info-label {
-    color: #6b85a6;
-    min-width: 80px;
-}
-
-.info-value {
-    color: #e6f1ff;
-    flex: 1;
-    word-break: break-word;
-}
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
 .message-box {
-    background: #0a0f1a;
-    border: 1px solid #1f2a38;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 13px;
-    color: #cfe8ff;
-    line-height: 1.6;
-    margin-bottom: 14px;
-    white-space: pre-wrap;
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; font-size: 13px; color: var(--text-1); line-height: 1.6;
+    margin-bottom: 14px; white-space: pre-wrap;
 }
 
-.divider {
-    border: none;
-    border-top: 1px solid #1f2a38;
-    margin: 16px 0;
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-group label { font-size: 12px; font-weight: 500; color: var(--text-2); letter-spacing: 0.03em; }
+.form-group input,
+.form-group textarea,
+.form-group select {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-1); font-family: var(--font-body); font-size: 13.5px;
+    padding: 9px 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+    resize: vertical;
 }
-
-.modal-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 4px;
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,224,196,0.1);
 }
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-3); }
 
+.modal-footer {
+    padding: 16px 22px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;
+}
+.btn-cancel {
+    border: 1px solid var(--border); background: none; color: var(--text-2); border-radius: 8px;
+    padding: 9px 18px; font-family: var(--font-body); font-size: 13px; cursor: pointer; transition: all 0.18s;
+}
+.btn-cancel:hover { background: var(--bg-raised); color: var(--text-1); }
 .btn-primary {
-    flex: 1;
-    padding: 10px;
-    background: linear-gradient(90deg, #00cfff, #00e5ff);
-    border: none;
-    border-radius: 6px;
-    color: #001018;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
+    background: var(--accent); border: none; color: #080c10; border-radius: 8px;
+    padding: 9px 22px; font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 7px;
 }
-
-.btn-primary:hover { opacity: 0.85; }
-
-.btn-danger {
-    flex: 1;
-    padding: 10px;
-    background: rgba(255,107,107,0.15);
-    border: 1px solid rgba(255,107,107,0.4);
-    border-radius: 6px;
-    color: #ff6b6b;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
-}
-
-.btn-danger:hover { background: rgba(255,107,107,0.25); }
-
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
 .btn-ghost {
-    flex: 1;
-    padding: 10px;
-    background: none;
-    border: 1px solid #1f2a38;
-    border-radius: 6px;
-    color: #9fb3c8;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 13px;
-    transition: 0.2s;
+    border: 1px solid var(--border); background: none; color: var(--text-2); border-radius: 8px;
+    padding: 9px 18px; font-family: var(--font-body); font-size: 13px; cursor: pointer; transition: all 0.18s;
+    display: inline-flex; align-items: center; gap: 7px;
 }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-.btn-ghost:hover {
-    border-color: #00e5ff;
-    color: #00e5ff;
+.char-count { font-size: 11px; color: var(--text-3); text-align: right; margin-top: -10px; margin-bottom: 14px; }
+
+/* FOOTER */
+.footer { text-align: center; padding: 14px; font-size: 12px; color: var(--text-3); border-top: 1px solid var(--border); }
+
+@media(max-width: 780px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
 }
-
-.close {
-    float: right;
-    font-size: 20px;
-    cursor: pointer;
-    color: #6b85a6;
-    transition: 0.2s;
-    line-height: 1;
-}
-
-.close:hover { color: #ff6b6b; }
-
-/* CHAR COUNT */
-.char-count {
-    font-size: 11px;
-    color: #6b85a6;
-    text-align: right;
-    margin-top: -12px;
-    margin-bottom: 10px;
-}
+@media(max-width: 500px) { .stats-row { grid-template-columns: 1fr; } }
 </style>
 </head>
-
 <body>
 
 <!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h2>SCBS - Admin</h2>
-    </div>
-
-    <div class="menu">
-        <a href="{{ url_for('dashboard') }}"
-           class="{% if active_page == 'dashboard' %}active{% endif %}">
-            <i class="fas fa-home"></i> Dashboard
-        </a>
-
-        <a href="{{ url_for('reservations') }}"
-           class="{% if active_page == 'reservations' %}active{% endif %}">
-            <i class="fas fa-calendar-check"></i> Reservations
-        </a>
-
-        <div class="menu-title">Management</div>
-
-        <a href="{{ url_for('categories') }}"
-           class="{% if active_page == 'categories' %}active{% endif %}">
-            <i class="fas fa-layer-group"></i> Categories
-        </a>
-
-        <a href="{{ url_for('facilities') }}"
-           class="{% if active_page == 'facilities' %}active{% endif %}">
-            <i class="fas fa-building"></i> Facilities
-        </a>
-
-        <a href="{{ url_for('users') }}"
-           class="{% if active_page == 'users' %}active{% endif %}">
-            <i class="fas fa-users"></i> Users
-        </a>
-
-        <a href="{{ url_for('inquiries') }}"
-           class="{% if active_page == 'inquiries' %}active{% endif %}">
-            <i class="fas fa-envelope"></i> Inquiries
-        </a>
-
-        <div class="menu-title">Logs</div>
-        <a href="{{ url_for('sales') }}"
-           class="{% if active_page == 'sales' %}active{% endif %}">
-            <i class="fas fa-chart-line"></i> Sales
-        </a>
-        <a href="{{ url_for('history_log') }}"
-           class="{% if active_page == 'history_log' %}active{% endif %}">
-            <i class="fas fa-history"></i> History Log
-        </a>
-
-        <div class="menu-title">Account</div>
-        <a href="{{ url_for('logout') }}"
-           style="color:#ff6b6b;"
-           onclick="return confirm('Are you sure you want to logout?')">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-    </div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-    <div class="topbar">
-        <h3>Inquiries</h3>
-        <div class="user" style="position: relative;">
-            <img src="https://i.pravatar.cc/40"
-                 style="width:35px; height:35px; border-radius:50%; cursor:pointer;"
-                 onclick="toggleMenu()">
-            <div id="profileMenu">
-                <a href="#">Profile</a>
-                <a href="#">Settings</a>
-                <a href="#" style="color:#ff6b6b;">Logout</a>
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-badge">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div>
+                <div class="logo-text">SCBS</div>
+                <div class="logo-sub">Admin Panel</div>
             </div>
         </div>
     </div>
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}"    class="{% if active_page=='dashboard'    %}active{% endif %}"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{{ url_for('reservations') }}" class="{% if active_page=='reservations' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Reservations</a>
+        <div class="nav-label">Management</div>
+        <a href="{{ url_for('categories') }}"   class="{% if active_page=='categories'   %}active{% endif %}"><i class="fas fa-layer-group"></i> Categories</a>
+        <a href="{{ url_for('facilities') }}"   class="{% if active_page=='facilities'   %}active{% endif %}"><i class="fas fa-building"></i> Facilities</a>
+        {% if admin_role == 'admin' %}
+        <a href="{{ url_for('users') }}"        class="{% if active_page=='users'        %}active{% endif %}"><i class="fas fa-users"></i> Customers</a>
+        {% endif %}
+        <a href="{{ url_for('inquiries') }}"    class="{% if active_page=='inquiries'    %}active{% endif %}"><i class="fas fa-envelope"></i> Inquiries</a>
+        {% if admin_role == 'admin' %}
+        <div class="nav-label">Logs</div>
+        <a href="{{ url_for('sales') }}"        class="{% if active_page=='sales'        %}active{% endif %}"><i class="fas fa-chart-line"></i> Sales</a>
+        <a href="{{ url_for('history_log') }}"  class="{% if active_page=='history_log'  %}active{% endif %}"><i class="fas fa-history"></i> History Log</a>
+        {% endif %}
+        <div class="nav-label">Account</div>
+        <a href="{{ url_for('logout') }}" class="danger"
+           onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <img src="https://i.pravatar.cc/64?u=admin" class="sidebar-avatar" alt="Admin">
+        <div>
+            <div class="sidebar-user-name">{{ admin_name }}</div>
+            <div class="sidebar-user-role">
+                <span class="role-pill {{ admin_role }}">
+                    <i class="fas fa-{% if admin_role == 'admin' %}user-shield{% else %}user-tie{% endif %}" style="font-size:9px;"></i>
+                    {{ admin_role|capitalize }}
+                </span>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+    <header class="topbar">
+        <div class="topbar-title">
+            <span class="breadcrumb">Management /</span> Inquiries
+        </div>
+    </header>
 
     <div class="content">
 
-        <div class="table-container">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon teal"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <div class="stat-val" id="statTotal">—</div>
+                    <div class="stat-lbl">Total Inquiries</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fas fa-envelope-open"></i></div>
+                <div>
+                    <div class="stat-val" id="statUnread">—</div>
+                    <div class="stat-lbl">Unread</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-eye"></i></div>
+                <div>
+                    <div class="stat-val" id="statRead">—</div>
+                    <div class="stat-lbl">Read</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-reply"></i></div>
+                <div>
+                    <div class="stat-val" id="statReplied">—</div>
+                    <div class="stat-lbl">Replied</div>
+                </div>
+            </div>
+        </div>
 
-            <div class="table-header">
-
-                <!-- LEFT: title + status filter -->
-                <div class="header-left">
-                    <select id="statusFilter" class="filter-select" onchange="applyFilters()">
-                        <option value="all">All Status</option>
+        <!-- Table -->
+        <div class="table-wrap">
+            <div class="table-toolbar">
+                <div class="toolbar-left">
+                    <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                        <option value="">All Status</option>
                         <option value="unread">Unread</option>
                         <option value="read">Read</option>
                         <option value="replied">Replied</option>
                     </select>
                 </div>
-
-                <!-- RIGHT: search -->
-                <div class="header-right">
-                    <div class="search-box">
-                        <input type="text" id="searchInput"
-                               placeholder="Search inquiries..."
-                               oninput="applyFilters()">
+                <div class="toolbar-right">
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search inquiries…" oninput="applyFilters()">
                     </div>
                 </div>
-
             </div>
 
             <table>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>DATE</th>
-                        <th>NAME</th>
-                        <th>EMAIL</th>
-                        <th>MESSAGE</th>
-                        <th>REMARKS</th>
-                        <th>STATUS</th>
-                        <th style="text-align:center;">ACTIONS</th>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Message</th>
+                        <th>Remarks</th>
+                        <th>Status</th>
+                        <th style="text-align:center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="inquiryTableBody">
                     {% for inquiry in inquiries %}
                     <tr class="inquiry-row {% if inquiry.status == 'unread' %}unread-row{% endif %}"
                         data-status="{{ inquiry.status | lower }}">
-                        <td>{{ inquiry.id }}</td>
-                        <td>{{ inquiry.created_at if inquiry.created_at else '—' }}</td>
-                        <td>{{ inquiry.name }}</td>
-                        <td>{{ inquiry.email }}</td>
-                        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <td><span style="color:var(--text-3);font-family:var(--font-mono);font-size:12px;">{{ '%02d' % inquiry.id }}</span></td>
+                        <td style="color:var(--text-2);font-size:12px;">{{ inquiry.created_at if inquiry.created_at else '—' }}</td>
+                        <td style="font-weight:500;">{{ inquiry.name }}</td>
+                        <td style="color:var(--text-2);">{{ inquiry.email }}</td>
+                        <td style="color:var(--text-2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                             {{ inquiry.message[:60] }}{% if inquiry.message|length > 60 %}…{% endif %}
                         </td>
-                        <td>{{ inquiry.remarks if inquiry.remarks else '—' }}</td>
+                        <td style="color:var(--text-3);">{{ inquiry.remarks if inquiry.remarks else '—' }}</td>
                         <td>
                             {% if inquiry.status == 'replied' %}
                                 <span class="badge badge-replied">Replied</span>
@@ -622,133 +445,120 @@ tbody tr.unread-row {
                                 <span class="badge badge-unread">Unread</span>
                             {% endif %}
                         </td>
-                        <td style="text-align:center; white-space:nowrap;">
-                            <button class="action-btn"
-                                    onclick="viewInquiry('{{ inquiry.id }}')">
-                                <i class="fas fa-eye"></i> View
-                            </button>
-                            <button class="action-btn"
-                                    style="background: linear-gradient(90deg,#00c896,#00e5a0); margin-left:4px;"
-                                    onclick="openReplyModal('{{ inquiry.id }}', '{{ inquiry.name }}', '{{ inquiry.email }}')">
-                                <i class="fas fa-reply"></i> Reply
-                            </button>
-                            <button class="action-btn"
-                                    style="background:#ff6b6b; color:#fff; margin-left:4px;"
-                                    onclick="deleteInquiry('{{ inquiry.id }}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <td style="text-align:center;">
+                            <div style="display:inline-flex;gap:6px;">
+                                <button class="btn-icon view-btn" title="View" onclick="viewInquiry('{{ inquiry.id }}')"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon reply" title="Reply" onclick="openReplyModal('{{ inquiry.id }}', '{{ inquiry.name }}', '{{ inquiry.email }}')"><i class="fas fa-reply"></i></button>
+                                <button class="btn-icon delete" title="Delete" onclick="deleteInquiry('{{ inquiry.id }}')"><i class="fas fa-trash"></i></button>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
+            <div class="pagination" id="pagination"></div>
         </div>
-
-        <!-- PAGINATION OUTSIDE CONTAINER -->
-        <div class="pagination" id="pagination"></div>
-
     </div>
 
-    <div class="footer">
-        © 2026 Sports Complex Booking System
-    </div>
-
+    <footer class="footer">© 2026 Sports Complex Booking System</footer>
 </div>
 
-<!-- ============================================================
-     VIEW MODAL
-     ============================================================ -->
-<div id="viewModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeViewModal()">&times;</span>
-        <h3><i class="fas fa-envelope-open"></i> Inquiry Details</h3>
-
-        <div class="info-row">
-            <span class="info-label">Name</span>
-            <span class="info-value" id="view_name"></span>
+<!-- VIEW MODAL -->
+<div class="modal-backdrop" id="viewBackdrop" onclick="handleBackdropClick(event,'viewBackdrop')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-envelope-open"></i> Inquiry Details</h3>
+            <button class="modal-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
         </div>
-        <div class="info-row">
-            <span class="info-label">Email</span>
-            <span class="info-value" id="view_email"></span>
+        <div class="modal-body">
+            <div class="info-row">
+                <div class="info-row-icon"><i class="fas fa-user"></i></div>
+                <div><div class="info-label">Name</div><div class="info-value" id="view_name"></div></div>
+            </div>
+            <div class="info-row">
+                <div class="info-row-icon"><i class="fas fa-at"></i></div>
+                <div><div class="info-label">Email</div><div class="info-value" id="view_email"></div></div>
+            </div>
+            <div class="info-row">
+                <div class="info-row-icon"><i class="fas fa-calendar"></i></div>
+                <div><div class="info-label">Date</div><div class="info-value" id="view_date"></div></div>
+            </div>
+            <div class="info-row">
+                <div class="info-row-icon"><i class="fas fa-tag"></i></div>
+                <div><div class="info-label">Status</div><div class="info-value" id="view_status"></div></div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="form-group">
+                <label>Message</label>
+                <div class="message-box" id="view_message"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Remarks</label>
+                <textarea id="view_remarks" rows="3" placeholder="Add or update remarks…"></textarea>
+            </div>
+
+            <input type="hidden" id="view_id">
         </div>
-        <div class="info-row">
-            <span class="info-label">Date</span>
-            <span class="info-value" id="view_date"></span>
-        </div>
-        <div class="info-row">
-            <span class="info-label">Status</span>
-            <span class="info-value" id="view_status"></span>
-        </div>
-
-        <hr class="divider">
-
-        <label>Message</label>
-        <div class="message-box" id="view_message"></div>
-
-        <label>Remarks</label>
-        <textarea id="view_remarks" rows="3" placeholder="Add or update remarks..."></textarea>
-
-        <input type="hidden" id="view_id">
-
-        <div class="modal-actions">
-            <button class="btn-primary" onclick="saveRemarks()">
-                <i class="fas fa-save"></i> Save Remarks
-            </button>
-            <button class="btn-ghost" onclick="openReplyFromView()">
-                <i class="fas fa-reply"></i> Reply
-            </button>
-            <button class="btn-ghost" onclick="closeViewModal()">Close</button>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+            <button class="btn-ghost" onclick="openReplyFromView()"><i class="fas fa-reply"></i> Reply</button>
+            <button class="btn-primary" onclick="saveRemarks()"><i class="fas fa-save"></i> Save Remarks</button>
         </div>
     </div>
 </div>
 
-<!-- ============================================================
-     REPLY MODAL
-     ============================================================ -->
-<div id="replyModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeReplyModal()">&times;</span>
-        <h3><i class="fas fa-paper-plane"></i> Reply to Inquiry</h3>
-
-        <input type="hidden" id="reply_id">
-
-        <div class="info-row" style="margin-bottom:14px;">
-            <span class="info-label">To</span>
-            <span class="info-value" id="reply_to" style="color:#00e5ff;"></span>
+<!-- REPLY MODAL -->
+<div class="modal-backdrop" id="replyBackdrop" onclick="handleBackdropClick(event,'replyBackdrop')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-paper-plane"></i> Reply to Inquiry</h3>
+            <button class="modal-close" onclick="closeReplyModal()"><i class="fas fa-times"></i></button>
         </div>
+        <div class="modal-body">
+            <input type="hidden" id="reply_id">
 
-        <label>Subject</label>
-        <input type="text" id="reply_subject"
-               value="Re: Your Inquiry – Sports Complex Booking System">
+            <div class="info-row" style="margin-bottom:14px;">
+                <div class="info-row-icon"><i class="fas fa-user"></i></div>
+                <div><div class="info-label">To</div><div class="info-value" id="reply_to" style="color:var(--accent);"></div></div>
+            </div>
 
-        <label>Message</label>
-        <textarea id="reply_message" rows="7"
-                  placeholder="Type your reply here..."
-                  oninput="updateCharCount()"></textarea>
-        <div class="char-count"><span id="charCount">0</span> characters</div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="reply_subject" value="Re: Your Inquiry – Sports Complex Booking System">
+            </div>
 
-        <div class="modal-actions">
-            <button class="btn-primary" onclick="sendReply()">
-                <i class="fas fa-paper-plane"></i> Send Reply
-            </button>
-            <button class="btn-ghost" onclick="closeReplyModal()">Cancel</button>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="reply_message" rows="7" placeholder="Type your reply here…" oninput="updateCharCount()"></textarea>
+            </div>
+            <div class="char-count"><span id="charCount">0</span> characters</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeReplyModal()">Cancel</button>
+            <button class="btn-primary" onclick="sendReply()"><i class="fas fa-paper-plane"></i> Send Reply</button>
         </div>
     </div>
 </div>
 
 <script>
-// ============================================================
-// STATE
-// ============================================================
+// ── STATE ────────────────────────────────────────────────────
 const allRows    = Array.from(document.querySelectorAll(".inquiry-row"));
 let filteredRows = [...allRows];
 let currentPage  = 1;
 const rowsPerPage = 6;
 
-// ============================================================
-// FILTER + SEARCH
-// ============================================================
+// ── STATS ─────────────────────────────────────────────────────
+function updateStats() {
+    document.getElementById('statTotal').textContent   = allRows.length;
+    document.getElementById('statUnread').textContent  = allRows.filter(r => r.dataset.status === 'unread').length;
+    document.getElementById('statRead').textContent    = allRows.filter(r => r.dataset.status === 'read').length;
+    document.getElementById('statReplied').textContent = allRows.filter(r => r.dataset.status === 'replied').length;
+}
+
+// ── FILTER + SEARCH ──────────────────────────────────────────
 function applyFilters() {
     const kw     = document.getElementById("searchInput").value.toLowerCase().trim();
     const status = document.getElementById("statusFilter").value.toLowerCase();
@@ -756,121 +566,96 @@ function applyFilters() {
     filteredRows = allRows.filter(row => {
         const text      = row.innerText.toLowerCase();
         const rowStatus = (row.dataset.status || "").toLowerCase();
-
-        const matchSearch = !kw || text.includes(kw);
-        const matchStatus = status === "all" || rowStatus === status;
-
-        return matchSearch && matchStatus;
+        return (!kw || text.includes(kw)) && (!status || rowStatus === status);
     });
 
     currentPage = 1;
     renderTable();
 }
 
-// ============================================================
-// RENDER TABLE
-// ============================================================
+// ── RENDER TABLE ─────────────────────────────────────────────
 function renderTable() {
     allRows.forEach(r => r.style.display = "none");
 
     const start = (currentPage - 1) * rowsPerPage;
-    filteredRows.slice(start, start + rowsPerPage)
-                .forEach(r => r.style.display = "");
+    const page  = filteredRows.slice(start, start + rowsPerPage);
+
+    if (!page.length) {
+        const tbody = document.getElementById('inquiryTableBody');
+        tbody.querySelectorAll('.empty-row').forEach(r => r.remove());
+        const emptyRow = document.createElement('tr');
+        emptyRow.className = 'empty-row';
+        emptyRow.innerHTML = `<td colspan="8"><div class="empty-state"><i class="fas fa-inbox"></i>No inquiries found.</div></td>`;
+        tbody.appendChild(emptyRow);
+    } else {
+        document.querySelectorAll('.empty-row').forEach(r => r.remove());
+        page.forEach(r => r.style.display = "");
+    }
 
     renderPagination();
 }
 
-// ============================================================
-// PAGINATION
-// ============================================================
+// ── PAGINATION ────────────────────────────────────────────────
 function renderPagination() {
     const container  = document.getElementById("pagination");
     container.innerHTML = "";
-
     const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
-    if (currentPage > totalPages) currentPage = 1;
     if (totalPages <= 1) return;
 
-    const prev = document.createElement("button");
-    prev.textContent = "<";
-    prev.disabled    = currentPage === 1;
-    prev.onclick     = () => { currentPage--; renderTable(); };
-    container.appendChild(prev);
+    const btn = (label, page, active, disabled) => {
+        const b = document.createElement('button');
+        b.className = 'pag-btn' + (active ? ' active' : '');
+        b.innerHTML = label;
+        b.disabled  = disabled;
+        b.onclick   = () => { currentPage = page; renderTable(); };
+        return b;
+    };
 
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        if (i === currentPage) btn.classList.add("active");
-        btn.onclick = () => { currentPage = i; renderTable(); };
-        container.appendChild(btn);
-    }
-
-    const next = document.createElement("button");
-    next.textContent = ">";
-    next.disabled    = currentPage === totalPages;
-    next.onclick     = () => { currentPage++; renderTable(); };
-    container.appendChild(next);
+    container.appendChild(btn('<i class="fas fa-chevron-left"></i>', currentPage-1, false, currentPage===1));
+    for (let i = 1; i <= totalPages; i++) container.appendChild(btn(i, i, i===currentPage, false));
+    container.appendChild(btn('<i class="fas fa-chevron-right"></i>', currentPage+1, false, currentPage===totalPages));
 }
 
-// ============================================================
-// PROFILE MENU
-// ============================================================
-function toggleMenu() {
-    const menu = document.getElementById("profileMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+// ── BACKDROP CLICK ────────────────────────────────────────────
+function handleBackdropClick(e, id) {
+    if (e.target === document.getElementById(id)) {
+        if (id === 'viewBackdrop')  closeViewModal();
+        if (id === 'replyBackdrop') closeReplyModal();
+    }
 }
 
-window.addEventListener("click", function (e) {
-    if (!e.target.closest(".user")) {
-        document.getElementById("profileMenu").style.display = "none";
-    }
-});
-
-// Close modals on backdrop click
-window.addEventListener("click", function (e) {
-    if (e.target === document.getElementById("viewModal"))  closeViewModal();
-    if (e.target === document.getElementById("replyModal")) closeReplyModal();
-});
-
-// ============================================================
-// VIEW INQUIRY
-// ============================================================
+// ── VIEW INQUIRY ──────────────────────────────────────────────
 function viewInquiry(id) {
     fetch(`/get_inquiry/${id}`)
         .then(res => res.json())
         .then(data => {
-            document.getElementById("view_id").value      = data.id;
+            document.getElementById("view_id").value        = data.id;
             document.getElementById("view_name").innerText  = data.name;
             document.getElementById("view_email").innerText = data.email;
             document.getElementById("view_date").innerText  = data.created_at || "—";
             document.getElementById("view_message").innerText = data.message;
             document.getElementById("view_remarks").value   = data.remarks || "";
 
-            // Status badge
             const statusMap = {
                 replied: '<span class="badge badge-replied">Replied</span>',
                 read:    '<span class="badge badge-read">Read</span>',
                 unread:  '<span class="badge badge-unread">Unread</span>'
             };
-            document.getElementById("view_status").innerHTML =
-                statusMap[data.status] || data.status;
+            document.getElementById("view_status").innerHTML = statusMap[data.status] || data.status;
 
-            // Mark as read if unread
             if (data.status === "unread") {
                 fetch(`/mark_inquiry_read/${id}`, { method: "POST" });
             }
 
-            document.getElementById("viewModal").style.display = "block";
+            document.getElementById("viewBackdrop").classList.add('open');
         });
 }
 
 function closeViewModal() {
-    document.getElementById("viewModal").style.display = "none";
+    document.getElementById("viewBackdrop").classList.remove('open');
 }
 
-// ============================================================
-// SAVE REMARKS (from view modal)
-// ============================================================
+// ── SAVE REMARKS ──────────────────────────────────────────────
 function saveRemarks() {
     const id      = document.getElementById("view_id").value;
     const remarks = document.getElementById("view_remarks").value.trim();
@@ -883,29 +668,22 @@ function saveRemarks() {
     .then(res => res.json())
     .then(() => {
         Swal.fire({
-            title: "Saved!",
-            text: "Remarks updated successfully.",
-            icon: "success",
-            timer: 1400,
-            showConfirmButton: false
+            title: "Saved!", text: "Remarks updated successfully.",
+            icon: "success", timer: 1400, showConfirmButton: false,
+            background: '#111820', color: '#e8f0f8'
         }).then(() => location.reload());
     });
 }
 
-// ============================================================
-// OPEN REPLY MODAL (from table row)
-// ============================================================
+// ── OPEN REPLY MODAL ──────────────────────────────────────────
 function openReplyModal(id, name, email) {
-    document.getElementById("reply_id").value     = id;
-    document.getElementById("reply_to").innerText = `${name} <${email}>`;
+    document.getElementById("reply_id").value      = id;
+    document.getElementById("reply_to").innerText  = `${name} <${email}>`;
     document.getElementById("reply_message").value = "";
     document.getElementById("charCount").innerText = "0";
-    document.getElementById("replyModal").style.display = "block";
+    document.getElementById("replyBackdrop").classList.add('open');
 }
 
-// ============================================================
-// OPEN REPLY FROM VIEW MODAL
-// ============================================================
 function openReplyFromView() {
     const id    = document.getElementById("view_id").value;
     const name  = document.getElementById("view_name").innerText;
@@ -915,39 +693,25 @@ function openReplyFromView() {
 }
 
 function closeReplyModal() {
-    document.getElementById("replyModal").style.display = "none";
+    document.getElementById("replyBackdrop").classList.remove('open');
 }
 
 function updateCharCount() {
-    const len = document.getElementById("reply_message").value.length;
-    document.getElementById("charCount").innerText = len;
+    document.getElementById("charCount").innerText = document.getElementById("reply_message").value.length;
 }
 
-// ============================================================
-// SEND REPLY  →  POST /reply_inquiry/<id>
-//
-// Your Flask route should:
-//   1. Send an email via Flask-Mail to the user's address
-//   2. Save the reply + update status to 'replied' in the DB
-//   3. Return JSON { success: true, message: "..." }
-// ============================================================
+// ── SEND REPLY ────────────────────────────────────────────────
 function sendReply() {
     const id      = document.getElementById("reply_id").value;
     const subject = document.getElementById("reply_subject").value.trim();
     const message = document.getElementById("reply_message").value.trim();
 
     if (!message) {
-        Swal.fire("Empty Reply", "Please type a message before sending.", "warning");
+        Swal.fire({ title: "Empty Reply", text: "Please type a message before sending.", icon: "warning", background: '#111820', color: '#e8f0f8', confirmButtonColor: '#00e0c4' });
         return;
     }
 
-    // Loading state
-    Swal.fire({
-        title: "Sending...",
-        text: "Sending reply to the user's email.",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
+    Swal.fire({ title: "Sending…", text: "Sending reply to the user's email.", allowOutsideClick: false, background: '#111820', color: '#e8f0f8', didOpen: () => Swal.showLoading() });
 
     fetch(`/reply_inquiry/${id}`, {
         method: "POST",
@@ -957,56 +721,40 @@ function sendReply() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            Swal.fire({
-                title: "Reply Sent!",
-                text: "The user has been notified via email.",
-                icon: "success",
-                timer: 1800,
-                showConfirmButton: false
-            }).then(() => {
-                closeReplyModal();
-                location.reload();
-            });
+            Swal.fire({ title: "Reply Sent!", text: "The user has been notified via email.", icon: "success", timer: 1800, showConfirmButton: false, background: '#111820', color: '#e8f0f8' })
+                .then(() => { closeReplyModal(); location.reload(); });
         } else {
-            Swal.fire("Error", data.message || "Failed to send reply.", "error");
+            Swal.fire({ title: "Error", text: data.message || "Failed to send reply.", icon: "error", background: '#111820', color: '#e8f0f8', confirmButtonColor: '#00e0c4' });
         }
     })
-    .catch(() => Swal.fire("Error", "Network error. Please try again.", "error"));
+    .catch(() => Swal.fire({ title: "Error", text: "Network error. Please try again.", icon: "error", background: '#111820', color: '#e8f0f8', confirmButtonColor: '#00e0c4' }));
 }
 
-// ============================================================
-// DELETE INQUIRY
-// ============================================================
+// ── DELETE INQUIRY ────────────────────────────────────────────
 function deleteInquiry(id) {
     Swal.fire({
         title: "Delete Inquiry?",
         text: "This action cannot be undone!",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#ff6b6b",
-        cancelButtonColor: "#6b85a6",
-        confirmButtonText: "Yes, delete it"
+        confirmButtonColor: "#f87171",
+        cancelButtonColor: "#4a5f72",
+        confirmButtonText: "Yes, delete it",
+        background: '#111820', color: '#e8f0f8'
     }).then(result => {
         if (!result.isConfirmed) return;
-
         fetch(`/delete_inquiry/${id}`, { method: "POST" })
             .then(res => res.json())
             .then(() => {
-                Swal.fire({
-                    title: "Deleted!",
-                    icon: "success",
-                    timer: 1200,
-                    showConfirmButton: false
-                }).then(() => location.reload());
+                Swal.fire({ title: "Deleted!", icon: "success", timer: 1200, showConfirmButton: false, background: '#111820', color: '#e8f0f8' })
+                    .then(() => location.reload());
             });
     });
 }
 
-// ============================================================
-// INIT
-// ============================================================
+// ── INIT ──────────────────────────────────────────────────────
+updateStats();
 renderTable();
 </script>
-
 </body>
 </html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Access Denied – Sports Complex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --red:    #ff3c3c;
+  --red-dim: rgba(255,60,60,0.12);
+  --red-border: rgba(255,60,60,0.28);
+  --cyan:   #00e5ff;
+  --bg:     #080c10;
+  --surface:#0d1219;
+  --border: #1a2330;
+  --text:   #c8daea;
+  --muted:  #4a6078;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-color: var(--bg);
+  font-family:'DM Sans', sans-serif;
+  color: var(--text);
+  overflow:hidden;
+}
+
+/* ── animated grid background ── */
+.bg-grid {
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    linear-gradient(rgba(255,60,60,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,60,60,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: drift 20s linear infinite;
+}
+@keyframes drift { to { background-position: 48px 48px; } }
+
+/* ── radial glow spots ── */
+.glow-red {
+  position:fixed; width:500px; height:500px; border-radius:50%;
+  background: radial-gradient(circle, rgba(255,60,60,0.09) 0%, transparent 70%);
+  top:-100px; left:-100px; pointer-events:none; z-index:0;
+  animation: pulse-red 4s ease-in-out infinite;
+}
+.glow-blue {
+  position:fixed; width:400px; height:400px; border-radius:50%;
+  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
+  bottom:-80px; right:-80px; pointer-events:none; z-index:0;
+  animation: pulse-blue 5s ease-in-out infinite;
+}
+@keyframes pulse-red  { 0%,100%{opacity:.7} 50%{opacity:1} }
+@keyframes pulse-blue { 0%,100%{opacity:.5} 50%{opacity:.9} }
+
+/* ── card ── */
+.card {
+  position:relative; z-index:1;
+  width:90%; max-width:460px;
+  background: var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:52px 44px 44px;
+  text-align:center;
+  box-shadow:
+    0 0 0 1px rgba(255,60,60,0.06),
+    0 24px 60px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  animation: rise .55s cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes rise {
+  from { opacity:0; transform:translateY(28px) scale(.97); }
+  to   { opacity:1; transform:none; }
+}
+
+/* top accent line */
+.card::before {
+  content:'';
+  position:absolute; top:0; left:10%; right:10%; height:2px;
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
+  border-radius:0 0 4px 4px;
+}
+
+/* ── icon ── */
+.icon-wrap {
+  width:76px; height:76px; border-radius:18px; margin:0 auto 24px;
+  background: var(--red-dim);
+  border:1px solid var(--red-border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; color:var(--red);
+  box-shadow: 0 0 24px rgba(255,60,60,0.15);
+  animation: shake 6s ease-in-out 1s infinite;
+}
+@keyframes shake {
+  0%,90%,100%{ transform:rotate(0deg) }
+  92%        { transform:rotate(-6deg) }
+  94%        { transform:rotate(6deg) }
+  96%        { transform:rotate(-4deg) }
+  98%        { transform:rotate(3deg) }
+}
+
+/* ── code badge ── */
+.code {
+  display:inline-block;
+  font-family:'Bebas Neue', sans-serif;
+  font-size:11px; letter-spacing:3px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:4px 12px;
+  margin-bottom:14px;
+}
+
+/* ── heading ── */
+h1 {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:40px; letter-spacing:2px;
+  color: var(--red);
+  line-height:1;
+  margin-bottom:14px;
+  text-shadow: 0 0 30px rgba(255,60,60,0.35);
+}
+
+/* ── body text ── */
+p {
+  color: #7a96ad;
+  font-size:14px;
+  line-height:1.75;
+  margin-bottom:34px;
+}
+
+/* ── divider ── */
+.divider {
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin-bottom:28px;
+}
+
+/* ── button ── */
+.btn {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:13px 30px; border-radius:11px;
+  background: linear-gradient(90deg, #00cfff, #00e5ff);
+  color:#001018; font-weight:600; text-decoration:none;
+  font-size:14px; letter-spacing:.3px;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 0 0 rgba(0,229,255,0);
+}
+.btn:hover {
+  transform:translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,229,255,0.3);
+}
+.btn:active { transform:translateY(-1px); }
+
+/* ── footer note ── */
+.footer-note {
+  margin-top:22px;
+  font-size:12px;
+  color: var(--muted);
+}
+.footer-note a {
+  color:#2a7fa0;
+  text-decoration:none;
+  transition:color .2s;
+}
+.footer-note a:hover { color:var(--cyan); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="glow-red"></div>
+<div class="glow-blue"></div>
+
+<div class="card">
+  <div class="icon-wrap"><i class="fas fa-ban"></i></div>
+  <div class="code">ERROR 403</div>
+  <h1>Access Denied</h1>
+  <p>You don't have permission to view this page.<br>
+     Please log in with an authorized account or contact<br>
+     your system administrator for access.</p>
+  <div class="divider"></div>
+  <a href="/auth/admin-login" class="btn">
+    <i class="fas fa-arrow-left"></i> Back to Login
+  </a>
+  <div class="footer-note">
+    Need help? <a href="mailto:admin@sportscomplex.com">Contact Support</a>
+  </div>
+</div>
+
+</body>
+</html>
